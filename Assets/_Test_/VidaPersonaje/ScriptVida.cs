@@ -1,32 +1,26 @@
-using System;
 using UnityEngine;
 
 public class ScriptVida : MonoBehaviour
 {
+    // Ya no necesita maxVida ni vida actual, eso lo lleva WinLose
+    public bool damage = false;
 
-    public int maxVida = 5;
-    public int vida;
-    public SliderVida slidervida;
-    public Boolean damage = false;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        vida = maxVida;
-        slidervida.SetVidaMax(maxVida);
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        if(damage)
+        // Esto es solo para pruebas, si la casilla damage se marca, resta vida
+        if (damage)
         {
             reducirSalud();
+            damage = false; // Lo reseteamos para que no reste vida cada frame
         }
     }
 
     public void reducirSalud()
     {
-        vida--;
-        slidervida.SetSlider(vida);
+        // LLAMADA A TU CÓDIGO:
+        if (WinLose.Instance != null)
+        {
+            WinLose.Instance.ModificarVidas(-1);
+        }
     }
 }
