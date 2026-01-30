@@ -94,12 +94,7 @@ public class Barra : MonoBehaviour
 
     private void AplicarCambioDePuntos()
     {
-        // Debug para ver si el timer funciona
-        if (puntosAAplicar == 0)
-        {
-            Debug.Log("<color=white>Timer:</color> Tick ejecutado, pero puntosAAplicar es 0.");
-            return;
-        }
+        if (puntosAAplicar == 0) return;
 
         progresoActual += puntosAAplicar;
         progresoActual = Mathf.Clamp(progresoActual, 0, 100);
@@ -107,6 +102,10 @@ public class Barra : MonoBehaviour
         if (barraProgreso != null)
             barraProgreso.value = progresoActual;
 
-        Debug.Log($"<color=green>Progreso:</color> {progresoActual} (Cambio: {puntosAAplicar})");
+        // Avisamos al árbitro WinLose del nuevo valor de la barra
+        if (WinLose.Instance != null)
+        {
+            WinLose.Instance.ValidarProgreso(progresoActual);
+        }
     }
 }
