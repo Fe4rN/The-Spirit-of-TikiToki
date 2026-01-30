@@ -178,7 +178,7 @@ public class PlayerInventory : MonoBehaviour
         {
             Debug.Log("<color=orange>SOLTANDO:</color> " + currentSlot.item.itemName);
             Vector3 spawnPos = transform.position + (transform.forward * 1.2f);
-            spawnPos.y = 0.1f;
+            spawnPos.y = 1.5f;
             Instantiate(currentSlot.item.prefab, spawnPos, Quaternion.identity);
 
             currentSlot.count--;
