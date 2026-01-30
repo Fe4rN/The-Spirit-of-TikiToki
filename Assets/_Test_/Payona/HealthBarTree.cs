@@ -4,25 +4,24 @@ using UnityEngine.UI;
 public class TreeHealthBarTree : MonoBehaviour
 {
     public Slider slider;
-    public Transform cam;
+    private Transform _camTransform;
 
     void Start()
     {
-        cam = Camera.main.transform;
-        gameObject.SetActive(false); // Oculta la barra al empezar
+        if (Camera.main != null) _camTransform = Camera.main.transform;
+        // No la desactivamos aquí, el Árbol lo hará en su Start
     }
 
-    // Actualiza el valor y muestra la barra
-    public void SetHealth(int current, int max)
+    public void SetHealth(float current, float max)
     {
-        gameObject.SetActive(true);
+        // Quitamos el SetActive de aquí para que no haya conflictos
         slider.maxValue = max;
         slider.value = current;
     }
 
-    // Efecto Billboard: La barra siempre mira a la cámara
     void LateUpdate()
     {
-        transform.LookAt(transform.position + cam.forward);
+        if (_camTransform == null) return;
+        transform.rotation = _camTransform.rotation;
     }
 }

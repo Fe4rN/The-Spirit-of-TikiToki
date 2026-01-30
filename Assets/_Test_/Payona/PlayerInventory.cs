@@ -21,7 +21,7 @@ public class PlayerInventory : MonoBehaviour
     public GameObject[] selectors;
 
     [Header("Visualización en Mano")]
-    public Transform holdPoint; // Arrastra aquí un objeto vacío hijo de las manos del jugador
+    public Transform holdPoint;
     private GameObject _currentHeldObject;
 
     [Header("Interacción")]
@@ -45,10 +45,15 @@ public class PlayerInventory : MonoBehaviour
 
         ScanForHighlight();
 
+        // Selección de slots (1 y 2)
         if (Input.GetKeyDown(KeyCode.Alpha1)) { activeSlotIndex = 0; UpdateUI(); }
         if (Input.GetKeyDown(KeyCode.Alpha2)) { activeSlotIndex = 1; UpdateUI(); }
 
+        // INTERACCIÓN (Espacio)
         if (Input.GetKeyDown(KeyCode.Space)) { HandleSpaceAction(); }
+
+        // SOLTAR (R)
+        if (Input.GetKeyDown(KeyCode.R)) { DropItem(); }
     }
 
     void ScanForHighlight()
@@ -58,7 +63,6 @@ public class PlayerInventory : MonoBehaviour
 
         if (currentItem != null)
         {
-            // 1. Si es un ÁRBOL, solo permitimos el highlight si tenemos el hacha
             if (currentItem.CompareTag("Tree"))
             {
                 if (slots[activeSlotIndex].item != null && slots[activeSlotIndex].item.itemName == "Axe")
@@ -66,14 +70,12 @@ public class PlayerInventory : MonoBehaviour
                     canHighlight = true;
                 }
             }
-            // 2. Si es un OBJETO (madera, hacha en el suelo, etc), siempre resaltamos para poder recogerlo
             else if (currentItem.itemData != null)
             {
                 canHighlight = true;
             }
         }
 
-        // Aplicar el highlight según el resultado de arriba
         if (canHighlight)
         {
             if (currentItem != _lastTargetedItem)
@@ -85,7 +87,6 @@ public class PlayerInventory : MonoBehaviour
         }
         else
         {
-            // Si no se puede resaltar (miramos un árbol sin hacha o no miramos nada)
             if (_lastTargetedItem != null)
             {
                 _lastTargetedItem.SetHighlight(false);
@@ -120,12 +121,11 @@ public class PlayerInventory : MonoBehaviour
     {
         WorldItem itemInFront = GetItemInFront();
 
-        // --- LÓGICA DE RECOGIDA (Busca en todo el inventario) ---
+        // --- LÓGICA DE RECOGIDA ---
         if (itemInFront != null && itemInFront.itemData != null)
         {
             ItemData data = itemInFront.itemData;
 
-            // 1. Intentar sumar a un stack existente
             for (int i = 0; i < slots.Length; i++)
             {
                 if (slots[i].item == data && slots[i].count < data.maxStack)
@@ -136,7 +136,6 @@ public class PlayerInventory : MonoBehaviour
                 }
             }
 
-            // 2. Si no hay stack, buscar el PRIMER hueco vacío disponible
             for (int i = 0; i < slots.Length; i++)
             {
                 if (slots[i].item == null)
@@ -147,12 +146,10 @@ public class PlayerInventory : MonoBehaviour
                     return;
                 }
             }
-
-            Debug.Log("<color=yellow>SISTEMA:</color> Inventario totalmente lleno.");
             return;
         }
 
-        // --- CASO B: INTERACTUAR (Árbol + Hacha) ---
+        // --- LÓGICA DE TALAR ---
         if (itemInFront != null && itemInFront.CompareTag("Tree") && slots[activeSlotIndex].item != null && slots[activeSlotIndex].item.itemName == "Axe")
         {
             Tree tree = itemInFront.GetComponent<Tree>();
@@ -162,12 +159,6 @@ public class PlayerInventory : MonoBehaviour
                 tree.TakeHit();
                 return;
             }
-        }
-
-        // --- CASO C: SOLTAR (Si no hay nada que recoger o interactuar delante) ---
-        if (slots[activeSlotIndex].item != null)
-        {
-            DropItem();
         }
     }
 
@@ -222,20 +213,15 @@ public class PlayerInventory : MonoBehaviour
 
     void UpdateHandVisual()
     {
-        // 1. Limpiar objeto actual de la mano
         if (_currentHeldObject != null) Destroy(_currentHeldObject);
 
-        // 2. Si el slot activo tiene un item, instanciarlo en el holdPoint
         ItemData currentItem = slots[activeSlotIndex].item;
         if (currentItem != null && currentItem.prefab != null && holdPoint != null)
         {
             _currentHeldObject = Instantiate(currentItem.prefab, holdPoint.position, holdPoint.rotation, holdPoint);
 
-            // Limpieza del clon en mano para que no cause problemas:
-            // Desactivamos su collider y Rigidbody si los tiene para que no empujen al jugador
             if (_currentHeldObject.GetComponent<Collider>()) _currentHeldObject.GetComponent<Collider>().enabled = false;
             if (_currentHeldObject.GetComponent<Rigidbody>()) _currentHeldObject.GetComponent<Rigidbody>().isKinematic = true;
-            // Quitamos el script WorldItem para que no se auto-detecte
             if (_currentHeldObject.GetComponent<WorldItem>()) Destroy(_currentHeldObject.GetComponent<WorldItem>());
         }
     }

@@ -129,8 +129,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldItem
   itemData: {fileID: 11400000, guid: 8cd82ffe816707443b2f8d6ed87eedfa, type: 2}
+  canDespawn: 1
+  lifeTime: 3
+  shrinkDuration: 1.5
   highlightColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  scaleMultiplier: 1.1
 --- !u!54 &8749904520884867029
 Rigidbody:
   m_ObjectHideFlags: 0
