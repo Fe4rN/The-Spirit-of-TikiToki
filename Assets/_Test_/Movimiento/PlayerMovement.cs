@@ -3,10 +3,13 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] private Transform playerTransform;
     [SerializeField] private float speed = 6f;
+    [SerializeField] private float rotationSpeed = 720f;
 
     private CharacterController controller;
     private Vector3 velocity;
+    private Vector3 moveInput;
 
     void Start()
     {
@@ -15,11 +18,18 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveZ = Input.GetAxisRaw("Vertical");
 
-        Vector3 move = transform.right * moveX + transform.forward * moveZ;
+        moveInput = new Vector3(moveX, 0, moveZ).normalized;
 
-        controller.Move(move * speed * Time.deltaTime);
+        if (moveInput != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveInput);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
+
+        Vector3 finalVelocity = (moveInput * speed);
+        controller.Move(finalVelocity * Time.deltaTime);
     }
 }
