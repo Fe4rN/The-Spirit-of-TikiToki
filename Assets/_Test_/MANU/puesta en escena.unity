@@ -242,7 +242,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpawnerEscenario
   areaSize: {x: 10, y: 10}
   radioExclusion: 2.01
-  hogueraPrefab: {fileID: 0}
+  hogueraPrefab: {fileID: 7633995313012639236, guid: 899ae0a11ae20744096ae41312f4d4ca, type: 3}
   cantidadHogueras: 5
   radioPentagono: 3
   arbolPrefab: {fileID: 0}
@@ -391,6 +391,56 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1930191795
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1930191797}
+  - component: {fileID: 1930191796}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1930191796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1930191795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0780360296e22b45974ec51de01f9b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Barra
+  barraProgreso: {fileID: 0}
+  intervaloDeTiempo: 3
+  puntosLentos: 1
+  puntosMedios: 3
+  puntosRapidos: 5
+  progresoActual: 50
+--- !u!4 &1930191797
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1930191795}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.36619, y: -0, z: -2.39446}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -398,3 +448,4 @@ SceneRoots:
   - {fileID: 530721523}
   - {fileID: 1036042192}
   - {fileID: 933671908}
+  - {fileID: 1930191797}
