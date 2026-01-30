@@ -789,12 +789,23 @@ MonoBehaviour:
   vidasActuales: 0
   tiempoRestante: 0
   juegoTerminado: 0
-  textoTiempo: {fileID: 0}
+  textoTiempo: {fileID: 2000762874}
   sliderVida: {fileID: 531976176}
   panelVictoria: {fileID: 0}
   panelDerrota: {fileID: 0}
   barraIzquierda: {fileID: 1222506603}
   barraDerecha: {fileID: 336823500}
+--- !u!114 &2000762874 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3243930523304015197, guid: d186287f537657141b2572d25fd75aaf, type: 3}
+  m_PrefabInstance: {fileID: 7041668475756211335}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &7041668475756211335
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class WinLose : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class WinLose : MonoBehaviour
     public bool juegoTerminado = false;
 
     [Header("Referencias UI: Tiempo y Vidas")]
-    public Text textoTiempo;
+    public TextMeshProUGUI textoTiempo;
     public Slider sliderVida;
     public GameObject panelVictoria;
     public GameObject panelDerrota;
