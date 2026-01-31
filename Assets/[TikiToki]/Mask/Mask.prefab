@@ -97,7 +97,7 @@ MonoBehaviour:
   initial: 0
   fireTime: 3
   rayRange: 25
-  beamRadius: 0.75
+  beamRadius: 1.5
   playerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -191,7 +191,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: -7887595797380853678, guid: 66d3f850d0a89094aa4bc25e52891c3d, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
