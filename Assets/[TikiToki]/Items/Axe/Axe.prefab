@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3043281390392387828}
+  - component: {fileID: 8447996209043539324}
   m_Layer: 3
   m_Name: Axe
   m_TagString: Untagged
@@ -32,6 +33,23 @@ Transform:
   - {fileID: 3827465239935492373}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8447996209043539324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6722745187792159250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d5b4468d30f0649bf852a43a33e624, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldItem
+  itemData: {fileID: 11400000, guid: 4165ebae91d76874bada48774450da83, type: 2}
+  canDespawn: 0
+  lifeTime: 30
+  shrinkDuration: 1.5
+  highlightColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1001 &3645481543142459134
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -113,9 +131,6 @@ PrefabInstance:
       addedObject: {fileID: 5899426259068260006}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c54b79a650c300f4e97f58d6b9e67402, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4312041199676621892}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c54b79a650c300f4e97f58d6b9e67402, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 6887261412619914433}
   m_SourcePrefab: {fileID: 100100000, guid: c54b79a650c300f4e97f58d6b9e67402, type: 3}
 --- !u!4 &3827465239935492373 stripped
@@ -155,23 +170,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &4312041199676621892
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4491834818496232367}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4d5b4468d30f0649bf852a43a33e624, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WorldItem
-  itemData: {fileID: 11400000, guid: 4165ebae91d76874bada48774450da83, type: 2}
-  canDespawn: 0
-  lifeTime: 30
-  shrinkDuration: 1.5
-  highlightColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!65 &6887261412619914433
 BoxCollider:
   m_ObjectHideFlags: 0

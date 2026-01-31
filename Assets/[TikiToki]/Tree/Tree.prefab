@@ -409,6 +409,8 @@ MonoBehaviour:
   healthBar: {fileID: 7776135594951436971}
   woodPrefab: {fileID: 4815595596351959099, guid: 195df5e0103fa9c4ca6bddd59060676d, type: 3}
   woodAmount: 1
+  escalaNormal: {x: 1, y: 1, z: 1}
+  sounTreeHit: {fileID: 8300000, guid: 1b746fb2ed7709d4caa47a7764e1d567, type: 3}
   soundTreeFall: {fileID: 8300000, guid: c502648d75633f84ca20cee7781fd0d4, type: 3}
 --- !u!114 &4129040383751138937
 MonoBehaviour:
@@ -439,7 +441,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: -7887595797380853678, guid: 66d3f850d0a89094aa4bc25e52891c3d, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
