@@ -235,10 +235,15 @@ public class PlayerInventory : MonoBehaviour
         // --- PARTE 1: ACTIVAR ANIMACIÓN ---
         if (currentSlot.item != null && currentSlot.item.itemName.ToLower() == "axe") // .ToLower() es clave
         {
+            Debug.Log("<color=magenta>ANIMACIÓN:</color> Preparando animación de TALA.");
             if (playerAnimator != null)
             {
                 playerAnimator.SetTrigger("Chop");
                 Debug.Log("<color=magenta>ANIMACIÓN:</color> Ejecutando animación de TALA.");
+            }
+            else
+            {
+                Debug.Log("<color=red>ANIMACIÓN:</color> No hay Animator asignado en PlayerInventory.");
             }
         }
 
@@ -265,7 +270,7 @@ public class PlayerInventory : MonoBehaviour
                     _bloquearEncendidoHastaSoltar = true;
                     currentSlot.count--;
                     if (currentSlot.count <= 0) currentSlot.item = null;
-                    hoguera.ActualizarVisuales();
+                    hoguera.ActualizarVisuales();   
                     UpdateUI();
                     return; // Salimos para que no intente encenderla en el mismo frame
                 }
