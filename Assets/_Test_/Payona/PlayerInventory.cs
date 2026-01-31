@@ -16,9 +16,9 @@ public class PlayerInventory : MonoBehaviour
     public int activeSlotIndex = 0;
 
     [Header("Referencias UI")]
+    public Image[] slotBackgrounds;
     public Image[] iconSlots;
     public TextMeshProUGUI[] stackTexts;
-    public GameObject[] selectors;
 
     [Header("Visualización en Mano")]
     public Transform holdPoint;
@@ -30,15 +30,18 @@ public class PlayerInventory : MonoBehaviour
     public float raySpread = 15f;
 
     private WorldItem _lastTargetedItem;
-
     private Hoguera _hogueraSiendoEncendida;
+
+    // --- COLORES ---
+    private Color frameColor = new Color(0.494f, 0.494f, 0.494f, 1f); // Gris #7E7E7E
+    private Color selectedColor = new Color(1f, 0.92f, 0.016f, 1f);   // Amarillo brillante
 
     void Start() { UpdateUI(); }
 
     void Update()
     {
         // --- VISUALIZACIÓN CONSTANTE DE RAYOS (No tocar) ---
-        Vector3 origin = transform.position + Vector3.up * -0.9f;
+        Vector3 origin = transform.position + Vector3.up * -0.95f;
         Debug.DrawRay(origin, transform.forward * interactionDistance, Color.cyan);
         Debug.DrawRay(origin, (Quaternion.Euler(0, -raySpread, 0) * transform.forward) * interactionDistance, Color.cyan);
         Debug.DrawRay(origin, (Quaternion.Euler(0, raySpread, 0) * transform.forward) * interactionDistance, Color.cyan);
@@ -115,7 +118,7 @@ public class PlayerInventory : MonoBehaviour
     WorldItem GetItemInFront()
     {
         RaycastHit hit;
-        Vector3 origin = transform.position + Vector3.up * -0.9f;
+        Vector3 origin = transform.position + Vector3.up * -0.95f;
         Vector3[] directions = {
         transform.forward,
         Quaternion.Euler(0, -raySpread, 0) * transform.forward,
@@ -269,11 +272,38 @@ public class PlayerInventory : MonoBehaviour
         InventorySlot currentSlot = slots[activeSlotIndex];
         if (currentSlot.item != null)
         {
-            Debug.Log("<color=orange>SOLTANDO:</color> " + currentSlot.item.itemName);
-            Vector3 spawnPos = transform.position + (transform.forward * 1.2f);
-            spawnPos.y = 1.5f;
-            Instantiate(currentSlot.item.prefab, spawnPos, Quaternion.identity);
+            // Guardamos el nombre antes de que el slot pueda quedar nulo
+            string nameToCheck = currentSlot.item.itemName;
 
+            Debug.Log("<color=orange>SOLTANDO:</color> " + nameToCheck);
+            Vector3 spawnPos = transform.position + (transform.forward * 1.2f);
+            spawnPos.y = 1.5f; // Altura desde la que cae
+
+            // Instanciamos el objeto y guardamos su referencia
+            GameObject droppedObj = Instantiate(currentSlot.item.prefab, spawnPos, Quaternion.identity);
+
+            // Buscamos todos los Rigidbodys en el objeto soltado (hijos incluidos)
+            Rigidbody[] rbs = droppedObj.GetComponentsInChildren<Rigidbody>();
+
+            if (nameToCheck == "Axe")
+            {
+                // Si es el hacha, activamos Kinematic (se queda quieta en el aire/suelo)
+                foreach (Rigidbody rb in rbs)
+                {
+                    rb.isKinematic = true;
+                }
+            }
+            else
+            {
+                // Si es madera o cualquier otra cosa, desactivamos Kinematic para que caiga
+                foreach (Rigidbody rb in rbs)
+                {
+                    rb.isKinematic = false;
+                    rb.useGravity = true;
+                }
+            }
+
+            // Restamos la cantidad del inventario
             currentSlot.count--;
             if (currentSlot.count <= 0) currentSlot.item = null;
 
@@ -285,6 +315,23 @@ public class PlayerInventory : MonoBehaviour
     {
         for (int i = 0; i < slots.Length; i++)
         {
+            // 1. EL RECUADRO: Cambia de color según si es el slot activo o no
+            if (slotBackgrounds.Length > i)
+            {
+                slotBackgrounds[i].enabled = true;
+
+                // Si el índice coincide con el slot activo, lo ponemos amarillo
+                if (i == activeSlotIndex)
+                {
+                    slotBackgrounds[i].color = selectedColor;
+                }
+                else
+                {
+                    slotBackgrounds[i].color = frameColor;
+                }
+            }
+
+            // 2. EL ICONO: Solo visible si hay item
             bool hasItem = slots[i].item != null;
             iconSlots[i].enabled = hasItem;
 
@@ -298,7 +345,6 @@ public class PlayerInventory : MonoBehaviour
                 stackTexts[i].text = "";
             }
 
-            if (selectors.Length > i) selectors[i].SetActive(i == activeSlotIndex);
         }
 
         UpdateHandVisual();
