@@ -4,8 +4,12 @@ using UnityEngine.SceneManagement;
 
 public class ControlPausa : MonoBehaviour
 {
+    [Header("Configuración")]
+    public bool esMenuPrincipal = false;
+    public string nombreEscenaMenuPrincipal = "MainMenu";
+
     [Header("Paneles de Menú")]
-    public GameObject panelPausaPrincipal;
+    public GameObject panelPausaPrincipal; // En el MainMenu, este puede ser el panel base o estar vacío
     public GameObject panelOpciones;
     public GameObject panelNiveles;
 
@@ -13,37 +17,33 @@ public class ControlPausa : MonoBehaviour
 
     private void Awake()
     {
+        // Solo pausamos el tiempo si NO es el menú principal
         Time.timeScale = 1f;
     }
 
     void Start()
     {
-        // Forzamos la inicialización manual para que MenuNiveles y MenuOpciones carguen sus datos
         InicializarTodo();
     }
 
     private void InicializarTodo()
     {
-        // 1. Los activamos para que sus métodos Start() se ejecuten con normalidad
         if (panelPausaPrincipal) panelPausaPrincipal.SetActive(true);
         if (panelOpciones) panelOpciones.SetActive(true);
         if (panelNiveles) panelNiveles.SetActive(true);
 
-        // 2. Limpiamos la pila por si acaso y restauramos el tiempo
-        historialMenus.Clear();
-        Time.timeScale = 1f;
+        // Si es MainMenu, el panel principal suele estar activo, no lo metemos en la pila aún
+        // para que ESC no lo "cierre" dejando la pantalla vacía.
 
-        // 3. Los ocultamos inmediatamente. Ahora ya están "despiertos" y con datos cargados.
-        if (panelPausaPrincipal) panelPausaPrincipal.SetActive(false);
+        if (panelPausaPrincipal) panelPausaPrincipal.SetActive(esMenuPrincipal);
         if (panelOpciones) panelOpciones.SetActive(false);
         if (panelNiveles) panelNiveles.SetActive(false);
+
+        historialMenus.Clear();
     }
 
     void Update()
     {
-        // Solo permitimos pausa si el juego no ha terminado (WinLose)
-        if (WinLose.Instance != null && WinLose.Instance.juegoTerminado) return;
-
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             GestionarTeclaEscape();
@@ -56,7 +56,7 @@ public class ControlPausa : MonoBehaviour
         {
             CerrarUltimoMenu();
         }
-        else
+        else if (!esMenuPrincipal) // Solo abre pausa con ESC si estamos en el juego
         {
             PausarJuego();
             AbrirMenu(panelPausaPrincipal);
@@ -67,17 +67,19 @@ public class ControlPausa : MonoBehaviour
     {
         if (menuAAbrir == null) return;
 
-        // Ocultar el panel anterior si existe
+        // Si es el menú principal y abrimos un submenú, ocultamos el fondo si quieres
         if (historialMenus.Count > 0)
         {
             historialMenus.Peek().SetActive(false);
         }
+        else if (esMenuPrincipal && panelPausaPrincipal != null)
+        {
+            // Ocultamos el panel base del menú principal al entrar a submenús
+            panelPausaPrincipal.SetActive(false);
+        }
 
-        // Mostrar el nuevo y registrar en la pila
         menuAAbrir.SetActive(true);
         historialMenus.Push(menuAAbrir);
-
-        Debug.Log($"<color=cyan>Navegación:</color> Entrando en {menuAAbrir.name}.");
     }
 
     public void CerrarUltimoMenu()
@@ -89,42 +91,36 @@ public class ControlPausa : MonoBehaviour
 
         if (historialMenus.Count > 0)
         {
-            // Reactivamos el anterior (ej: volver de Opciones a Pausa)
             historialMenus.Peek().SetActive(true);
         }
         else
         {
-            // Volver al juego
-            ReanudarJuego();
+            if (esMenuPrincipal)
+            {
+                // Si volvemos al final de la pila en el MainMenu, reactivamos el panel base
+                if (panelPausaPrincipal) panelPausaPrincipal.SetActive(true);
+            }
+            else
+            {
+                ReanudarJuego();
+            }
         }
     }
 
-    public void PausarJuego()
-    {
-        Time.timeScale = 0f;
-    }
+    public void PausarJuego() { if (!esMenuPrincipal) Time.timeScale = 0f; }
 
     public void ReanudarJuego()
     {
         Time.timeScale = 1f;
-
-        if (panelPausaPrincipal) panelPausaPrincipal.SetActive(false);
+        if (panelPausaPrincipal && !esMenuPrincipal) panelPausaPrincipal.SetActive(false);
         if (panelOpciones) panelOpciones.SetActive(false);
         if (panelNiveles) panelNiveles.SetActive(false);
-
         historialMenus.Clear();
     }
 
-    public void VolverAlMenuPrincipal(string nombreEscenaMenuPrincipal)
+    public void VolverAlMenuPrincipal()
     {
-        // 1. IMPORTANTE: Reanudar el tiempo antes de cambiar de escena
         Time.timeScale = 1f;
-
-        // 2. Limpiar la pila por seguridad
-        historialMenus.Clear();
-
-        // 3. Cargar la escena
-        Debug.Log("<color=orange>Cargando Menú Principal...</color>");
         SceneManager.LoadScene(nombreEscenaMenuPrincipal);
     }
 }
