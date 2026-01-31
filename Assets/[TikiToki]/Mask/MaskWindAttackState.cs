@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class MaskWindAttackState : MaskState
 {
@@ -7,6 +9,14 @@ public class MaskWindAttackState : MaskState
     [SerializeField] private float windStrength = 0.7f;
     [SerializeField] private float windDuration = 5f;
     private float windCounter;
+
+    [Header("Configuración de Partículas")]
+    [SerializeField] private ParticleSystem mouthParticles; // Arrastra aquí el ParticleSystem que ya tienes orientado
+    [SerializeField] private GameObject windEffectPrefab;   // Solo para las ráfagas del mapa
+    [SerializeField] private int mapWindCount = 5;
+    [SerializeField] private float spawnRadius = 15f;
+
+    private List<ParticleSystem> _mapParticlesList = new List<ParticleSystem>();
 
     [Header("Animación de Mandíbula")]
     [SerializeField] private float jawOpenDistance = 0.3f;
@@ -21,14 +31,22 @@ public class MaskWindAttackState : MaskState
 
     protected override void StateEnter()
     {
-        Debug.Log("Entering Wind State");
+        // Failsafe del Player
+        if (machine.PlayerTransform == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null) machine.PlayerTransform = player.transform;
+        }
+
         playerMovement = machine.PlayerTransform.GetComponent<PlayerMovement>();
         windDirection = ChooseRandomAxis();
         windCounter = windDuration;
         anticipationCounter = anticipationDuration;
         currentPhase = WindPhase.Anticipation;
 
-        // Animar mandíbula - apertura parcial para anticipación
+        // Preparamos las ráfagas del mapa
+        PrepareMultipleMapParticles();
+
         if (machine.JawTransform != null)
         {
             jawInitialPosition = machine.JawTransform.localPosition;
@@ -47,7 +65,6 @@ public class MaskWindAttackState : MaskState
             case WindPhase.Anticipation:
                 anticipationCounter -= Time.deltaTime;
 
-                // Animar mandíbula a posición de anticipación
                 if (isJawAnimating && machine.JawTransform != null)
                 {
                     machine.JawTransform.localPosition = Vector3.Lerp(
@@ -62,7 +79,9 @@ public class MaskWindAttackState : MaskState
                     currentPhase = WindPhase.Attacking;
                     playerMovement.SetWind(windDirection, windStrength);
 
-                    // Abrir completamente la mandíbula
+                    // ACTIVAR VISUALES
+                    ActivateWindVisuals();
+
                     if (machine.JawTransform != null)
                     {
                         jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
@@ -71,7 +90,6 @@ public class MaskWindAttackState : MaskState
                 break;
 
             case WindPhase.Attacking:
-                // Animar mandíbula a posición completamente abierta
                 if (isJawAnimating && machine.JawTransform != null)
                 {
                     machine.JawTransform.localPosition = Vector3.Lerp(
@@ -87,12 +105,63 @@ public class MaskWindAttackState : MaskState
         }
     }
 
+    private void PrepareMultipleMapParticles()
+    {
+        if (windEffectPrefab == null) return;
+        _mapParticlesList.Clear();
+
+        for (int i = 0; i < mapWindCount; i++)
+        {
+            Vector3 randomOffset = new Vector3(Random.Range(-spawnRadius, spawnRadius), 2f, Random.Range(-spawnRadius, spawnRadius));
+            Vector3 spawnPos = machine.PlayerTransform.position + randomOffset;
+
+            GameObject mapGo = Instantiate(windEffectPrefab, spawnPos, Quaternion.LookRotation(windDirection));
+            ParticleSystem ps = mapGo.GetComponent<ParticleSystem>();
+            if (ps != null)
+            {
+                ps.Stop();
+                _mapParticlesList.Add(ps);
+            }
+        }
+    }
+
+    private void ActivateWindVisuals()
+    {
+        // 1. Play a la boca (la que ya tienes puesta en el editor)
+        if (mouthParticles != null)
+        {
+            mouthParticles.Play();
+        }
+
+        // 2. Play a las del mapa
+        foreach (ParticleSystem ps in _mapParticlesList)
+        {
+            if (ps != null) ps.Play();
+        }
+    }
+
     protected override void StateExit()
     {
         AffectMap();
         playerMovement.ClearWind();
 
-        // Cerrar mandíbula
+        // 1. Parar partículas de la boca
+        if (mouthParticles != null)
+        {
+            mouthParticles.Stop();
+        }
+
+        // 2. Parar y limpiar ráfagas del mapa
+        foreach (ParticleSystem ps in _mapParticlesList)
+        {
+            if (ps != null)
+            {
+                ps.Stop();
+                Destroy(ps.gameObject, 2f);
+            }
+        }
+        _mapParticlesList.Clear();
+
         if (machine.JawTransform != null)
         {
             machine.JawTransform.localPosition = jawInitialPosition;
@@ -103,7 +172,6 @@ public class MaskWindAttackState : MaskState
     private Vector3 ChooseRandomAxis()
     {
         int choice = Random.Range(0, 4);
-
         switch (choice)
         {
             case 0: return Vector3.right;
@@ -113,15 +181,9 @@ public class MaskWindAttackState : MaskState
         }
     }
 
-    private void AffectMap()
-    {
-        ReplenishLeaves();
-        ExtinguishBonfires();
-    }
-
+    private void AffectMap() { /* Lógica de hogueras y hojas */ }
     private void ReplenishLeaves() { }
     private void ExtinguishBonfires() { }
-
 }
 
 public enum WindPhase { Anticipation, Attacking }

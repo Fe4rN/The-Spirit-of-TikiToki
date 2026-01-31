@@ -41,7 +41,7 @@ public class PlayerHealth : MonoBehaviour
         yield return new WaitForSeconds(.5f);
         Character.SetActive(false);
         yield return new WaitForSeconds(.5f);
-        Character.SetActive(false);
+        Character.SetActive(true);
     }
 
     private IEnumerator ActivateImmunity()
