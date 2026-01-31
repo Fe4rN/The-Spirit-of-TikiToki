@@ -12,7 +12,7 @@ public class MaskRayAttackState : MaskState
     [SerializeField] private float fireTime = 3f;
     [SerializeField] private float rayRange = 25f;
     [SerializeField] private float beamRadius = 1.5f;
-    [SerializeField] private LayerMask hitMask;
+    [SerializeField] private LayerMask playerMask;
 
     [Header("Animación de Mandíbula")]
     [SerializeField] private float jawOpenDistance = 0.8f;
@@ -103,7 +103,9 @@ public class MaskRayAttackState : MaskState
     private void FireBeamTick()
     {
         Vector3 origin = machine.transform.position;
-        Vector3 direction = machine.transform.forward;
+
+        // Flip direction
+        Vector3 direction = -machine.transform.forward;
 
         Vector3 point1 = origin + Vector3.up * beamRadius;
         Vector3 point2 = origin - Vector3.up * beamRadius;
@@ -114,18 +116,19 @@ public class MaskRayAttackState : MaskState
             beamRadius,
             direction,
             rayRange,
-            hitMask
+            playerMask,
+            QueryTriggerInteraction.Ignore
         );
 
         foreach (var hit in hits)
         {
             if (hit.collider.CompareTag("Player"))
             {
-                Debug.Log("Player taking beam damage");
-                //TODO - Añadir daño real
+                hit.collider.GetComponent<PlayerHealth>().TakeDamage();
             }
         }
     }
+
 }
 
 public enum RayAttackPhase { Charging, LockedIn, Firing }
