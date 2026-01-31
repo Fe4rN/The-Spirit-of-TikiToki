@@ -258,6 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7bd434cb3d737c4b8ad4f6635563da8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
+  playerAnimator: {fileID: 5534364709535365762}
   slots:
   - item: {fileID: 0}
     count: 0
@@ -274,12 +275,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   holdPoint: {fileID: 1397507524384290631}
-  playerAnimator: {fileID: 5534364709535365762}
   interactionDistance: 2
   interactionLayer:
     serializedVersion: 2
     m_Bits: 8
-  raySpread: 15
 --- !u!95 &5534364709535365762
 Animator:
   serializedVersion: 7
