@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskIdleState
   stateName: {fileID: 11400000, guid: 71afdd2c5a334d54fb60b0230b9625a2, type: 2}
-  initial: 0
+  initial: 1
   minAttackCooldown: 3
   maxAttackCooldown: 7
 --- !u!114 &2448894787941978986
@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskMeteorAttackState
   stateName: {fileID: 11400000, guid: a086198234e1fdc499a580144397c058, type: 2}
-  initial: 1
+  initial: 0
   anticipationDuration: 1.5
   attackDuration: 3
   jawOpenDistance: 1.2
