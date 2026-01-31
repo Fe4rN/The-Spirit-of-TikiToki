@@ -1,12 +1,14 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
     [SerializeField] private int MaxHits;
-    private int remainingHits;
+    public int remainingHits;
     private bool isImmune = false;
     [SerializeField] private GameObject Character;
+    [SerializeField] private HealthBarUI healthBar;
 
     private void Start()
     {
@@ -19,6 +21,8 @@ public class PlayerHealth : MonoBehaviour
         if (remainingHits-- > 0)
         {
             remainingHits--;
+            Debug.Log("Restando una hostia");
+            healthBar.updateSlider(remainingHits);
             StartCoroutine(FlashCharacter());
             StartCoroutine(ActivateImmunity());
         }
@@ -31,16 +35,17 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         StopAllCoroutines();
+        GameObject.FindFirstObjectByType<WinLose>().FinalizarPartida(false, "Vidas agotadas.");
     }
 
     private IEnumerator FlashCharacter()
     {
         Character.SetActive(false);
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.1f);
         Character.SetActive(true);
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.1f);
         Character.SetActive(false);
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.1f);
         Character.SetActive(true);
     }
 

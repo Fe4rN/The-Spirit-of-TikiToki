@@ -7,7 +7,6 @@ public class WinLose : MonoBehaviour
     public static WinLose Instance { get; private set; }
 
     [Header("Configuración de Partida")]
-    public int vidasMaximas = 5;
     public float tiempoMaximo = 120f;
 
     [Header("Monitor de Estado (Inspector)")]
@@ -17,7 +16,6 @@ public class WinLose : MonoBehaviour
 
     [Header("Referencias UI: Tiempo y Vidas")]
     public TextMeshProUGUI textoTiempo;
-    public Slider sliderVida;
 
     [Header("Referencias UI: Barra Dual (Progreso)")]
     public Image barraIzquierda; // Fill Origin: Right
@@ -31,7 +29,6 @@ public class WinLose : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
-        vidasActuales = vidasMaximas;
         tiempoRestante = tiempoMaximo;
         juegoTerminado = false;
     }
@@ -44,12 +41,6 @@ public class WinLose : MonoBehaviour
             if (scriptPausa.panelDerrota != null) scriptPausa.panelDerrota.SetActive(false);
         }
 
-        if (sliderVida != null)
-        {
-            sliderVida.maxValue = vidasMaximas;
-            sliderVida.value = vidasActuales;
-        }
-
         ActualizarVisualBarraDual(50f);
         ActualizarUI();
     }
@@ -57,15 +48,6 @@ public class WinLose : MonoBehaviour
     private void Update()
     {
         if (juegoTerminado) return;
-
-        if (sliderVida != null && sliderVida.value != vidasActuales)
-            sliderVida.value = vidasActuales;
-
-        if (vidasActuales <= 0)
-        {
-            FinalizarPartida(false, "Vidas agotadas.");
-            return;
-        }
 
         if (tiempoRestante > 0)
         {
@@ -76,13 +58,6 @@ public class WinLose : MonoBehaviour
         {
             FinalizarPartida(false, "¡Tiempo agotado!");
         }
-    }
-
-    public void ModificarVidas(int cantidad)
-    {
-        if (juegoTerminado) return;
-        vidasActuales += cantidad;
-        vidasActuales = Mathf.Clamp(vidasActuales, 0, vidasMaximas);
     }
 
     public void ValidarProgreso(float valorBarra)
@@ -122,7 +97,7 @@ public class WinLose : MonoBehaviour
         }
     }
 
-    private void FinalizarPartida(bool victoria, string mensaje)
+    public void FinalizarPartida(bool victoria, string mensaje)
     {
         if (juegoTerminado) return;
         juegoTerminado = true;

@@ -150,13 +150,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpawnerEscenario
   areaSize: {x: 35, y: 14}
   radioExclusion: 3.04
+  maxArboles: 4
+  maxHojas: 4
   hogueraPrefab: {fileID: 7633995313012639236, guid: 899ae0a11ae20744096ae41312f4d4ca, type: 3}
+  arbolPrefab: {fileID: 9050551289244230672, guid: 1f2e7f2719e2ef742bde1a57ba0f7a60, type: 3}
+  hojasPrefab: {fileID: 7049852181358402290, guid: 8cfe42f50457c8144ae9c9675bd76222, type: 3}
   cantidadHogueras: 5
   radioPentagono: 3
-  arbolPrefab: {fileID: 9050551289244230672, guid: 1f2e7f2719e2ef742bde1a57ba0f7a60, type: 3}
-  maxArboles: 4
-  hojasPrefab: {fileID: 7049852181358402290, guid: 8cfe42f50457c8144ae9c9675bd76222, type: 3}
-  maxHojas: 4
 --- !u!4 &82619253
 Transform:
   m_ObjectHideFlags: 0
@@ -1310,7 +1310,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7998468106243641551, guid: a0c01c7e8a2b5be49a323c4c4ac4c761, type: 3}
   m_PrefabInstance: {fileID: 6015936560395606049}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 6015936560395606053}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
@@ -4936,6 +4936,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7998468106243641551, guid: a0c01c7e8a2b5be49a323c4c4ac4c761, type: 3}
+      propertyPath: m_Value
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8086327763650468544, guid: a0c01c7e8a2b5be49a323c4c4ac4c761, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -5093,7 +5097,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8333880885289406855, guid: a0c01c7e8a2b5be49a323c4c4ac4c761, type: 3}
       insertIndex: -1
       addedObject: {fileID: 855032418}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4687689398198403207, guid: a0c01c7e8a2b5be49a323c4c4ac4c761, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6015936560395606054}
   m_SourcePrefab: {fileID: 100100000, guid: a0c01c7e8a2b5be49a323c4c4ac4c761, type: 3}
 --- !u!1 &6015936560395606050 stripped
 GameObject:
@@ -5110,6 +5117,23 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7611334596903191813, guid: a0c01c7e8a2b5be49a323c4c4ac4c761, type: 3}
   m_PrefabInstance: {fileID: 6015936560395606049}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &6015936560395606053 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4687689398198403207, guid: a0c01c7e8a2b5be49a323c4c4ac4c761, type: 3}
+  m_PrefabInstance: {fileID: 6015936560395606049}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6015936560395606054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6015936560395606053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf2f3eeee82a4ed4da290c749a60254a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
 --- !u!1001 &6615604576487398362
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5221,7 +5245,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   MaxHits: 5
+  remainingHits: 0
   Character: {fileID: 6615604576487398366}
+  healthBar: {fileID: 6015936560395606054}
 --- !u!1 &6615604576487398366 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3784546432930140916, guid: b490757dd0e224547be0458895558fc5, type: 3}

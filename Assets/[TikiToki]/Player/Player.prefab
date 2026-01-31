@@ -139,7 +139,7 @@ GameObject:
   - component: {fileID: 2881153960264806038}
   - component: {fileID: 6176296399961177660}
   - component: {fileID: 9177340506407554396}
-  - component: {fileID: 3994318009437748728}
+  - component: {fileID: 585379937921189767}
   - component: {fileID: 4449364370850004533}
   - component: {fileID: 5534364709535365762}
   - component: {fileID: 4979456258895631436}
@@ -230,7 +230,7 @@ MonoBehaviour:
   rotationSpeed: 720
   tremoloIntensity: 0.5
   tremoloFrequency: 8
---- !u!114 &3994318009437748728
+--- !u!114 &585379937921189767
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -243,7 +243,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   MaxHits: 5
+  remainingHits: 0
   Character: {fileID: 3784546432930140916}
+  healthBar: {fileID: 0}
 --- !u!114 &4449364370850004533
 MonoBehaviour:
   m_ObjectHideFlags: 0
