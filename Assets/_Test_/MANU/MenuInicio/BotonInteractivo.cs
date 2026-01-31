@@ -3,23 +3,35 @@ using UnityEngine.EventSystems;
 
 public class BotonInteractivo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    [Header("Referencia")]
     public MascotaMenu mascota;
 
-    // Se ejecuta cuando el ratón entra en el área del botón
+    // Se activa al pasar el ratón por encima
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (mascota != null) mascota.CambiarEstadoEnfado(true);
+        if (mascota != null)
+        {
+            mascota.CambiarEstadoEnfado(true);
+        }
     }
 
-    // Se ejecuta cuando el ratón sale del área del botón
+    // Se activa al quitar el ratón de encima
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (mascota != null) mascota.CambiarEstadoEnfado(false);
+        if (mascota != null)
+        {
+            mascota.CambiarEstadoEnfado(false);
+        }
     }
 
-    // Método para conectar al evento OnClick del botón en el Inspector
-    public void AlPulsarBoton()
+    // Método para el OnClick del botón
+    public void ClickEnBoton()
     {
-        if (mascota != null) mascota.EjecutarAnimacionFinal();
+        if (mascota != null)
+        {
+            mascota.EjecutarAnimacionFinal();
+        }
     }
+
+
 }
