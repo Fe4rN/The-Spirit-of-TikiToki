@@ -1,14 +1,14 @@
-using UnityEngine;
-using System.Collections;
+Ôªøusing System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class SpawnerMaster : MonoBehaviour
 {
-    [Header("¡rea de GeneraciÛn")]
+    [Header("√Årea de Generaci√≥n")]
     public Vector2 areaSize = new Vector2(15f, 15f);
     [Range(0.5f, 5f)] public float radioExclusion = 2.5f;
 
-    [Header("LÌmites M·ximos")]
+    [Header("L√≠mites M√°ximos")]
     public int maxArboles = 3;
     public int maxHojas = 4;
 
@@ -17,7 +17,7 @@ public class SpawnerMaster : MonoBehaviour
     public GameObject arbolPrefab;
     public GameObject hojasPrefab;
 
-    [Header("ConfiguraciÛn Hogueras")]
+    [Header("Configuraci√≥n Hogueras")]
     public int cantidadHogueras = 5;
     public float radioPentagono = 4f;
 
@@ -43,119 +43,114 @@ public class SpawnerMaster : MonoBehaviour
         GenerarSoloHojas();
     }
 
-    // --- GENERACI”N CON EFECTOS ---
-
-    public void GenerarAlgunasHojas()
-    {
-        ActualizarEstadoEscena();
-        int cantidadAÒadir = Random.Range(1, 4);
-        GestionarActivacionDinamica(poolHojas, cantidadAÒadir, maxHojas, hojasPrefab, PrimitiveType.Cube, "HojasSecas_", true, false);
-    }
-
-    public void GenerarAlgunosArboles()
-    {
-        ActualizarEstadoEscena();
-        int cantidadAÒadir = Random.Range(1, 4);
-        GestionarActivacionDinamica(poolArboles, cantidadAÒadir, maxArboles, arbolPrefab, PrimitiveType.Cylinder, "Arbol_", false, true);
-    }
-
-    private void GestionarActivacionDinamica(List<GameObject> pool, int cantidadAÒadir, int limiteMaximo, GameObject prefab, PrimitiveType fallback, string nombreBase, bool esHoja, bool esArbol)
-    {
-        int activosActuales = 0;
-        foreach (GameObject g in pool) { if (g != null && g.activeSelf) activosActuales++; }
-
-        int espacioLibre = limiteMaximo - activosActuales;
-        if (espacioLibre <= 0) return;
-
-        int cantidadRealAGenerar = Mathf.Min(cantidadAÒadir, espacioLibre);
-        int activadosEnEstaRonda = 0;
-
-        for (int i = 0; i < pool.Count; i++)
-        {
-            if (activadosEnEstaRonda >= cantidadRealAGenerar) return;
-            if (pool[i] == null) pool[i] = InstanciarIndividual(prefab, fallback, nombreBase + i);
-
-            if (!pool[i].activeSelf)
-            {
-                if (IntentarPosicionarObjeto(pool[i], esHoja, esArbol)) activadosEnEstaRonda++;
-            }
-        }
-
-        while (activadosEnEstaRonda < cantidadRealAGenerar && pool.Count < limiteMaximo)
-        {
-            GameObject nuevo = InstanciarIndividual(prefab, fallback, nombreBase + pool.Count);
-            pool.Add(nuevo);
-            if (IntentarPosicionarObjeto(nuevo, esHoja, esArbol)) activadosEnEstaRonda++;
-            else break;
-        }
-    }
-
-    private bool IntentarPosicionarObjeto(GameObject obj, bool esHoja, bool esArbol)
-    {
-        int intentos = 0;
-        while (intentos < 50)
-        {
-            intentos++;
-            float rx = Random.Range(-areaSize.x / 2f, areaSize.x / 2f);
-            float rz = Random.Range(-areaSize.y / 2f, areaSize.y / 2f);
-            Vector3 targetPos = transform.position + new Vector3(rx, 0, rz);
-
-            if (EsPosicionValida(targetPos))
-            {
-                // Si es hoja, la spawnamos arriba para que caiga
-                Vector3 spawnPos = targetPos;
-                if (esHoja) spawnPos.y += 10f;
-
-                ActivarObjetoDelPool(obj, spawnPos, esArbol);
-                return true;
-            }
-        }
-        return false;
-    }
+    // --- L√ìGICA DE ACTIVACI√ìN UNIFICADA ---
 
     private void ActivarObjetoDelPool(GameObject obj, Vector3 posicion, bool esArbol)
     {
         obj.transform.position = posicion;
 
-        // --- RESET DE VIDA ---
+        // Capturamos la escala real del prefab ANTES de ponerla a cero para el efecto
+        Vector3 escalaObjetivo = obj.transform.localScale;
+
         if (esArbol)
         {
             Tree treeScript = obj.GetComponent<Tree>();
-            // Si no est· en el padre, b˙scalo en los hijos (por si acaso)
             if (treeScript == null) treeScript = obj.GetComponentInChildren<Tree>();
-
-            if (treeScript != null)
-            {
-                treeScript.ResetearArbol(); // Llamamos al mÈtodo que acabamos de crear
-            }
+            if (treeScript != null) treeScript.ResetearArbol();
         }
 
         obj.SetActive(true);
         posicionesOcupadas.Add(new Vector3(posicion.x, 0, posicion.z));
 
-        if (esArbol)
-        {
-            StartCoroutine(EfectoCrecimiento(obj.transform));
-        }
+        // Iniciamos el crecimiento para ambos tipos de objeto
+        StartCoroutine(EfectoCrecimiento(obj.transform, escalaObjetivo));
     }
 
-    private IEnumerator EfectoCrecimiento(Transform t)
+    private IEnumerator EfectoCrecimiento(Transform t, Vector3 escalaFinal)
     {
         float duracion = 1.5f;
         float tiempo = 0;
-        Vector3 escalaFinal = Vector3.one;
+
+        // Empezamos desde escala cero
         t.localScale = Vector3.zero;
 
         while (tiempo < duracion)
         {
             tiempo += Time.deltaTime;
+            // Escalamos suavemente hasta la escala original (ej. 0.25 para hojas)
             t.localScale = Vector3.Lerp(Vector3.zero, escalaFinal, tiempo / duracion);
             yield return null;
         }
         t.localScale = escalaFinal;
     }
 
-    // --- M…TODOS DE SOPORTE ---
+    public void GenerarAlgunosArboles()
+    {
+        ActualizarEstadoEscena();
+        int cantidadAAsignar = Random.Range(1, 4);
+        int contador = 0;
+
+        foreach (GameObject obj in poolArboles)
+        {
+            if (contador >= cantidadAAsignar) break;
+            if (obj.activeSelf) continue;
+
+            // CORRECCI√ìN: A√±adidos los par√°metros bool (esHoja = false, esArbol = true)
+            if (IntentarPosicionarObjeto(obj, false, true))
+            {
+                contador++;
+            }
+        }
+    }
+
+    // --- L√ìGICA PARA EL VIENTO ---
+
+    public void GenerarAlgunasHojas()
+    {
+        // 1. Refrescamos qu√© posiciones est√°n libres en el mapa
+        ActualizarEstadoEscena();
+
+        // 2. Definimos una cantidad aleatoria de hojas nuevas [1 a 3]
+        int cantidadATraer = Random.Range(1, 4);
+        int contador = 0;
+
+        // 3. Buscamos hojas inactivas en el pool para "traerlas" al mapa
+        foreach (GameObject hoja in poolHojas)
+        {
+            if (contador >= cantidadATraer) break;
+            if (hoja.activeSelf) continue;
+
+            // Intentamos posicionarla en un lugar v√°lido
+            // esHoja = true, esArbol = false
+            if (IntentarPosicionarObjeto(hoja, true, false))
+            {
+                contador++;
+            }
+        }
+    }
+
+    // Cambia la firma para aceptar los booleanos de control
+    private bool IntentarPosicionarObjeto(GameObject obj, bool esHoja, bool esArbol)
+    {
+        int intentos = 0;
+        while (intentos < 100)
+        {
+            intentos++;
+            float rx = Random.Range(-areaSize.x / 2f, areaSize.x / 2f);
+            float rz = Random.Range(-areaSize.y / 2f, areaSize.y / 2f);
+            Vector3 candidata = transform.position + new Vector3(rx, 0, rz);
+
+            if (EsPosicionValida(candidata))
+            {
+                // CORRECCI√ìN: Ahora pasamos 'esArbol' al siguiente m√©todo
+                ActivarObjetoDelPool(obj, candidata, esArbol);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // --- M√âTODOS DE SOPORTE Y POOLING ---
 
     private GameObject InstanciarIndividual(GameObject prefab, PrimitiveType fallback, string nombre)
     {
@@ -189,7 +184,9 @@ public class SpawnerMaster : MonoBehaviour
     {
         foreach (Vector3 ocupada in posicionesOcupadas)
         {
-            if (Vector2.Distance(new Vector2(pos.x, pos.z), new Vector2(ocupada.x, ocupada.z)) < radioExclusion) return false;
+            // Usamos Vector2 para ignorar la altura en el c√°lculo de proximidad
+            if (Vector2.Distance(new Vector2(pos.x, pos.z), new Vector2(ocupada.x, ocupada.z)) < radioExclusion)
+                return false;
         }
         return true;
     }

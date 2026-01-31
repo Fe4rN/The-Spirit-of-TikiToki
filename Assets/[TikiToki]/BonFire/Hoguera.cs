@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Hoguera : MonoBehaviour
@@ -24,6 +25,8 @@ public class Hoguera : MonoBehaviour
     public GameObject efectosFuego;
 
     private bool _siendoEncendidaEsteFrame = false;
+
+    public static Action OnBonfireLit;
 
     void Start()
     {
@@ -111,6 +114,8 @@ public class Hoguera : MonoBehaviour
     void FinalizarEncendido()
     {
         estaEncendida = true;
+        OnBonfireLit?.Invoke();
+
         progresoActual = tiempoNecesario;
         if (sistemaChispas != null) sistemaChispas.Stop();
         if (barraProgreso != null) barraProgreso.gameObject.SetActive(false);

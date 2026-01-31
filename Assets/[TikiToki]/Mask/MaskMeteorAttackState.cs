@@ -30,6 +30,8 @@ public class MaskMeteorAttackState : MaskState
     [SerializeField] private float warningDuration = 2f;
     [SerializeField] private Color warningColor = new Color(1f, 0.2f, 0f, 0.5f);
 
+    [SerializeField] private AudioClip audioQ;
+
     private List<GameObject> activeWarnings = new List<GameObject>();
     private bool meteorsSpawned = false;
 
@@ -47,6 +49,11 @@ public class MaskMeteorAttackState : MaskState
         {
             jawInitialPosition = machine.JawTransform.localPosition;
             jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
+        }
+
+        if (audioQ != null && machine.GetComponent<AudioSource>() != null)
+        {
+            machine.GetComponent<AudioSource>().PlayOneShot(audioQ);
         }
     }
 

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1130597598123357765}
   - component: {fileID: 2158518837995244204}
   - component: {fileID: 7605650530800787190}
+  - component: {fileID: 3819422173030089630}
   m_Layer: 0
   m_Name: Sunset
   m_TagString: Untagged
@@ -127,3 +128,18 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!114 &3819422173030089630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287476226637621448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0c6b14e094fa6b46bc6552a4a2e6269, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SunsetLogic
+  durationMinutes: 0.5
+  startAngle: 30
+  endAngle: -145

@@ -20,6 +20,8 @@ public class MaskRayAttackState : MaskState
     private Vector3 jawInitialPosition;
     private Vector3 jawTargetPosition;
 
+    [SerializeField] private AudioClip audioQ;
+
     protected override void StateEnter()
     {
         Debug.Log("Entering RayState");
@@ -33,6 +35,12 @@ public class MaskRayAttackState : MaskState
         {
             jawInitialPosition = machine.JawTransform.localPosition;
             jawTargetPosition = jawInitialPosition + Vector3.back * (jawOpenDistance * 0.4f);
+        }
+
+
+        if (audioQ != null && machine.GetComponent<AudioSource>() != null)
+        {
+            machine.GetComponent<AudioSource>().PlayOneShot(audioQ);
         }
     }
 

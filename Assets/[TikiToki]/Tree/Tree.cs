@@ -1,5 +1,7 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using System;
+using Random = UnityEngine.Random;
 
 public class Tree : MonoBehaviour
 {
@@ -17,11 +19,27 @@ public class Tree : MonoBehaviour
     public GameObject woodPrefab;
     public int woodAmount = 3;
 
+    [Header("Visuales")]
+    public Vector3 escalaNormal = Vector3.one;
     private Vector3 _originalScale;
+
+
+    public AudioClip sounTreeHit;
+    public AudioClip soundTreeFall;
+
+    public static Action OnTreeHit;
+    public static Action OnTreeDestroyed;
+
+    void Awake()
+    {
+        // Usamos Awake para capturar la escala del prefab antes de que el Spawner la toque
+        _originalScale = (transform.localScale.magnitude > 0.1f) ? transform.localScale : escalaNormal;
+    }
 
     void Start()
     {
-        _originalScale = transform.localScale;
+        // Si por alguna razón el Spawner lo puso a 0 antes del Awake, usamos la escala de respaldo
+        if (_originalScale.magnitude < 0.1f) _originalScale = escalaNormal;
     }
 
     void Update()
@@ -41,6 +59,8 @@ public class Tree : MonoBehaviour
                     if (healthBar != null) healthBar.gameObject.SetActive(false);
                 }
 
+                OnTreeHit?.Invoke();
+
                 UpdateVisuals();
             }
         }
@@ -51,6 +71,12 @@ public class Tree : MonoBehaviour
         // Sumamos 1 de daño completo por cada pulsación
         _currentDamage += 1f;
         _lastHitTime = Time.time;
+
+        AudioSource source = GetComponent<AudioSource>();
+        if (source != null && sounTreeHit != null)
+        {
+            source.PlayOneShot(sounTreeHit);
+        }
 
         UpdateVisuals();
 
@@ -92,11 +118,20 @@ public class Tree : MonoBehaviour
 
     void Die()
     {
+        AudioSource source = GetComponent<AudioSource>();
+        if (source != null && soundTreeFall != null)
+        {
+            // 1. Reproducimos el sonido de caída
+            source.PlayOneShot(soundTreeFall);
+        }
+
         for (int i = 0; i < woodAmount; i++)
         {
             Vector3 randomOffset = new Vector3(Random.Range(-0.6f, 0.6f), 0.2f, Random.Range(-0.6f, 0.6f));
             Instantiate(woodPrefab, transform.position + randomOffset, Quaternion.identity);
         }
+
+        OnTreeDestroyed?.Invoke();
         gameObject.SetActive(false);
     }
 
