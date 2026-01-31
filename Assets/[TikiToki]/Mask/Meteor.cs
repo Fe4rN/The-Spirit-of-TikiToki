@@ -9,10 +9,15 @@ public class Meteor : MonoBehaviour
     [SerializeField] private float bounceForce = 5f;
     [SerializeField] private PlayerHealth playerHealth;
 
+    [Header("Sonidos de Impacto")]
+    [SerializeField] private AudioClip[] impactSounds;
+    private AudioSource _audioSource;
+
     public void Initialize(float radius)
     {
         damageRadius = radius;
         playerHealth = FindFirstObjectByType<PlayerHealth>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -26,6 +31,12 @@ public class Meteor : MonoBehaviour
             collision.gameObject.CompareTag("Player"))
         {
             hasImpacted = true;
+
+            if (_audioSource != null && impactSounds != null && impactSounds.Length > 0)
+            {
+                _audioSource.pitch = Random.Range(0.8f, 1.2f);
+                _audioSource.PlayOneShot(impactSounds[Random.Range(0, impactSounds.Length)]);
+            }
 
             // Parar emisión de partículas
             ParticleSystem[] allParticles = GetComponentsInChildren<ParticleSystem>();

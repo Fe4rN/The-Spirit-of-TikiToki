@@ -19,6 +19,9 @@ public class Tree : MonoBehaviour
 
     private Vector3 _originalScale;
 
+    public AudioClip sounTreeHit;
+    public AudioClip soundTreeFall;
+
     void Start()
     {
         _originalScale = transform.localScale;
@@ -51,6 +54,12 @@ public class Tree : MonoBehaviour
         // Sumamos 1 de daño completo por cada pulsación
         _currentDamage += 1f;
         _lastHitTime = Time.time;
+
+        AudioSource source = GetComponent<AudioSource>();
+        if (source != null && sounTreeHit != null)
+        {
+            source.PlayOneShot(sounTreeHit);
+        }
 
         UpdateVisuals();
 
@@ -92,6 +101,13 @@ public class Tree : MonoBehaviour
 
     void Die()
     {
+        AudioSource source = GetComponent<AudioSource>();
+        if (source != null && soundTreeFall != null)
+        {
+            // 1. Reproducimos el sonido de caída
+            source.PlayOneShot(soundTreeFall);
+        }
+
         for (int i = 0; i < woodAmount; i++)
         {
             Vector3 randomOffset = new Vector3(Random.Range(-0.6f, 0.6f), 0.2f, Random.Range(-0.6f, 0.6f));

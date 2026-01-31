@@ -31,6 +31,9 @@ public class MaskWindAttackState : MaskState
     private WindPhase currentPhase;
     private float anticipationCounter;
 
+
+    [SerializeField] private AudioClip audioQ;
+
     protected override void StateEnter()
     {
         // Failsafe del Player
@@ -56,6 +59,12 @@ public class MaskWindAttackState : MaskState
             jawInitialPosition = machine.JawTransform.localPosition;
             jawTargetPosition = jawInitialPosition + Vector3.back * (jawOpenDistance * 0.5f);
             isJawAnimating = true;
+        }
+
+
+        if (audioQ != null && machine.GetComponent<AudioSource>() != null)
+        {
+            machine.GetComponent<AudioSource>().PlayOneShot(audioQ);
         }
     }
 
