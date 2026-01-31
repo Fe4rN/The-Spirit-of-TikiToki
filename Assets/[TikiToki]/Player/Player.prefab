@@ -254,11 +254,12 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   holdPoint: {fileID: 1397507524384290631}
-  playerAnimator: {fileID: 0}
+  playerAnimator: {fileID: 5534364709535365762}
   interactionDistance: 2
   interactionLayer:
     serializedVersion: 2
     m_Bits: 8
+  raySpread: 15
 --- !u!95 &5534364709535365762
 Animator:
   serializedVersion: 7
