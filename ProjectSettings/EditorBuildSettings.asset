@@ -6,8 +6,20 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/[TikiToki]/Inventory/MainMenu.unity
+    path: Assets/[TikiToki]/MenuInicio/MainMenu.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 0
+    path: Assets/[TikiToki]/MenuInicio/Inicio.unity
+    guid: 65259beb1fa233b4689c7381a7a6b23b
+  - enabled: 1
+    path: Assets/[TikiToki]/Scenes/Tutorial.unity
+    guid: 9df02988d62b5e3419405bf4727aa5b9
+  - enabled: 1
+    path: Assets/[TikiToki]/Scenes/Level1.unity
+    guid: e5254dcf30c19c44d8f0d03980bf7b7d
+  - enabled: 1
+    path: Assets/[TikiToki]/Scenes/Level2.unity
+    guid: 8c62f53a9f04a41459d9a1ed0713006e
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
