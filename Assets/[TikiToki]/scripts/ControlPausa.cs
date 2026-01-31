@@ -13,6 +13,10 @@ public class ControlPausa : MonoBehaviour
     public GameObject panelOpciones;
     public GameObject panelNiveles;
 
+    [Header("Paneles de Fin de Juego")]
+    public GameObject panelVictoria;
+    public GameObject panelDerrota;
+
     private Stack<GameObject> historialMenus = new Stack<GameObject>();
 
     private void Awake()
@@ -122,5 +126,44 @@ public class ControlPausa : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(nombreEscenaMenuPrincipal);
+    }
+
+    // Este método lo llamarás desde WinLose en lugar de hacer SetActive(true) allí
+    public void ActivarPanelFin(GameObject panelFin)
+    {
+        if (panelFin == null) return;
+
+        PausarJuego(); // Detenemos el tiempo
+
+        // Si hubiera algún menú de pausa abierto, lo ocultamos
+        if (historialMenus.Count > 0) historialMenus.Peek().SetActive(false);
+
+        panelFin.SetActive(true);
+        historialMenus.Push(panelFin); // Lo metemos en la pila para que Esc sepa que hay algo
+    }
+
+    // --- FUNCIONES DE NAVEGACIÓN ---
+
+    public void ReiniciarNivel()
+    {
+        Time.timeScale = 1f;
+        historialMenus.Clear();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void SiguienteNivel()
+    {
+        Time.timeScale = 1f;
+        historialMenus.Clear();
+
+        int siguienteIndice = SceneManager.GetActiveScene().buildIndex + 1;
+        if (siguienteIndice < SceneManager.sceneCountInBuildSettings)
+        {
+            SceneManager.LoadScene(siguienteIndice);
+        }
+        else
+        {
+            VolverAlMenuPrincipal();
+        }
     }
 }
