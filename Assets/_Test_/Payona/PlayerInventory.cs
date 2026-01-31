@@ -31,6 +31,7 @@ public class PlayerInventory : MonoBehaviour
 
     private WorldItem _lastTargetedItem;
     private Hoguera _hogueraSiendoEncendida;
+    private bool _bloquearEncendidoHastaSoltar = false;
 
     // --- COLORES ---
     private Color frameColor = new Color(0.494f, 0.494f, 0.494f, 1f); // Gris #7E7E7E
@@ -56,16 +57,22 @@ public class PlayerInventory : MonoBehaviour
         // --- LÓGICA DE ESPACIO (Diferenciada) ---
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            _bloquearEncendidoHastaSoltar = false;
             HandleSpaceAction(); // Solo para poner madera/hojas o recoger
         }
 
         if (Input.GetKey(KeyCode.Space))
         {
-            HandleHoldAction(); // Esto gestiona el llenado de la barra
+            if (!_bloquearEncendidoHastaSoltar)
+            {
+                HandleHoldAction();
+            }
         }
 
         if (Input.GetKeyUp(KeyCode.Space))
         {
+            _bloquearEncendidoHastaSoltar = false;
+
             if (_hogueraSiendoEncendida != null)
             {
                 _hogueraSiendoEncendida.DetenerEncendido(); // Importante para apagar chispas al soltar
@@ -190,6 +197,7 @@ public class PlayerInventory : MonoBehaviour
                 {
                     Debug.Log("<color=brown>HOGUERA:</color> Entregando madera.");
                     hoguera.tieneMadera = true;
+                    _bloquearEncendidoHastaSoltar = true;
                     currentSlot.count--;
                     if (currentSlot.count <= 0) currentSlot.item = null;
                     hoguera.ActualizarVisuales();
@@ -202,6 +210,7 @@ public class PlayerInventory : MonoBehaviour
                 {
                     Debug.Log("<color=green>HOGUERA:</color> Entregando hojas.");
                     hoguera.tieneHojas = true;
+                    _bloquearEncendidoHastaSoltar = true;
                     currentSlot.count--;
                     if (currentSlot.count <= 0) currentSlot.item = null;
                     hoguera.ActualizarVisuales();
@@ -277,7 +286,7 @@ public class PlayerInventory : MonoBehaviour
 
             Debug.Log("<color=orange>SOLTANDO:</color> " + nameToCheck);
             Vector3 spawnPos = transform.position + (transform.forward * 1.2f);
-            spawnPos.y = 1.5f; // Altura desde la que cae
+            spawnPos.y = 1.1f; // Altura desde la que cae
 
             // Instanciamos el objeto y guardamos su referencia
             GameObject droppedObj = Instantiate(currentSlot.item.prefab, spawnPos, Quaternion.identity);
