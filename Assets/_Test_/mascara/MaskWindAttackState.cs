@@ -20,6 +20,8 @@ public class MaskWindAttackState : MaskState
 
     protected override void StateUpdate()
     {
+        machine.MirrorPlayerPosition();
+        machine.LookAtPlayer();
         windCounter -= Time.deltaTime;
         if (windCounter <= 0) machine.SetState(machine.idleState.Value);
     }
