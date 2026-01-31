@@ -139,6 +139,7 @@ GameObject:
   - component: {fileID: 2881153960264806038}
   - component: {fileID: 6176296399961177660}
   - component: {fileID: 9177340506407554396}
+  - component: {fileID: 3994318009437748728}
   - component: {fileID: 4449364370850004533}
   - component: {fileID: 5534364709535365762}
   m_Layer: 6
@@ -228,6 +229,20 @@ MonoBehaviour:
   rotationSpeed: 720
   tremoloIntensity: 0.5
   tremoloFrequency: 8
+--- !u!114 &3994318009437748728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6130758000548300091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42013bc5a1f1431499acb5aefb2b68b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  MaxHits: 5
+  Character: {fileID: 3784546432930140916}
 --- !u!114 &4449364370850004533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,7 +261,9 @@ MonoBehaviour:
   - item: {fileID: 0}
     count: 0
   activeSlotIndex: 0
-  slotBackgrounds: []
+  slotBackgrounds:
+  - {fileID: 0}
+  - {fileID: 0}
   iconSlots:
   - {fileID: 0}
   - {fileID: 0}
@@ -406,6 +423,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1e3f4b1f85b0994dab8c5e0a8eecb78, type: 3}
+--- !u!1 &3784546432930140916 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: e1e3f4b1f85b0994dab8c5e0a8eecb78, type: 3}
+  m_PrefabInstance: {fileID: 4054366921998004133}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4597814860790990926 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e1e3f4b1f85b0994dab8c5e0a8eecb78, type: 3}
