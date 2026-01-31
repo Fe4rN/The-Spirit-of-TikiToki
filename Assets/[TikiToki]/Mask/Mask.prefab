@@ -97,7 +97,7 @@ MonoBehaviour:
   fireTime: 3
   rayRange: 25
   beamRadius: 0.75
-  hitMask:
+  playerMask:
     serializedVersion: 2
     m_Bits: 64
   jawOpenDistance: 0.8
@@ -115,9 +115,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskWindAttackState
   stateName: {fileID: 11400000, guid: b972c40272fd33b468180b6e501d8474, type: 2}
-  initial: 1
+  initial: 0
   windStrength: 0.7
   windDuration: 5
+  mouthParticles: {fileID: 4808102685166142440}
   windEffectPrefab: {fileID: 5124170238383190684, guid: 2f39706acf59bdb419d579504d1d9697, type: 3}
   mapWindCount: 5
   spawnRadius: 15
@@ -137,7 +138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskMeteorAttackState
   stateName: {fileID: 11400000, guid: a086198234e1fdc499a580144397c058, type: 2}
-  initial: 0
+  initial: 1
   anticipationDuration: 1.5
   attackDuration: 3
   jawOpenDistance: 1.2
@@ -170,7 +171,8 @@ MonoBehaviour:
   growlDuration: 1
   screamDuration: 2
   stunDuration: 3
-  jawOpenDistance: 1.5
+  screamParticles: {fileID: 7809203326452144309}
+  jawOpenDistance: 1.35
   jawAnimationSpeed: 6
 --- !u!1001 &1650554356881502275
 PrefabInstance:
@@ -224,6 +226,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8842870085071644918, guid: fb7b40ef4beb6ac4e91f772daf5550d2, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8842870085071644918, guid: fb7b40ef4beb6ac4e91f772daf5550d2, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8842870085071644918, guid: fb7b40ef4beb6ac4e91f772daf5550d2, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8842870085071644918, guid: fb7b40ef4beb6ac4e91f772daf5550d2, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8842870085071644918, guid: fb7b40ef4beb6ac4e91f772daf5550d2, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8842870085071644918, guid: fb7b40ef4beb6ac4e91f772daf5550d2, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -232,6 +258,11 @@ PrefabInstance:
 --- !u!4 &7286913491114949392 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8342816360846150483, guid: fb7b40ef4beb6ac4e91f772daf5550d2, type: 3}
+  m_PrefabInstance: {fileID: 1650554356881502275}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &7809203326452144309 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8842870085071644918, guid: fb7b40ef4beb6ac4e91f772daf5550d2, type: 3}
   m_PrefabInstance: {fileID: 1650554356881502275}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1807987392915495741
@@ -325,6 +356,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4661110866800639297}
     m_Modifications:
+    - target: {fileID: 38314468555976145, guid: 2f39706acf59bdb419d579504d1d9697, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1720180270731853558, guid: 2f39706acf59bdb419d579504d1d9697, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -374,6 +409,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f39706acf59bdb419d579504d1d9697, type: 3}
+--- !u!198 &4808102685166142440 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 38314468555976145, guid: 2f39706acf59bdb419d579504d1d9697, type: 3}
+  m_PrefabInstance: {fileID: 4769823435342179897}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6192062404553871567 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1720180270731853558, guid: 2f39706acf59bdb419d579504d1d9697, type: 3}

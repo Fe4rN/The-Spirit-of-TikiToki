@@ -99,4 +99,24 @@ public class Tree : MonoBehaviour
         }
         gameObject.SetActive(false);
     }
+
+    public void ResetearArbol()
+    {
+        // 1. Reseteamos el daño a 0 (equivale a vida completa)
+        _currentDamage = 0f;
+
+        // 2. Apagamos la barra de vida para que no se vea al "nacer"
+        if (healthBar != null)
+        {
+            // En tu script healthBar es el componente, así que usamos .gameObject
+            healthBar.gameObject.SetActive(false);
+
+            // Dejamos el valor de la barra preparado al máximo por si acaso
+            healthBar.SetHealth(tapsToCut, tapsToCut);
+        }
+
+        // 3. Importante: si el árbol murió, su escala podría haber quedado rara.
+        // Aunque el Spawner lo escala de 0 a 1, nos aseguramos de que el valor inicial sea 0.
+        transform.localScale = Vector3.zero;
+    }
 }

@@ -120,4 +120,22 @@ public class Hoguera : MonoBehaviour
         if (Barra.Instance != null)
             Barra.Instance.RecalcularTasaDeCambio();
     }
+
+    public void ApagarHoguera()
+    {
+        if (!estaEncendida) return;
+
+        estaEncendida = false;
+        progresoActual = 0f; // Se apaga del todo, hay que volver a empezar el progreso
+
+        if (barraProgreso != null) barraProgreso.gameObject.SetActive(false);
+        if (sistemaChispas != null) sistemaChispas.Stop();
+
+        ActualizarVisuales(); // Esto mostrará el modeloCompleto (madera + hojas) pero sin fuego
+
+        // Avisamos a la barra global que ahora hay una hoguera menos dando calor
+        if (Barra.Instance != null) Barra.Instance.RecalcularTasaDeCambio();
+
+        Debug.Log("<color=blue>HOGUERA:</color> El viento ha apagado una hoguera.");
+    }
 }

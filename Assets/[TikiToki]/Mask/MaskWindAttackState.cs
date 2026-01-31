@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class MaskWindAttackState : MaskState
 {
     private PlayerMovement playerMovement;
+    private SpawnerMaster spawnerMaster;
+
     private Vector3 windDirection;
     [SerializeField] private float windStrength = 0.7f;
     [SerializeField] private float windDuration = 5f;
@@ -37,6 +39,8 @@ public class MaskWindAttackState : MaskState
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null) machine.PlayerTransform = player.transform;
         }
+
+        spawnerMaster = FindFirstObjectByType<SpawnerMaster>();
 
         playerMovement = machine.PlayerTransform.GetComponent<PlayerMovement>();
         windDirection = ChooseRandomAxis();
@@ -181,9 +185,35 @@ public class MaskWindAttackState : MaskState
         }
     }
 
-    private void AffectMap() { /* Lógica de hogueras y hojas */ }
-    private void ReplenishLeaves() { }
-    private void ExtinguishBonfires() { }
+    private void AffectMap()
+    {
+        ReplenishLeaves();
+        ExtinguishBonfires();
+    }
+
+    private void ReplenishLeaves()
+    {
+        // El viento trae hojas nuevas al mapa
+        spawnerMaster?.GenerarAlgunasHojas();
+    }
+
+    private void ExtinguishBonfires()
+    {
+        // Buscamos todas las hogueras de la escena
+        Hoguera[] todasLasHogueras = FindObjectsByType<Hoguera>(FindObjectsSortMode.None);
+
+        foreach (Hoguera h in todasLasHogueras)
+        {
+            // Si está encendida, hay un 20% de probabilidad de apagarla
+            if (h.estaEncendida)
+            {
+                if (Random.value <= 0.20f) // 0.20 = 20%
+                {
+                    h.ApagarHoguera();
+                }
+            }
+        }
+    }
 }
 
 public enum WindPhase { Anticipation, Attacking }
