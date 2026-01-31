@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class PlayerInventory : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class PlayerInventory : MonoBehaviour
         public ItemData item;
         public int count;
     }
+
+    public static Action OnItemCollected;
+    public static Action<string> OnBonfireMaterialAdded;
 
     [Header("Configuración")]
     public InventorySlot[] slots = new InventorySlot[2];
@@ -247,6 +251,8 @@ public class PlayerInventory : MonoBehaviour
                 if (currentSlot.item != null && currentSlot.item.itemName == "woodPile" && !hoguera.tieneMadera)
                 {
                     Debug.Log("<color=brown>HOGUERA:</color> Entregando madera.");
+                    OnBonfireMaterialAdded?.Invoke("woodPile");
+
                     hoguera.tieneMadera = true;
                     _bloquearEncendidoHastaSoltar = true;
                     currentSlot.count--;
@@ -260,6 +266,8 @@ public class PlayerInventory : MonoBehaviour
                 if (currentSlot.item != null && currentSlot.item.itemName == "leavesPile" && !hoguera.tieneHojas)
                 {
                     Debug.Log("<color=green>HOGUERA:</color> Entregando hojas.");
+                    OnBonfireMaterialAdded?.Invoke("leavesPile");
+
                     hoguera.tieneHojas = true;
                     _bloquearEncendidoHastaSoltar = true;
                     currentSlot.count--;
@@ -321,6 +329,8 @@ public class PlayerInventory : MonoBehaviour
     void FinishPickup(WorldItem item)
     {
         Debug.Log("<color=cyan>RECOGIDO:</color> " + item.itemData.itemName);
+        OnItemCollected?.Invoke();
+
         item.SetHighlight(false);
         Destroy(item.gameObject);
         _lastTargetedItem = null;

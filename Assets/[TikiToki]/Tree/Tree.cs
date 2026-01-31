@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using System;
+using Random = UnityEngine.Random;
 
 public class Tree : MonoBehaviour
 {
@@ -16,6 +18,8 @@ public class Tree : MonoBehaviour
     public TreeHealthBarTree healthBar;
     public GameObject woodPrefab;
     public int woodAmount = 3;
+
+    public static Action OnTreeHit;
 
     private Vector3 _originalScale;
 
@@ -51,6 +55,8 @@ public class Tree : MonoBehaviour
         // Sumamos 1 de daño completo por cada pulsación
         _currentDamage += 1f;
         _lastHitTime = Time.time;
+
+        OnTreeHit?.Invoke();
 
         UpdateVisuals();
 
