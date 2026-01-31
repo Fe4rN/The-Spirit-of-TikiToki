@@ -90,19 +90,71 @@ public class PlayerInventory : MonoBehaviour
 
         if (currentItem != null)
         {
+            // 1. ÁRBOLES: Requiere el hacha
             if (currentItem.CompareTag("Tree"))
             {
-                if (slots[activeSlotIndex].item != null && slots[activeSlotIndex].item.itemName == "Axe")
+                if (slots[activeSlotIndex].item != null && slots[activeSlotIndex].item.itemName.ToLower() == "axe")
                 {
                     canHighlight = true;
                 }
             }
+            // 2. HOGUERA: Comprobamos si el item en mano es uno de los materiales necesarios
+            else if (currentItem.CompareTag("Bonfire"))
+            {
+                Hoguera hoguera = currentItem.GetComponentInParent<Hoguera>();
+                if (hoguera != null && !hoguera.estaEncendida)
+                {
+                    // Si la hoguera ya tiene todo, resaltamos para indicar que se puede encender
+                    if (hoguera.tieneMadera && hoguera.tieneHojas)
+                    {
+                        canHighlight = true;
+                    }
+                    else if (slots[activeSlotIndex].item != null)
+                    {
+                        string nombreEnMano = slots[activeSlotIndex].item.itemName.ToLower();
+
+                        // Lista de materiales que la hoguera acepta
+                        string[] materialesAceptados = { "woodpile", "leavespile" };
+
+                        foreach (string mat in materialesAceptados)
+                        {
+                            if (nombreEnMano == mat)
+                            {
+                                // Verificamos cuál falta específicamente
+                                if (mat == "woodpile" && !hoguera.tieneMadera) canHighlight = true;
+                                if (mat == "leavespile" && !hoguera.tieneHojas) canHighlight = true;
+                            }
+                        }
+                    }
+                }
+            }
+            // 3. OBJETOS SUELTOS: Siempre se pueden resaltar para recoger
             else if (currentItem.itemData != null)
             {
                 canHighlight = true;
             }
         }
 
+        // --- APLICAR RESALTADO ---
+        if (canHighlight)
+        {
+            if (currentItem != _lastTargetedItem)
+            {
+                if (_lastTargetedItem != null) _lastTargetedItem.SetHighlight(false);
+                currentItem.SetHighlight(true);
+                _lastTargetedItem = currentItem;
+            }
+        }
+        else
+        {
+            if (_lastTargetedItem != null)
+            {
+                _lastTargetedItem.SetHighlight(false);
+                _lastTargetedItem = null;
+            }
+        }
+
+        // --- APLICACIÓN DEL HIGHLIGHT ---
         if (canHighlight)
         {
             if (currentItem != _lastTargetedItem)
@@ -299,7 +351,7 @@ public class PlayerInventory : MonoBehaviour
                 // Si es el hacha, activamos Kinematic (se queda quieta en el aire/suelo)
                 foreach (Rigidbody rb in rbs)
                 {
-                    rb.isKinematic = true;
+                    rb.isKinematic = false;
                 }
             }
             else
