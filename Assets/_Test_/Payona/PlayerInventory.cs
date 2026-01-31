@@ -31,11 +31,13 @@ public class PlayerInventory : MonoBehaviour
 
     private WorldItem _lastTargetedItem;
 
+    private Hoguera _hogueraSiendoEncendida;
+
     void Start() { UpdateUI(); }
 
     void Update()
     {
-        // --- VISUALIZACIÓN CONSTANTE DE 5 RAYOS ---
+        // --- VISUALIZACIÓN CONSTANTE DE RAYOS (No tocar) ---
         Vector3 origin = transform.position + Vector3.up * -0.9f;
         Debug.DrawRay(origin, transform.forward * interactionDistance, Color.cyan);
         Debug.DrawRay(origin, (Quaternion.Euler(0, -raySpread, 0) * transform.forward) * interactionDistance, Color.cyan);
@@ -45,14 +47,29 @@ public class PlayerInventory : MonoBehaviour
 
         ScanForHighlight();
 
-        // Selección de slots (1 y 2)
         if (Input.GetKeyDown(KeyCode.Alpha1)) { activeSlotIndex = 0; UpdateUI(); }
         if (Input.GetKeyDown(KeyCode.Alpha2)) { activeSlotIndex = 1; UpdateUI(); }
 
-        // INTERACCIÓN (Espacio)
-        if (Input.GetKeyDown(KeyCode.Space)) { HandleSpaceAction(); }
+        // --- LÓGICA DE ESPACIO (Diferenciada) ---
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            HandleSpaceAction(); // Solo para poner madera/hojas o recoger
+        }
 
-        // SOLTAR (R)
+        if (Input.GetKey(KeyCode.Space))
+        {
+            HandleHoldAction(); // Esto gestiona el llenado de la barra
+        }
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            if (_hogueraSiendoEncendida != null)
+            {
+                _hogueraSiendoEncendida.DetenerEncendido(); // Importante para apagar chispas al soltar
+                _hogueraSiendoEncendida = null;
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.R)) { DropItem(); }
     }
 
@@ -100,21 +117,49 @@ public class PlayerInventory : MonoBehaviour
         RaycastHit hit;
         Vector3 origin = transform.position + Vector3.up * -0.9f;
         Vector3[] directions = {
-            transform.forward,
-            Quaternion.Euler(0, -raySpread, 0) * transform.forward,
-            Quaternion.Euler(0, raySpread, 0) * transform.forward,
-            Quaternion.Euler(0, -raySpread * 2f, 0) * transform.forward,
-            Quaternion.Euler(0, raySpread * 2f, 0) * transform.forward
-        };
+        transform.forward,
+        Quaternion.Euler(0, -raySpread, 0) * transform.forward,
+        Quaternion.Euler(0, raySpread, 0) * transform.forward,
+        Quaternion.Euler(0, -raySpread * 2f, 0) * transform.forward,
+        Quaternion.Euler(0, raySpread * 2f, 0) * transform.forward
+    };
 
         foreach (Vector3 dir in directions)
         {
-            if (Physics.Raycast(origin, dir, out hit, interactionDistance, interactionLayer))
+            // Añadimos QueryTriggerInteraction.Ignore para que no detecte triggers invisibles por error
+            if (Physics.Raycast(origin, dir, out hit, interactionDistance, interactionLayer, QueryTriggerInteraction.Ignore))
             {
-                return hit.collider.GetComponentInParent<WorldItem>();
+                // CAMBIO CLAVE: Buscamos el script en el objeto golpeado O en cualquier padre superior
+                WorldItem item = hit.collider.GetComponentInParent<WorldItem>();
+
+                if (item != null)
+                {
+                    Debug.DrawRay(origin, dir * interactionDistance, Color.red); // Rayo rojo si detecta item
+                    return item;
+                }
             }
         }
         return null;
+    }
+
+    void HandleHoldAction()
+    {
+        WorldItem target = GetItemInFront();
+        if (target != null && target.CompareTag("Bonfire"))
+        {
+            Hoguera h = target.GetComponentInParent<Hoguera>();
+            if (h != null && !h.estaEncendida && h.tieneMadera && h.tieneHojas)
+            {
+                _hogueraSiendoEncendida = h;
+                h.IntentarEncender(Time.deltaTime);
+            }
+        }
+        else if (_hogueraSiendoEncendida != null)
+        {
+            // Si dejamos de mirar la hoguera mientras mantenemos espacio
+            _hogueraSiendoEncendida.DetenerEncendido();
+            _hogueraSiendoEncendida = null;
+        }
     }
 
     void HandleSpaceAction()
@@ -164,8 +209,7 @@ public class PlayerInventory : MonoBehaviour
                 // C. Si no estás entregando nada útil, o la hoguera ya tiene lo que ofreces, intentamos encender.
                 if (!hoguera.estaEncendida)
                 {
-                    Debug.Log("<color=orange>HOGUERA:</color> Intentando encender con lo que hay...");
-                    hoguera.IntentarEncender();
+                    Debug.Log("<color=orange>HOGUERA:</color> Mantén ESPACIO para intentar encender.");
                     return;
                 }
 
@@ -269,9 +313,29 @@ public class PlayerInventory : MonoBehaviour
         {
             _currentHeldObject = Instantiate(currentItem.prefab, holdPoint.position, holdPoint.rotation, holdPoint);
 
-            if (_currentHeldObject.GetComponent<Collider>()) _currentHeldObject.GetComponent<Collider>().enabled = false;
-            if (_currentHeldObject.GetComponent<Rigidbody>()) _currentHeldObject.GetComponent<Rigidbody>().isKinematic = true;
-            if (_currentHeldObject.GetComponent<WorldItem>()) Destroy(_currentHeldObject.GetComponent<WorldItem>());
+            // --- AJUSTE DE ROTACIÓN ESPECÍFICA PARA EL HACHA ---
+            if (currentItem.itemName == "Axe")
+            {
+                // Aplicamos la rotación local para que sea relativa a la mano
+                _currentHeldObject.transform.localEulerAngles = new Vector3(0f, 0f, -41.772f);
+            }
+
+            // --- SOLUCIÓN PARA LA CAÍDA ---
+            // Desactivamos TODOS los colliders que pueda tener el modelo (en el padre y en los hijos)
+            Collider[] colliders = _currentHeldObject.GetComponentsInChildren<Collider>();
+            foreach (Collider c in colliders) c.enabled = false;
+
+            // Ponemos TODOS los Rigidbodys en modo Kinematic para que no les afecte la gravedad
+            Rigidbody[] rbs = _currentHeldObject.GetComponentsInChildren<Rigidbody>();
+            foreach (Rigidbody rb in rbs)
+            {
+                rb.isKinematic = true;
+                rb.useGravity = false; // Por seguridad extra, quitamos la gravedad
+            }
+
+            // Quitamos cualquier script de WorldItem de los hijos para que el raycast no se detecte a sí mismo
+            WorldItem[] worldItems = _currentHeldObject.GetComponentsInChildren<WorldItem>();
+            foreach (WorldItem wi in worldItems) Destroy(wi);
         }
     }
 }

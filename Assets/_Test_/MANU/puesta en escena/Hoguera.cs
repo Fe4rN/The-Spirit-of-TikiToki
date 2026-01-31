@@ -7,14 +7,24 @@ public class Hoguera : MonoBehaviour
     public bool tieneMadera = false;
     public bool tieneHojas = false;
 
+    [Header("Progreso de Encendido")]
+    public float progresoActual = 0f;
+    public float tiempoNecesario = 2.5f; // Segundos manteniendo espacio
+    public ParticleSystem sistemaChispas; // Arrastra aquí tus partículas
+    public TreeHealthBarTree barraProgreso; // Reutilizamos el script de la barra del árbol
+
     [Header("Referencias Visuales")]
-    public GameObject efectosFuego; // El fuego (partículas/luz)
-    public GameObject modeloMadera; // Troncos visuales en la base
-    public GameObject modeloHojas;  // Hojas visuales en la base
+    public GameObject efectosFuego;
+    public GameObject modeloMadera;
+    public GameObject modeloHojas;
 
     void Start()
     {
         ActualizarVisuales();
+        if (barraProgreso != null) barraProgreso.gameObject.SetActive(false);
+        if (sistemaChispas != null) sistemaChispas.Stop();
+
+        // ESTO ES LO QUE FALTA:
         if (Barra.Instance != null) Barra.Instance.RegistrarHoguera(this);
     }
 
@@ -25,23 +35,43 @@ public class Hoguera : MonoBehaviour
         if (modeloHojas != null) modeloHojas.SetActive(tieneHojas);
     }
 
-    // Método para intentar encenderla
-    public void IntentarEncender()
+    public void IntentarEncender(float incremento)
+    {
+        if (estaEncendida || !tieneMadera || !tieneHojas) return;
+
+        // Activar efectos si no estaban ya
+        if (barraProgreso != null && !barraProgreso.gameObject.activeSelf) barraProgreso.gameObject.SetActive(true);
+        if (sistemaChispas != null && !sistemaChispas.isPlaying) sistemaChispas.Play();
+
+        progresoActual += incremento;
+
+        if (barraProgreso != null)
+            barraProgreso.SetHealth(progresoActual, tiempoNecesario);
+
+        if (progresoActual >= tiempoNecesario)
+        {
+            FinalizarEncendido();
+        }
+    }
+
+    public void DetenerEncendido()
     {
         if (estaEncendida) return;
 
-        if (tieneMadera && tieneHojas)
-        {
-            estaEncendida = true;
-            ActualizarVisuales();
-            Debug.Log("<color=orange>HOGUERA:</color> ¡Encendida!");
+        progresoActual = 0f; // Resetear si sueltas (o puedes hacer que baje lento)
+        if (barraProgreso != null) barraProgreso.gameObject.SetActive(false);
+        if (sistemaChispas != null) sistemaChispas.Stop();
+    }
 
-            if (Barra.Instance != null)
-                Barra.Instance.RecalcularTasaDeCambio();
-        }
-        else
-        {
-            Debug.Log("<color=yellow>HOGUERA:</color> Faltan ingredientes. Madera: " + tieneMadera + " Hojas: " + tieneHojas);
-        }
+    void FinalizarEncendido()
+    {
+        estaEncendida = true;
+        if (sistemaChispas != null) sistemaChispas.Stop();
+        if (barraProgreso != null) barraProgreso.gameObject.SetActive(false);
+
+        ActualizarVisuales();
+
+        if (Barra.Instance != null)
+            Barra.Instance.RecalcularTasaDeCambio();
     }
 }
