@@ -10,9 +10,11 @@ public class MaskMachine : MonoBehaviour
     [SerializeField] private float smoothTime = 0.2f;
     private float velocityX;
 
-    [Header("Cooldown de Ataque")]
-    public float minAttackCooldown;
-    public float maxAttackCooldown;
+    [Header("Estados")]
+    public NombreEstado idleState;
+    public NombreEstado laserState;
+    public NombreEstado windState;
+    public NombreEstado meteorState;
 
 
     #region Cosas de estado
@@ -52,7 +54,6 @@ public class MaskMachine : MonoBehaviour
             if (state.Initial)
             {
                 MaskState = state;
-
             }
         }
 
@@ -60,8 +61,11 @@ public class MaskMachine : MonoBehaviour
         {
             MaskState = states[0];
         }
+    }
 
-        PlayerTransform = GameObject.FindWithTag("Player").transform;
+    void Start()
+    {
+        PlayerTransform = GameObject.FindFirstObjectByType<CharacterController>().transform;
     }
 
     void Update()

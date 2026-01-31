@@ -1,23 +1,32 @@
+using NUnit.Framework;
 using UnityEngine;
 
 public class MaskIdleState : MaskState
 {
     MaskAttacks nextAttack;
     float decisionTimer;
+    bool isAttackChosen = false;
+
+    [Header("Cooldown de Ataque")]
+    public float minAttackCooldown;
+    public float maxAttackCooldown;
+
     protected override void StateEnter()
     {
-        decisionTimer = Random.Range(machine.minAttackCooldown, machine.maxAttackCooldown);
+        Debug.Log("Entering Idle State");
+        decisionTimer = Random.Range(minAttackCooldown, maxAttackCooldown);
+        isAttackChosen = false;
     }
 
-    //TODO - Hay que hacer que una vez elegido el ataque, deje de pasar por la resta al contador
     protected override void StateUpdate()
     {
         machine.MirrorPlayerPosition();
 
-        if (decisionTimer >= 0) decisionTimer -= Time.deltaTime;
+        if (!isAttackChosen) decisionTimer -= Time.deltaTime;
 
-        if (decisionTimer <= 0f)
+        if (decisionTimer <= 0f && !isAttackChosen)
         {
+            isAttackChosen = true;
             ChooseRandomAttack();
             SwitchToAttackState();
         }
@@ -35,15 +44,15 @@ public class MaskIdleState : MaskState
         switch (nextAttack)
         {
             case MaskAttacks.Laser:
-                // machine.SetState(machine.LaserChargeState);
+                machine.SetState(machine.laserState.Value);
                 break;
 
             case MaskAttacks.Wind:
-                // machine.SetState(machine.WindState);
+                machine.SetState(machine.windState.Value);
                 break;
 
             case MaskAttacks.Meteor:
-                // machine.SetState(machine.MeteorState);
+                machine.SetState(machine.windState.Value);
                 break;
         }
     }

@@ -372,6 +372,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2299187994812484371, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: PlayerTransform
+      value: 
+      objectReference: {fileID: 211056752}
     - target: {fileID: 4661110866800639297, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.77829
@@ -416,19 +420,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mask
       objectReference: {fileID: 0}
+    - target: {fileID: 8611005941377651080, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: windDuration
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6118392890844229141, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1794727428}
-    - targetCorrespondingSourceObject: {fileID: 6118392890844229141, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1794727429}
-    - targetCorrespondingSourceObject: {fileID: 6118392890844229141, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1794727431}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
 --- !u!1 &1113074944
 GameObject:
@@ -657,64 +656,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b490757dd0e224547be0458895558fc5, type: 3}
---- !u!1 &1794727427 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6118392890844229141, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-  m_PrefabInstance: {fileID: 431732532}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1794727428
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1794727427}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 114e8cef96ced74408b3644d953ec637, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MaskMachine
-  PlayerTransform: {fileID: 0}
-  MaskTransform: {fileID: 1794727430}
-  smoothTime: 0.2
-  minAttackCooldown: 1
-  maxAttackCooldown: 2
-  OnStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &1794727429
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1794727427}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ad7b1e430282d14792624f75177c4a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MaskIdleState
-  stateName: {fileID: 11400000, guid: 71afdd2c5a334d54fb60b0230b9625a2, type: 2}
-  initial: 1
---- !u!4 &1794727430 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4661110866800639297, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-  m_PrefabInstance: {fileID: 431732532}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1794727431
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1794727427}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab0e633a65bd5e64baaf6ce3a1e07a3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MaskRayAttackState
-  stateName: {fileID: 11400000, guid: e5afc910086bb514682f74f3d4d8b019, type: 2}
-  initial: 0
 --- !u!1001 &2079112152
 PrefabInstance:
   m_ObjectHideFlags: 0
