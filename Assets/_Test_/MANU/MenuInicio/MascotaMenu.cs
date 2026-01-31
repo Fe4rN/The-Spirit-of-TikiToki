@@ -2,62 +2,78 @@ using UnityEngine;
 
 public class MascotaMenu : MonoBehaviour
 {
+    [Header("Ajuste de Sensibilidad")]
+    public float divisorDistancia = 2f;
+
+    [Header("Límites de Rotación")]
+    public float minX = -50f;
+    public float maxX = 50f;
+    public float minY = 140f;
+    public float maxY = 230f;
+
+    [Header("Estado Enfado")]
+    public GameObject objetoEnfado;
+    public float velocidadTransicion = 100f;
+
+    private float distance;
     public bool estaEnfadado = false;
-    private Animator anim;
 
     void Start()
     {
-        anim = GetComponent<Animator>();
+        if (Camera.main != null)
+            distance = Vector3.Distance(Camera.main.transform.position, transform.position) / divisorDistancia;
+
+        if (objetoEnfado != null) objetoEnfado.SetActive(false);
     }
 
     void Update()
     {
-        MirarAlRaton();
+        Quaternion rotacionObjetivo;
+
+        if (estaEnfadado)
+        {
+            // 1. El objetivo es mirar al frente (0, 190, 0)
+            rotacionObjetivo = Quaternion.Euler(0, 190, 0);
+        }
+        else
+        {
+            // 2. El objetivo es la posición del ratón con límites aplicados
+            rotacionObjetivo = CalcularRotacionRaton();
+        }
+
+        // 3. Aplicar la transición suave hacia el objetivo actual (sea el ratón o el frente)
+        transform.localRotation = Quaternion.RotateTowards(transform.localRotation, rotacionObjetivo, velocidadTransicion * Time.deltaTime);
     }
 
-    void MirarAlRaton()
+    // Esta función calcula a dónde DEBERÍA mirar, pero no aplica la rotación todavía
+    Quaternion CalcularRotacionRaton()
     {
-        // Convertimos la posición del ratón a coordenadas del mundo
-        Vector3 posicionRaton = Input.mousePosition;
-        posicionRaton.z = 10f; // Distancia desde la cámara
-        Vector3 objetivo = Camera.main.ScreenToWorldPoint(posicionRaton);
+        if (Camera.main == null) return transform.localRotation;
 
-        // Calculamos la dirección
-        Vector2 direccion = objetivo - transform.position;
-        float angulo = Mathf.Atan2(direccion.y, direccion.x) * Mathf.Rad2Deg;
+        Vector3 mouse = Input.mousePosition;
+        mouse.z = distance;
+        Vector3 lookPoint = Camera.main.ScreenToWorldPoint(mouse);
 
-        // Aplicamos la rotación (ajusta el -90 si tu objeto mira hacia otro lado)
-        transform.rotation = Quaternion.Euler(0, 0, angulo - 90f);
+        // Usamos un objeto temporal para calcular el LookAt sin mover el objeto real
+        Quaternion lookRotation = Quaternion.LookRotation(lookPoint - transform.position);
+        Vector3 currentRot = lookRotation.eulerAngles;
+
+        // Corregir y limitar X e Y
+        float rotX = (currentRot.x > 180) ? currentRot.x - 360 : currentRot.x;
+        float clampedX = Mathf.Clamp(rotX, minX, maxX);
+        float clampedY = Mathf.Clamp(currentRot.y, minY, maxY);
+
+        return Quaternion.Euler(clampedX, clampedY, 0);
     }
 
     public void CambiarEstadoEnfado(bool enfadado)
     {
-        if (estaEnfadado != enfadado) // Solo avisamos si el estado realmente cambia
-        {
-            estaEnfadado = enfadado;
-            Debug.Log("<color=orange>Estado de la Mascota:</color> " + (estaEnfadado ? "¡ENFADADO!" : "Normal"));
-
-            if (anim != null)
-            {
-                anim.SetBool("Enfadado", estaEnfadado);
-            }
-        }
+        estaEnfadado = enfadado;
+        if (objetoEnfado != null) objetoEnfado.SetActive(enfadado);
     }
 
     public void EjecutarAnimacionFinal()
     {
-        Debug.Log("Ejecutando animación de cierre...");
-        if (anim != null) anim.SetTrigger("Cerrar");
-
-        // Cerramos el juego (esto solo funciona en el build final, no en el editor)
-        Invoke("SalirDelJuego", 1.5f); // Damos tiempo a la animación
-    }
-
-    void SalirDelJuego()
-    {
-        Application.Quit();
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
+        Debug.Log("Acción final ejecutada");
     }
 }
