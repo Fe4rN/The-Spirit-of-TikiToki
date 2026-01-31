@@ -22,6 +22,7 @@ public class Meteor : MonoBehaviour
         // Añadimos la comprobación de "Player" para que explote si le cae encima
         if (collision.gameObject.CompareTag("Ground") ||
             collision.gameObject.name == "Suelo" ||
+            collision.gameObject.CompareTag("Tree") ||
             collision.gameObject.CompareTag("Player"))
         {
             hasImpacted = true;
@@ -47,10 +48,11 @@ public class Meteor : MonoBehaviour
             // Iniciamos la rutina que espera un poco antes de clavar el objeto y encogerlo
             StartCoroutine(WaitThenShrink());
         }
-        else
-        {
+        else if (collision.gameObject.CompareTag("Destruible"))
+        { 
             Destroy(gameObject);
         }
+        
     }
 
     private void ApplyDamage()
@@ -72,6 +74,26 @@ public class Meteor : MonoBehaviour
                 {
                     // Usamos la referencia global si el componente no está en el collider
                     playerHealth.TakeDamage();
+                }
+            }
+            // 2. DAÑO A LOS ÁRBOLES
+            else if (hitCollider.CompareTag("Tree"))
+            {
+                // Buscamos el script en el objeto o sus padres
+                Tree tree = hitCollider.GetComponentInParent<Tree>();
+
+                // VERIFICACIÓN DE SEGURIDAD: Solo actuamos si el script existe
+                if (tree != null)
+                {
+                    for (int i = 0; i <= 4; i++)
+                    {
+                        tree.TakeHit();
+                    }
+                }
+                else
+                {
+                    // Este mensaje te dirá exactamente qué objeto tiene el tag mal puesto
+                    Debug.LogWarning($"El objeto {hitCollider.name} tiene el tag 'Tree' pero no tiene el script 'Tree'.");
                 }
             }
         }

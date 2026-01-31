@@ -3,6 +3,7 @@ using UnityEngine;
 public class MaskScreamAttackState : MaskState
 {
     private PlayerMovement playerMovement;
+    private SpawnerMaster spawnerMaster;
     private ScreamPhase currentPhase;
     private float phaseCounter;
 
@@ -25,6 +26,8 @@ public class MaskScreamAttackState : MaskState
     {
         Debug.Log("Entering Scream State");
         playerMovement = machine.PlayerTransform.GetComponent<PlayerMovement>();
+        spawnerMaster = FindFirstObjectByType<SpawnerMaster>();
+
         currentPhase = ScreamPhase.Growling;
         phaseCounter = growlDuration;
         hasStunnedPlayer = false;
@@ -76,6 +79,9 @@ public class MaskScreamAttackState : MaskState
                     {
                         screamParticles.Play();
                     }
+
+                    // Regenerar arboles
+                    spawnerMaster?.GenerarAlgunosArboles();
 
                     // TODO: Reproducir sonido de grito
                 }

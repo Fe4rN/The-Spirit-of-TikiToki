@@ -245,7 +245,7 @@ GameObject:
   - component: {fileID: 104299446}
   m_Layer: 0
   m_Name: InsibleWall (3)
-  m_TagString: Untagged
+  m_TagString: Destruible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -876,7 +876,7 @@ GameObject:
   - component: {fileID: 562245228}
   m_Layer: 0
   m_Name: water (2)
-  m_TagString: Untagged
+  m_TagString: Destruible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1498,7 +1498,7 @@ GameObject:
   - component: {fileID: 1137614583}
   m_Layer: 0
   m_Name: falseWater (2)
-  m_TagString: Untagged
+  m_TagString: Destruible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1627,7 +1627,7 @@ GameObject:
   - component: {fileID: 1204796090}
   m_Layer: 0
   m_Name: InsibleWall (1)
-  m_TagString: Untagged
+  m_TagString: Destruible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1739,7 +1739,7 @@ GameObject:
   - component: {fileID: 1231170301}
   m_Layer: 0
   m_Name: InsibleWall
-  m_TagString: Untagged
+  m_TagString: Destruible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2016,7 +2016,7 @@ GameObject:
   - component: {fileID: 1417438743}
   m_Layer: 0
   m_Name: InsibleWall (2)
-  m_TagString: Untagged
+  m_TagString: Destruible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2393,7 +2393,7 @@ GameObject:
   - component: {fileID: 1941939090}
   m_Layer: 0
   m_Name: InvisibleWalls
-  m_TagString: Untagged
+  m_TagString: Destruible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2485,7 +2485,7 @@ GameObject:
   - component: {fileID: 1958019769}
   m_Layer: 0
   m_Name: Sea
-  m_TagString: Untagged
+  m_TagString: Destruible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2528,7 +2528,7 @@ GameObject:
   - component: {fileID: 2037311056}
   m_Layer: 0
   m_Name: water (1)
-  m_TagString: Untagged
+  m_TagString: Destruible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2641,7 +2641,7 @@ GameObject:
   - component: {fileID: 2105497634}
   m_Layer: 0
   m_Name: water
-  m_TagString: Untagged
+  m_TagString: Destruible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

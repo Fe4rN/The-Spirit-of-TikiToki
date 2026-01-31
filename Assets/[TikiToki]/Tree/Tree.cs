@@ -97,6 +97,6 @@ public class Tree : MonoBehaviour
             Vector3 randomOffset = new Vector3(Random.Range(-0.6f, 0.6f), 0.2f, Random.Range(-0.6f, 0.6f));
             Instantiate(woodPrefab, transform.position + randomOffset, Quaternion.identity);
         }
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }

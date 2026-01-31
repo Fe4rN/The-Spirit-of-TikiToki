@@ -67,6 +67,45 @@ public class SpawnerMaster : MonoBehaviour
         }
     }
 
+    public void GenerarAlgunosArboles()
+    {
+        ActualizarEstadoEscena();
+
+        int cantidadAAsignar = Random.Range(1, 3); // Intentará crear 1 o 2 árboles nuevos
+        int contador = 0;
+
+        foreach (GameObject obj in poolArboles)
+        {
+            if (contador >= cantidadAAsignar) break; // Ya hemos creado los que queríamos
+            if (obj.activeSelf) continue;            // Si este ya está en el mapa, buscamos el siguiente del pool
+
+            // Intentamos buscarle un sitio
+            if (IntentarPosicionarObjeto(obj))
+            {
+                contador++;
+            }
+        }
+    }
+
+    private bool IntentarPosicionarObjeto(GameObject obj)
+    {
+        int intentos = 0;
+        while (intentos < 100)
+        {
+            intentos++;
+            float rx = Random.Range(-areaSize.x / 2f, areaSize.x / 2f);
+            float rz = Random.Range(-areaSize.y / 2f, areaSize.y / 2f);
+            Vector3 candidata = transform.position + new Vector3(rx, 0, rz);
+
+            if (EsPosicionValida(candidata))
+            {
+                ActivarObjetoDelPool(obj, candidata);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void GenerarSoloArboles()
     {
         ActualizarEstadoEscena();
