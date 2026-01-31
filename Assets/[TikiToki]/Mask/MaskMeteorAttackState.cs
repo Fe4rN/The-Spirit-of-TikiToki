@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class MaskMeteorAttackState : MaskState
 {
@@ -17,6 +19,19 @@ public class MaskMeteorAttackState : MaskState
     private float chompTimer;
     private int currentChomps;
     private bool isOpening;
+
+    [Header("Configuración de Meteoritos")]
+    [SerializeField] private GameObject[] meteorPrefabs;
+    [SerializeField] private Transform groundReference;
+    [SerializeField] private int minMeteors = 10;
+    [SerializeField] private int maxMeteors = 20;
+    [SerializeField] private float meteorHeight = 10f;
+    [SerializeField] private float damageRadius = 1f;
+    [SerializeField] private float warningDuration = 2f;
+    [SerializeField] private Color warningColor = new Color(1f, 0.2f, 0f, 0.5f);
+
+    private List<GameObject> activeWarnings = new List<GameObject>();
+    private bool meteorsSpawned = false;
 
     protected override void StateEnter()
     {
@@ -88,14 +103,13 @@ public class MaskMeteorAttackState : MaskState
                         machine.JawTransform.localPosition = jawInitialPosition;
                     }
 
-                    // TODO: Iniciar lluvia de meteoritos
+                    // Iniciar lluvia de meteoritos
+                    StartMeteorRain();
                 }
                 break;
 
             case MeteorPhase.Attacking:
                 attackCounter -= Time.deltaTime;
-
-                // TODO: Actualizar lógica de meteoritos
 
                 if (attackCounter <= 0)
                     machine.SetState(machine.idleState.Value);
@@ -110,11 +124,152 @@ public class MaskMeteorAttackState : MaskState
         {
             machine.JawTransform.localPosition = jawInitialPosition;
         }
+
+        // Limpiar warnings activos
+        CleanupWarnings();
+        meteorsSpawned = false;
     }
 
-    private void chooseRandomPoint()
+    private void StartMeteorRain()
     {
-        // TODO: Implementar selección de punto aleatorio para meteoritos
+        if (meteorPrefabs == null || meteorPrefabs.Length == 0)
+        {
+            Debug.LogError("No meteor prefabs assigned!");
+            return;
+        }
+
+        if (groundReference == null)
+        {
+            Debug.LogError("Ground reference not assigned!");
+            return;
+        }
+
+        int meteorCount = Random.Range(minMeteors, maxMeteors + 1);
+
+        for (int i = 0; i < meteorCount; i++)
+        {
+            float delay = Random.Range(0f, attackDuration - warningDuration);
+            StartCoroutine(SpawnMeteorWithWarning(delay));
+        }
+
+        meteorsSpawned = true;
+    }
+
+    private IEnumerator SpawnMeteorWithWarning(float initialDelay)
+    {
+        yield return new WaitForSeconds(initialDelay);
+
+        Vector3 targetPosition = GetRandomPositionOnGround();
+
+        // Crear warning visual
+        GameObject warning = CreateWarningIndicator(targetPosition);
+        activeWarnings.Add(warning);
+
+        // Esperar el tiempo de aviso
+        yield return new WaitForSeconds(warningDuration);
+
+        // Destruir el warning
+        if (warning != null)
+        {
+            activeWarnings.Remove(warning);
+            Destroy(warning);
+        }
+
+        // Spawear el meteorito
+        SpawnMeteor(targetPosition);
+    }
+
+    private Vector3 GetRandomPositionOnGround()
+    {
+        if (groundReference == null) return Vector3.zero;
+
+        // Obtener los bounds del suelo
+        Renderer groundRenderer = groundReference.GetComponent<Renderer>();
+        if (groundRenderer != null)
+        {
+            Bounds bounds = groundRenderer.bounds;
+
+            float randomX = Random.Range(bounds.min.x, bounds.max.x);
+            float randomZ = Random.Range(bounds.min.z, bounds.max.z);
+
+            return new Vector3(randomX, bounds.max.y, randomZ);
+        }
+
+        // Fallback si no hay renderer
+        return groundReference.position + new Vector3(
+            Random.Range(-10f, 10f),
+            0f,
+            Random.Range(-10f, 10f)
+        );
+    }
+
+    private GameObject CreateWarningIndicator(Vector3 position)
+    {
+        // Crear un cilindro aplanado como indicador
+        GameObject warning = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        warning.name = "MeteorWarning";
+
+        // Posicionar ligeramente sobre el suelo
+        warning.transform.position = position + Vector3.up * 0.05f;
+        warning.transform.localScale = new Vector3(damageRadius * 2, 0.01f, damageRadius * 2);
+
+        // Configurar material
+        Renderer renderer = warning.GetComponent<Renderer>();
+        renderer.material = new Material(Shader.Find("Standard"));
+        renderer.material.color = warningColor;
+        renderer.material.SetFloat("_Mode", 3); // Transparent mode
+        renderer.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        renderer.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        renderer.material.SetInt("_ZWrite", 0);
+        renderer.material.DisableKeyword("_ALPHATEST_ON");
+        renderer.material.EnableKeyword("_ALPHABLEND_ON");
+        renderer.material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        renderer.material.renderQueue = 3000;
+
+        // Remover collider
+        Collider collider = warning.GetComponent<Collider>();
+        if (collider != null)
+            Destroy(collider);
+
+        return warning;
+    }
+
+    private void SpawnMeteor(Vector3 targetPosition)
+    {
+        // Seleccionar prefab aleatorio
+        GameObject meteorPrefab = meteorPrefabs[Random.Range(0, meteorPrefabs.Length)];
+
+        // Posición de spawn en el cielo
+        Vector3 spawnPosition = targetPosition + Vector3.up * meteorHeight;
+
+        // Instanciar meteorito
+        GameObject meteor = Instantiate(meteorPrefab, spawnPosition, Random.rotation);
+
+        // Asegurar que tiene Rigidbody
+        Rigidbody rb = meteor.GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = meteor.AddComponent<Rigidbody>();
+        }
+        rb.useGravity = true;
+
+        // Agregar el script Meteor si no lo tiene
+        Meteor meteorScript = meteor.GetComponent<Meteor>();
+        if (meteorScript == null)
+        {
+            meteorScript = meteor.AddComponent<Meteor>();
+        }
+        meteorScript.Initialize(damageRadius);
+    }
+
+    private void CleanupWarnings()
+    {
+        foreach (GameObject warning in activeWarnings)
+        {
+            if (warning != null)
+                Destroy(warning);
+        }
+        activeWarnings.Clear();
     }
 }
 
