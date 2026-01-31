@@ -105,8 +105,8 @@ public class MaskMachine : MonoBehaviour
 
     public void LookAtPlayer()
     {
-        if(!PlayerTransform) return;
+        // if(!PlayerTransform) return;
 
-        transform.LookAt(PlayerTransform);
+        // transform.LookAt(PlayerTransform);
     }
 }
