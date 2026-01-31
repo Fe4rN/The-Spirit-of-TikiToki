@@ -12,8 +12,9 @@ public class PlayerInventory : MonoBehaviour
         public int count;
     }
 
-    public static Action OnItemCollected;
+    public static Action<string> OnItemCollected;
     public static Action<string> OnBonfireMaterialAdded;
+    public static Action OnItemDropped;
 
     [Header("Configuración")]
     public InventorySlot[] slots = new InventorySlot[2];
@@ -329,7 +330,7 @@ public class PlayerInventory : MonoBehaviour
     void FinishPickup(WorldItem item)
     {
         Debug.Log("<color=cyan>RECOGIDO:</color> " + item.itemData.itemName);
-        OnItemCollected?.Invoke();
+        OnItemCollected?.Invoke(item.itemData.itemName);
 
         item.SetHighlight(false);
         Destroy(item.gameObject);
@@ -372,6 +373,8 @@ public class PlayerInventory : MonoBehaviour
                     rb.useGravity = true;
                 }
             }
+
+            OnItemDropped?.Invoke();
 
             // Restamos la cantidad del inventario
             currentSlot.count--;

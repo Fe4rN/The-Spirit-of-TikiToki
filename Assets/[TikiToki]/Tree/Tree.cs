@@ -20,6 +20,7 @@ public class Tree : MonoBehaviour
     public int woodAmount = 3;
 
     public static Action OnTreeHit;
+    public static Action OnTreeDestroyed;
 
     private Vector3 _originalScale;
 
@@ -98,6 +99,8 @@ public class Tree : MonoBehaviour
 
     void Die()
     {
+        OnTreeDestroyed?.Invoke();
+
         for (int i = 0; i < woodAmount; i++)
         {
             Vector3 randomOffset = new Vector3(Random.Range(-0.6f, 0.6f), 0.2f, Random.Range(-0.6f, 0.6f));
