@@ -30,7 +30,7 @@ public class MenuOpciones : MonoBehaviour
     void CargarPreferencias()
     {
         // Cargar Volumenes
-        float vMaster = PlayerPrefs.GetFloat("VolMaster", 0.75f);
+        float vMaster = PlayerPrefs.GetFloat("Master", 0.75f);
         float vMusica = PlayerPrefs.GetFloat("VolMusica", 0.75f);
         float vSFX = PlayerPrefs.GetFloat("VolSFX", 0.75f);
 
