@@ -23,8 +23,6 @@ public class MenuOpciones : MonoBehaviour
 
     void Start()
     {
-        if (panelOpciones != null) panelOpciones.SetActive(false);
-
         ConfigurarResoluciones();
         CargarPreferencias();
     }
