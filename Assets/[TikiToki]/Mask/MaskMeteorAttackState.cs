@@ -243,7 +243,8 @@ public class MaskMeteorAttackState : MaskState
         Vector3 spawnPosition = targetPosition + Vector3.up * meteorHeight;
 
         // Instanciar meteorito
-        GameObject meteor = Instantiate(meteorPrefab, spawnPosition, Random.rotation);
+        //GameObject meteor = Instantiate(meteorPrefab, spawnPosition, Random.rotation);
+        GameObject meteor = Instantiate(meteorPrefab, spawnPosition, Quaternion.identity);
 
         // Asegurar que tiene Rigidbody
         Rigidbody rb = meteor.GetComponent<Rigidbody>();

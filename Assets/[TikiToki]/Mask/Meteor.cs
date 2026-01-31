@@ -5,7 +5,7 @@ public class Meteor : MonoBehaviour
 {
     private float damageRadius;
     private bool hasImpacted = false;
-    [SerializeField] private float destroyDelay = 2f;
+    [SerializeField] private float destroyDelay = 5f; // Tiempo total que tarda en desaparecer
 
     public void Initialize(float radius)
     {
@@ -21,23 +21,17 @@ public class Meteor : MonoBehaviour
         {
             hasImpacted = true;
 
-            // Aplicar daño en área inmediatamente
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, damageRadius);
-            foreach (Collider hitCollider in hitColliders)
+            // Parar emisión de partículas
+            ParticleSystem[] allParticles = GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem ps in allParticles)
             {
-                if (hitCollider.CompareTag("Player"))
-                {
-                    Debug.Log($"Meteor hit player! Position: {transform.position}");
-                    // TODO: Aplicar daño al jugador
-                    PlayerMovement player = hitCollider.GetComponent<PlayerMovement>();
-                    if (player != null)
-                    {
-                        // Aquí puedes agregar daño cuando tengas el sistema de vida
-                    }
-                }
+                ps.Stop();
             }
 
-            // Desactivar la física para que no siga rodando
+            // Aplicar daño en área
+            ApplyDamage();
+
+            // Desactivar física
             Rigidbody rb = GetComponent<Rigidbody>();
             if (rb != null)
             {
@@ -46,20 +40,48 @@ public class Meteor : MonoBehaviour
                 rb.angularVelocity = Vector3.zero;
             }
 
-            // Destruir después de 2 segundos
-            StartCoroutine(DestroyAfterDelay());
+            // Iniciar desaparición gradual
+            StartCoroutine(ShrinkAndDestroy());
         }
     }
 
-    private IEnumerator DestroyAfterDelay()
+    private void ApplyDamage()
     {
-        yield return new WaitForSeconds(destroyDelay);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, damageRadius);
+        foreach (Collider hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Player"))
+            {
+                PlayerMovement player = hitCollider.GetComponent<PlayerMovement>();
+                if (player != null)
+                {
+                    // Lógica de daño aquí
+                }
+            }
+        }
+    }
+
+    private IEnumerator ShrinkAndDestroy()
+    {
+        Vector3 originalScale = transform.localScale;
+        float currentTime = 0f;
+
+        // Mientras no hayamos llegado al tiempo límite
+        while (currentTime < destroyDelay)
+        {
+            currentTime += Time.deltaTime;
+
+            // Interpolamos la escala de la original a cero
+            transform.localScale = Vector3.Lerp(originalScale, Vector3.zero, currentTime / destroyDelay);
+
+            yield return null; // Esperar al siguiente frame
+        }
+
         Destroy(gameObject);
     }
 
     private void OnDrawGizmos()
     {
-        // Visualizar el radio de daño en el editor
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, damageRadius);
     }

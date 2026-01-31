@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2448894787941978986}
   - component: {fileID: 8611005941377651080}
   - component: {fileID: -1571734138363501569}
+  - component: {fileID: 3928743520178445932}
   m_Layer: 0
   m_Name: Mask
   m_TagString: Untagged
@@ -51,12 +52,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MaskMachine
   PlayerTransform: {fileID: 0}
   MaskTransform: {fileID: 4661110866800639297}
-  JawTransform: {fileID: 0}
+  JawTransform: {fileID: 7847746012094545211}
   smoothTime: 0.2
   idleState: {fileID: 11400000, guid: 71afdd2c5a334d54fb60b0230b9625a2, type: 2}
   laserState: {fileID: 11400000, guid: e5afc910086bb514682f74f3d4d8b019, type: 2}
   windState: {fileID: 11400000, guid: b972c40272fd33b468180b6e501d8474, type: 2}
   meteorState: {fileID: 11400000, guid: a086198234e1fdc499a580144397c058, type: 2}
+  screamState: {fileID: 11400000, guid: ce4d0361c58c6a446bde743467fc05b6, type: 2}
   OnStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -136,6 +138,35 @@ MonoBehaviour:
   jawOpenDistance: 1.2
   jawChompSpeed: 8
   chompCount: 3
+  meteorPrefabs:
+  - {fileID: 8148407405548260427, guid: d0f31269909fcc447aeb049a1eceb3d5, type: 3}
+  - {fileID: 932311917337050069, guid: 23b571958c5ad9a4da12e5a4df5e7ca6, type: 3}
+  groundReference: {fileID: 0}
+  minMeteors: 10
+  maxMeteors: 20
+  meteorHeight: 10
+  damageRadius: 1
+  warningDuration: 2
+  warningColor: {r: 1, g: 0.2, b: 0, a: 0.5}
+--- !u!114 &3928743520178445932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118392890844229141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81946680f2fd218448543309613366ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MaskScreamAttackState
+  stateName: {fileID: 11400000, guid: ce4d0361c58c6a446bde743467fc05b6, type: 2}
+  initial: 0
+  growlDuration: 1
+  screamDuration: 2
+  stunDuration: 3
+  jawOpenDistance: 1.5
+  jawAnimationSpeed: 6
 --- !u!1001 &1807987392915495741
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -212,5 +243,10 @@ PrefabInstance:
 --- !u!4 &2206195958706978006 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 330131b1081b26643941be3e8cb9bbb5, type: 3}
+  m_PrefabInstance: {fileID: 1807987392915495741}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7847746012094545211 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -720706097962359290, guid: 330131b1081b26643941be3e8cb9bbb5, type: 3}
   m_PrefabInstance: {fileID: 1807987392915495741}
   m_PrefabAsset: {fileID: 0}
