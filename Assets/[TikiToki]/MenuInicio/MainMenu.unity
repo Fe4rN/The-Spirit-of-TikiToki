@@ -925,7 +925,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &262082093
 Transform:
   m_ObjectHideFlags: 0
@@ -3576,7 +3576,8 @@ MonoBehaviour:
   maxX: 50
   minY: 140
   maxY: 230
-  objetoEnfado: {fileID: 262082092}
+  bodyRenderer: {fileID: 2128761257}
+  eyesMaterialIndex: 5
   velocidadTransicion: 100
   animacionFinal: {fileID: 7400000, guid: 715a42f32f0bb194dbc03936ba8801c6, type: 2}
   canvasDesactivar: {fileID: 1477181004}
@@ -7135,6 +7136,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 330131b1081b26643941be3e8cb9bbb5, type: 3}
+--- !u!23 &2128761257 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 330131b1081b26643941be3e8cb9bbb5, type: 3}
+  m_PrefabInstance: {fileID: 2128761256}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2142296291
 GameObject:
   m_ObjectHideFlags: 0
