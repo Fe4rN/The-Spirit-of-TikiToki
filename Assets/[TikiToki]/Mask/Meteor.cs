@@ -6,12 +6,12 @@ public class Meteor : MonoBehaviour
     private float damageRadius;
     private bool hasImpacted = false;
     [SerializeField] private float destroyDelay = 5f;
+    [SerializeField] private float bounceForce = 5f;
     [SerializeField] private PlayerHealth playerHealth;
 
     public void Initialize(float radius)
     {
         damageRadius = radius;
-        // Mantenemos esto como respaldo si solo hay un jugador
         playerHealth = FindFirstObjectByType<PlayerHealth>();
     }
 
@@ -36,17 +36,20 @@ public class Meteor : MonoBehaviour
             // Aplicar daño en área
             ApplyDamage();
 
-            // Desactivar física
+            // --- LÓGICA DE REBOTE ---
             Rigidbody rb = GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.isKinematic = true;
-                rb.linearVelocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
+                // Aplicamos un impulso hacia arriba para el rebote
+                rb.AddForce(Vector3.up * bounceForce, ForceMode.Impulse);
             }
 
-            // Iniciar desaparición gradual
-            StartCoroutine(ShrinkAndDestroy());
+            // Iniciamos la rutina que espera un poco antes de clavar el objeto y encogerlo
+            StartCoroutine(WaitThenShrink());
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
 
@@ -74,10 +77,23 @@ public class Meteor : MonoBehaviour
         }
     }
 
-    private IEnumerator ShrinkAndDestroy()
+    private IEnumerator WaitThenShrink()
     {
-        Vector3 originalScale = transform.localScale;
+        // Esperamos un tiempo breve (0.5s) para que se vea el rebote físico
+        yield return new WaitForSeconds(2f);
+
+        // Ahora sí desactivamos la física para que se quede en el sitio
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        // Iniciar desaparición gradual
         float currentTime = 0f;
+        Vector3 originalScale = transform.localScale;
 
         while (currentTime < destroyDelay)
         {

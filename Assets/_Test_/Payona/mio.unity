@@ -857,6 +857,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32cf87d4c8c33a3469b59d18d368e37b, type: 3}
+--- !u!198 &538067668 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7809203326452144309, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+  m_PrefabInstance: {fileID: 1863710442}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &562245226
 GameObject:
   m_ObjectHideFlags: 0
@@ -1891,7 +1896,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1257326668}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0780360296e22b45974ec51de01f9b4, type: 3}
   m_Name: 
@@ -2247,6 +2252,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85b4408697c773b428e17e156a5bbcf8, type: 3}
+--- !u!198 &1687601692 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 4808102685166142440, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+  m_PrefabInstance: {fileID: 1863710442}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1863710442
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2263,17 +2273,33 @@ PrefabInstance:
       propertyPath: groundReference
       value: 
       objectReference: {fileID: 1109935297}
-    - target: {fileID: 2206195958706978006, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: m_LocalPosition.z
+    - target: {fileID: 373064889546185893, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2299187994812484371, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: PlayerTransform
+      value: 
+      objectReference: {fileID: 1151568843}
+    - target: {fileID: 3928743520178445932, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: initial
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3928743520178445932, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: jawOpenDistance
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 3928743520178445932, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: screamParticles
+      value: 
+      objectReference: {fileID: 538067668}
     - target: {fileID: 4661110866800639297, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4661110866800639297, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4661110866800639297, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2307,18 +2333,50 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5839206455324467303, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: playerTransform
-      value: 
-      objectReference: {fileID: 1151568843}
+    - target: {fileID: 4808102685166142440, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6118392890844229141, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: m_Name
       value: Mask
       objectReference: {fileID: 0}
-    - target: {fileID: 6660820977637867056, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+    - target: {fileID: 7809203326452144309, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7809203326452144309, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7809203326452144309, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7809203326452144309, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7809203326452144309, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7809203326452144309, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8449045984843543277, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8611005941377651080, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: initial
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8611005941377651080, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: mouthParticles
+      value: 
+      objectReference: {fileID: 1687601692}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

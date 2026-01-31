@@ -11,6 +11,9 @@ public class MaskScreamAttackState : MaskState
     [SerializeField] private float screamDuration = 2f;
     [SerializeField] private float stunDuration = 3f;
 
+    [Header("Efectos Visuales")]
+    [SerializeField] private ParticleSystem screamParticles; // Arrastra aquí el efecto de distorsión/grito
+
     [Header("Animación de Mandíbula")]
     [SerializeField] private float jawOpenDistance = 1.5f;
     [SerializeField] private float jawAnimationSpeed = 6f;
@@ -25,6 +28,9 @@ public class MaskScreamAttackState : MaskState
         currentPhase = ScreamPhase.Growling;
         phaseCounter = growlDuration;
         hasStunnedPlayer = false;
+
+        // Aseguramos que las partículas estén paradas al inicio
+        if (screamParticles != null) screamParticles.Stop();
 
         // Animar mandíbula - apertura parcial para gruñido
         if (machine.JawTransform != null)
@@ -65,6 +71,12 @@ public class MaskScreamAttackState : MaskState
                         jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
                     }
 
+                    // --- ACTIVAR EFECTO DE GRITO ---
+                    if (screamParticles != null)
+                    {
+                        screamParticles.Play();
+                    }
+
                     // TODO: Reproducir sonido de grito
                 }
                 break;
@@ -88,6 +100,12 @@ public class MaskScreamAttackState : MaskState
 
     protected override void StateExit()
     {
+        // Detener partículas al salir del estado
+        if (screamParticles != null)
+        {
+            screamParticles.Stop();
+        }
+
         // Cerrar mandíbula
         if (machine.JawTransform != null)
         {
