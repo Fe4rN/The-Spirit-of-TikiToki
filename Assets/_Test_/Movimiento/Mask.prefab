@@ -9,7 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4661110866800639297}
-  - component: {fileID: 5839206455324467303}
+  - component: {fileID: 2299187994812484371}
+  - component: {fileID: 6660820977637867056}
+  - component: {fileID: 2448894787941978986}
+  - component: {fileID: 8611005941377651080}
   m_Layer: 0
   m_Name: Mask
   m_TagString: Untagged
@@ -33,7 +36,7 @@ Transform:
   - {fileID: 739237626413508879}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5839206455324467303
+--- !u!114 &2299187994812484371
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,13 +45,92 @@ MonoBehaviour:
   m_GameObject: {fileID: 6118392890844229141}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6855796d3e69ed2418e0b80b69797188, type: 3}
+  m_Script: {fileID: 11500000, guid: 114e8cef96ced74408b3644d953ec637, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MaskMovement
-  playerTransform: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::MaskMachine
+  PlayerTransform: {fileID: 0}
+  MaskTransform: {fileID: 4661110866800639297}
   smoothTime: 0.2
---- !u!1001 &993313962013986532
-PrefabInstance:
+  idleState: {fileID: 11400000, guid: 71afdd2c5a334d54fb60b0230b9625a2, type: 2}
+  laserState: {fileID: 11400000, guid: e5afc910086bb514682f74f3d4d8b019, type: 2}
+  windState: {fileID: 11400000, guid: b972c40272fd33b468180b6e501d8474, type: 2}
+  meteorState: {fileID: 0}
+  OnStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &6660820977637867056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118392890844229141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ad7b1e430282d14792624f75177c4a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MaskIdleState
+  stateName: {fileID: 11400000, guid: 71afdd2c5a334d54fb60b0230b9625a2, type: 2}
+  initial: 1
+  minAttackCooldown: 3
+  maxAttackCooldown: 7
+--- !u!114 &2448894787941978986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118392890844229141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab0e633a65bd5e64baaf6ce3a1e07a3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MaskRayAttackState
+  stateName: {fileID: 11400000, guid: e5afc910086bb514682f74f3d4d8b019, type: 2}
+  initial: 0
+  fireTime: 3
+  rayRange: 25
+  beamRadius: 0.75
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 64
+--- !u!114 &8611005941377651080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118392890844229141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5422eecafd227947838c22967bc1d4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MaskWindAttackState
+  stateName: {fileID: 11400000, guid: b972c40272fd33b468180b6e501d8474, type: 2}
+  initial: 0
+  windStrength: 0.7
+  windDuration: 5
+--- !u!1 &6334014027759892730
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7445219701785961482}
+  - component: {fileID: 3437982292637055050}
+  - component: {fileID: 7117998310423514343}
+  - component: {fileID: 4243078593995979326}
+  m_Layer: 0
+  m_Name: Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7445219701785961482
+Transform:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:

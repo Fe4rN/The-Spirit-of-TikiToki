@@ -8,6 +8,9 @@ public class PlayerMovement : MonoBehaviour
 
     private CharacterController controller;
     private Vector3 moveInput;
+
+    private Vector3 windDirection;
+    private float windStrength;
     private float verticalVelocity;
 
     void Start()
@@ -30,14 +33,37 @@ public class PlayerMovement : MonoBehaviour
 
         if (controller.isGrounded)
         {
-            verticalVelocity = -1f; // Fuerza mínima para mantener el contacto
+            verticalVelocity = -1f; // Fuerza mï¿½nima para mantener el contacto
         }
         else
         {
             verticalVelocity -= 9.81f * Time.deltaTime; // Gravedad normal si cae
         }
 
-        Vector3 finalVelocity = (moveInput * speed) + (Vector3.up * verticalVelocity);
+        float againstWindFactor = 1f;
+
+        if (moveInput != Vector3.zero && windStrength > 0f)
+        {
+            float dot = Vector3.Dot(moveInput.normalized, windDirection);
+            if (dot < 0)
+            {
+                float resistance = Mathf.Abs(dot) * windStrength;
+                againstWindFactor -= resistance;
+            }
+        }
+
+        Vector3 finalVelocity = moveInput * speed * Mathf.Clamp(againstWindFactor, 0.2f, 1f) + (Vector3.up * verticalVelocity);
         controller.Move(finalVelocity * Time.deltaTime);
+    }
+
+    public void SetWind(Vector3 direction, float strength)
+    {
+        windDirection = direction.normalized;
+        windStrength = strength;
+    }
+
+    public void ClearWind()
+    {
+        windStrength = 0f;
     }
 }
