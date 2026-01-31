@@ -5,19 +5,24 @@ public class Meteor : MonoBehaviour
 {
     private float damageRadius;
     private bool hasImpacted = false;
-    [SerializeField] private float destroyDelay = 5f; // Tiempo total que tarda en desaparecer
+    [SerializeField] private float destroyDelay = 5f;
+    [SerializeField] private PlayerHealth playerHealth;
 
     public void Initialize(float radius)
     {
         damageRadius = radius;
+        // Mantenemos esto como respaldo si solo hay un jugador
+        playerHealth = FindFirstObjectByType<PlayerHealth>();
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (hasImpacted) return;
 
-        // Verificar si colisiona con el suelo
-        if (collision.gameObject.name == "Suelo" || collision.gameObject.CompareTag("Ground"))
+        // Añadimos la comprobación de "Player" para que explote si le cae encima
+        if (collision.gameObject.CompareTag("Ground") ||
+            collision.gameObject.name == "Suelo" ||
+            collision.gameObject.CompareTag("Player"))
         {
             hasImpacted = true;
 
@@ -47,15 +52,23 @@ public class Meteor : MonoBehaviour
 
     private void ApplyDamage()
     {
+        // OverlapSphere detectará el BoxCollider del player sin problemas
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, damageRadius);
         foreach (Collider hitCollider in hitColliders)
         {
             if (hitCollider.CompareTag("Player"))
             {
-                PlayerMovement player = hitCollider.GetComponent<PlayerMovement>();
-                if (player != null)
+                // Intentamos obtener la salud directamente del objeto impactado
+                PlayerHealth health = hitCollider.GetComponent<PlayerHealth>();
+
+                if (health != null)
                 {
-                    // Lógica de daño aquí
+                    health.TakeDamage();
+                }
+                else if (playerHealth != null)
+                {
+                    // Usamos la referencia global si el componente no está en el collider
+                    playerHealth.TakeDamage();
                 }
             }
         }
@@ -66,15 +79,11 @@ public class Meteor : MonoBehaviour
         Vector3 originalScale = transform.localScale;
         float currentTime = 0f;
 
-        // Mientras no hayamos llegado al tiempo límite
         while (currentTime < destroyDelay)
         {
             currentTime += Time.deltaTime;
-
-            // Interpolamos la escala de la original a cero
             transform.localScale = Vector3.Lerp(originalScale, Vector3.zero, currentTime / destroyDelay);
-
-            yield return null; // Esperar al siguiente frame
+            yield return null;
         }
 
         Destroy(gameObject);
