@@ -13,6 +13,13 @@ public class PlayerMovement : MonoBehaviour
     private float windStrength;
     private float verticalVelocity;
 
+    private bool isStunned = false;
+    private float stunTimer = 0f;
+
+    [Header("Efecto de Stun")]
+    [SerializeField] private float tremoloIntensity = 0.5f;
+    [SerializeField] private float tremoloFrequency = 8f;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -20,6 +27,37 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        // Actualizar stun timer
+        if (isStunned)
+        {
+            stunTimer -= Time.deltaTime;
+            if (stunTimer <= 0)
+            {
+                isStunned = false;
+                stunTimer = 0f;
+            }
+        }
+
+        // Si está stunned, no puede moverse
+        if (isStunned)
+        {
+            // Solo aplicar gravedad
+            if (controller.isGrounded)
+            {
+                verticalVelocity = -1f;
+            }
+            else
+            {
+                verticalVelocity -= 9.81f * Time.deltaTime;
+            }
+
+            // Aplicar efecto de temblor
+            Vector3 tremolo = GetTremoloOffset();
+            Vector3 gravityOnly = Vector3.up * verticalVelocity + tremolo;
+            controller.Move(gravityOnly * Time.deltaTime);
+            return;
+        }
+
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveZ = Input.GetAxisRaw("Vertical");
 
@@ -65,5 +103,19 @@ public class PlayerMovement : MonoBehaviour
     public void ClearWind()
     {
         windStrength = 0f;
+    }
+
+    public void ApplyStun(float duration)
+    {
+        isStunned = true;
+        stunTimer = duration;
+        Debug.Log($"Player stunned for {duration} seconds");
+    }
+
+    private Vector3 GetTremoloOffset()
+    {
+        float xTremolo = Mathf.Sin(Time.time * tremoloFrequency) * tremoloIntensity;
+        float zTremolo = Mathf.Cos(Time.time * tremoloFrequency * 0.7f) * tremoloIntensity;
+        return new Vector3(xTremolo, 0, zTremolo);
     }
 }

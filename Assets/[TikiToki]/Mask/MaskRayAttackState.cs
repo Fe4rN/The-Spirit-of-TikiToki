@@ -14,6 +14,12 @@ public class MaskRayAttackState : MaskState
     [SerializeField] private float beamRadius = 1.5f;
     [SerializeField] private LayerMask hitMask;
 
+    [Header("Animación de Mandíbula")]
+    [SerializeField] private float jawOpenDistance = 0.8f;
+    [SerializeField] private float jawAnimationSpeed = 5f;
+    private Vector3 jawInitialPosition;
+    private Vector3 jawTargetPosition;
+
     protected override void StateEnter()
     {
         Debug.Log("Entering RayState");
@@ -21,10 +27,27 @@ public class MaskRayAttackState : MaskState
         LockedInCounter = 1f;
         FiringCounter = fireTime;
         currentPhase = RayAttackPhase.Charging;
+
+        // Animar mandíbula - apertura parcial durante carga
+        if (machine.JawTransform != null)
+        {
+            jawInitialPosition = machine.JawTransform.localPosition;
+            jawTargetPosition = jawInitialPosition + Vector3.back * (jawOpenDistance * 0.4f);
+        }
     }
 
     protected override void StateUpdate()
     {
+        // Animar mandíbula
+        if (machine.JawTransform != null)
+        {
+            machine.JawTransform.localPosition = Vector3.Lerp(
+                machine.JawTransform.localPosition,
+                jawTargetPosition,
+                Time.deltaTime * jawAnimationSpeed
+            );
+        }
+
         switch (currentPhase)
         {
             case RayAttackPhase.Charging:
@@ -33,14 +56,28 @@ public class MaskRayAttackState : MaskState
                 machine.LookAtPlayer();
 
                 if (ChargingCounter <= 0)
+                {
                     currentPhase = RayAttackPhase.LockedIn;
+                    // Abrir más la mandíbula cuando está bloqueado
+                    if (machine.JawTransform != null)
+                    {
+                        jawTargetPosition = jawInitialPosition + Vector3.back * (jawOpenDistance * 0.7f);
+                    }
+                }
                 break;
 
             case RayAttackPhase.LockedIn:
                 LockedInCounter -= Time.deltaTime;
 
                 if (LockedInCounter <= 0)
+                {
                     currentPhase = RayAttackPhase.Firing;
+                    // Abrir completamente la mandíbula al disparar
+                    if (machine.JawTransform != null)
+                    {
+                        jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
+                    }
+                }
                 break;
 
             case RayAttackPhase.Firing:
@@ -51,6 +88,15 @@ public class MaskRayAttackState : MaskState
                 if (FiringCounter <= 0)
                     machine.SetState(machine.idleState.Value);
                 break;
+        }
+    }
+
+    protected override void StateExit()
+    {
+        // Cerrar mandíbula
+        if (machine.JawTransform != null)
+        {
+            machine.JawTransform.localPosition = jawInitialPosition;
         }
     }
 

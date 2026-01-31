@@ -6,6 +6,9 @@ public class MaskMachine : MonoBehaviour
     public Transform PlayerTransform;
     [SerializeField] private Transform MaskTransform;
 
+    [Header("Animación")]
+    public Transform JawTransform; // Referencia a Beige.001
+
     [Header("Movimiento por defecto")]
     [SerializeField] private float smoothTime = 0.2f;
     private float velocityX;
@@ -15,6 +18,7 @@ public class MaskMachine : MonoBehaviour
     public NombreEstado laserState;
     public NombreEstado windState;
     public NombreEstado meteorState;
+    public NombreEstado screamState;
 
 
     #region Cosas de estado

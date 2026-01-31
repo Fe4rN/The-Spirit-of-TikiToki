@@ -34,7 +34,7 @@ public class MaskIdleState : MaskState
 
     private void ChooseRandomAttack()
     {
-        int choice = Random.Range(0, 3);
+        int choice = Random.Range(0, 4);
 
         nextAttack = (MaskAttacks)choice;
     }
@@ -52,10 +52,14 @@ public class MaskIdleState : MaskState
                 break;
 
             case MaskAttacks.Meteor:
-                machine.SetState(machine.windState.Value);
+                machine.SetState(machine.meteorState.Value);
+                break;
+
+            case MaskAttacks.Scream:
+                machine.SetState(machine.screamState.Value);
                 break;
         }
     }
 }
 
-public enum MaskAttacks { Laser, Wind, Meteor }
+public enum MaskAttacks { Laser, Wind, Meteor, Scream }

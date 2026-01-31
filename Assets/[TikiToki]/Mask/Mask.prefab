@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6660820977637867056}
   - component: {fileID: 2448894787941978986}
   - component: {fileID: 8611005941377651080}
+  - component: {fileID: -1571734138363501569}
   m_Layer: 0
   m_Name: Mask
   m_TagString: Untagged
@@ -50,11 +51,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MaskMachine
   PlayerTransform: {fileID: 0}
   MaskTransform: {fileID: 4661110866800639297}
+  JawTransform: {fileID: 0}
   smoothTime: 0.2
   idleState: {fileID: 11400000, guid: 71afdd2c5a334d54fb60b0230b9625a2, type: 2}
   laserState: {fileID: 11400000, guid: e5afc910086bb514682f74f3d4d8b019, type: 2}
   windState: {fileID: 11400000, guid: b972c40272fd33b468180b6e501d8474, type: 2}
-  meteorState: {fileID: 0}
+  meteorState: {fileID: 11400000, guid: a086198234e1fdc499a580144397c058, type: 2}
   OnStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -94,6 +96,8 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 64
+  jawOpenDistance: 0.8
+  jawAnimationSpeed: 5
 --- !u!114 &8611005941377651080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,6 +114,28 @@ MonoBehaviour:
   initial: 0
   windStrength: 0.7
   windDuration: 5
+  jawOpenDistance: 0.3
+  jawAnimationSpeed: 5
+  anticipationDuration: 0.5
+--- !u!114 &-1571734138363501569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118392890844229141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5223690c7cdde504084cf40b047261e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MaskMeteorAttackState
+  stateName: {fileID: 11400000, guid: a086198234e1fdc499a580144397c058, type: 2}
+  initial: 0
+  anticipationDuration: 1.5
+  attackDuration: 3
+  jawOpenDistance: 1.2
+  jawChompSpeed: 8
+  chompCount: 3
 --- !u!1001 &1807987392915495741
 PrefabInstance:
   m_ObjectHideFlags: 0
