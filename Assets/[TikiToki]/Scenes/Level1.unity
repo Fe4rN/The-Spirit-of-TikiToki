@@ -2507,40 +2507,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -1571734138363501569, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: initial
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -1571734138363501569, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: groundReference
       value: 
       objectReference: {fileID: 843562030}
-    - target: {fileID: -1571734138363501569, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: maxGroundBounds
-      value: 
-      objectReference: {fileID: 955525194}
-    - target: {fileID: -1571734138363501569, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: minGroundBounds
-      value: 
-      objectReference: {fileID: 376568547}
-    - target: {fileID: 2206195958706978006, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2448894787941978986, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: beamRadius
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2448894787941978986, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: playerMask.m_Bits
-      value: 64
-      objectReference: {fileID: 0}
     - target: {fileID: 4661110866800639297, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4661110866800639297, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4661110866800639297, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2574,21 +2550,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5839206455324467303, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: playerTransform
-      value: 
-      objectReference: {fileID: 6615604576487398363}
     - target: {fileID: 6118392890844229141, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: m_Name
       value: Mask
-      objectReference: {fileID: 0}
-    - target: {fileID: 6660820977637867056, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: initial
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8085092440732252559, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: m_PlayOnAwake
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
