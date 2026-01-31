@@ -32,6 +32,4 @@ public class BotonInteractivo : MonoBehaviour, IPointerEnterHandler, IPointerExi
             mascota.EjecutarAnimacionFinal();
         }
     }
-
-
 }

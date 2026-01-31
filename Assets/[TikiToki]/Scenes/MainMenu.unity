@@ -168,7 +168,6 @@ GameObject:
   - component: {fileID: 435886644}
   - component: {fileID: 435886647}
   - component: {fileID: 435886646}
-  - component: {fileID: 435886645}
   m_Layer: 0
   m_Name: Sphere (1)
   m_TagString: Untagged
@@ -190,28 +189,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 262082093}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &435886645
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 435886643}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 29.075, z: 0}
 --- !u!23 &435886646
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -811,6 +789,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1054026830}
   - component: {fileID: 1054026829}
+  - component: {fileID: 1054026831}
   m_Layer: 0
   m_Name: TIKI
   m_TagString: Untagged
@@ -837,6 +816,8 @@ MonoBehaviour:
   maxY: 230
   objetoEnfado: {fileID: 262082092}
   velocidadTransicion: 100
+  animacionFinal: {fileID: 7400000, guid: 715a42f32f0bb194dbc03936ba8801c6, type: 2}
+  canvasDesactivar: {fileID: 1477181004}
   estaEnfadado: 0
 --- !u!4 &1054026830
 Transform:
@@ -855,6 +836,28 @@ Transform:
   - {fileID: 262082093}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!95 &1054026831
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054026828}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2e7d45b2192a2274ab1c37003ebd3c88, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1309956691
 GameObject:
   m_ObjectHideFlags: 0
@@ -1383,7 +1386,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1671199978}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1671199976}
+        m_TargetAssemblyTypeName: BotonInteractivo, Assembly-CSharp
+        m_MethodName: ClickEnBoton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1671199978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1570,7 +1585,6 @@ GameObject:
   - component: {fileID: 1860340047}
   - component: {fileID: 1860340050}
   - component: {fileID: 1860340049}
-  - component: {fileID: 1860340048}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -1592,28 +1606,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 262082093}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1860340048
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1860340046}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 5.652, y: 18.26, z: 1.861}
 --- !u!23 &1860340049
 MeshRenderer:
   m_ObjectHideFlags: 0

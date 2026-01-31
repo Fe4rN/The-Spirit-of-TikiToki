@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; // Necesario para las Corrutinas
 
 public class MascotaMenu : MonoBehaviour
 {
@@ -15,11 +16,20 @@ public class MascotaMenu : MonoBehaviour
     public GameObject objetoEnfado;
     public float velocidadTransicion = 100f;
 
+    [Header("Cierre de Juego")]
+    [SerializeField] private AnimationClip animacionFinal;
+    [SerializeField] private GameObject canvasDesactivar;
+    private Animator _animator;
+    private bool _bloqueadoPorAnimacion = false;
+
+
     private float distance;
     public bool estaEnfadado = false;
 
     void Start()
     {
+        _animator = GetComponent<Animator>();
+
         if (Camera.main != null)
             distance = Vector3.Distance(Camera.main.transform.position, transform.position) / divisorDistancia;
 
@@ -28,24 +38,22 @@ public class MascotaMenu : MonoBehaviour
 
     void Update()
     {
+        if (_bloqueadoPorAnimacion) return;
+
         Quaternion rotacionObjetivo;
 
         if (estaEnfadado)
         {
-            // 1. El objetivo es mirar al frente (0, 190, 0)
             rotacionObjetivo = Quaternion.Euler(0, 190, 0);
         }
         else
         {
-            // 2. El objetivo es la posición del ratón con límites aplicados
             rotacionObjetivo = CalcularRotacionRaton();
         }
 
-        // 3. Aplicar la transición suave hacia el objetivo actual (sea el ratón o el frente)
         transform.localRotation = Quaternion.RotateTowards(transform.localRotation, rotacionObjetivo, velocidadTransicion * Time.deltaTime);
     }
 
-    // Esta función calcula a dónde DEBERÍA mirar, pero no aplica la rotación todavía
     Quaternion CalcularRotacionRaton()
     {
         if (Camera.main == null) return transform.localRotation;
@@ -54,11 +62,9 @@ public class MascotaMenu : MonoBehaviour
         mouse.z = distance;
         Vector3 lookPoint = Camera.main.ScreenToWorldPoint(mouse);
 
-        // Usamos un objeto temporal para calcular el LookAt sin mover el objeto real
         Quaternion lookRotation = Quaternion.LookRotation(lookPoint - transform.position);
         Vector3 currentRot = lookRotation.eulerAngles;
 
-        // Corregir y limitar X e Y
         float rotX = (currentRot.x > 180) ? currentRot.x - 360 : currentRot.x;
         float clampedX = Mathf.Clamp(rotX, minX, maxX);
         float clampedY = Mathf.Clamp(currentRot.y, minY, maxY);
@@ -72,8 +78,40 @@ public class MascotaMenu : MonoBehaviour
         if (objetoEnfado != null) objetoEnfado.SetActive(enfadado);
     }
 
+    // --- LOGICA DE CIERRE ---
+
+    // En MascotaMenu.cs
     public void EjecutarAnimacionFinal()
     {
-        Debug.Log("Acción final ejecutada");
+        if (canvasDesactivar != null)
+        {
+            canvasDesactivar.SetActive(false);
+        }
+
+        transform.localRotation = Quaternion.Euler(0, 190, 0);
+
+        if (_animator != null && animacionFinal != null)
+        {
+            _bloqueadoPorAnimacion = true;
+
+            Debug.Log("Iniciando secuencia de cierre...");
+            _animator.SetTrigger("disparoOjos");
+
+            StartCoroutine(EsperarYSalir());
+        }
+    }
+
+    private IEnumerator EsperarYSalir()
+    {
+        // Esperamos la duración exacta del clip de animación
+        yield return new WaitForSeconds(animacionFinal.length);
+
+        Debug.Log("Cerrando aplicación...");
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
     }
 }
