@@ -136,9 +136,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8083553539229771621}
-  - component: {fileID: 9177340506407554396}
   - component: {fileID: 2881153960264806038}
   - component: {fileID: 6176296399961177660}
+  - component: {fileID: 9177340506407554396}
   - component: {fileID: 4449364370850004533}
   m_Layer: 6
   m_Name: Player
@@ -165,21 +165,6 @@ Transform:
   - {fileID: 4341502354372807508}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9177340506407554396
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6130758000548300091}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81d708e6df5514646b9819aea2aab379, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Movimiento
-  playerTransform: {fileID: 8083553539229771621}
-  speed: 6
-  rotationSpeed: 720
 --- !u!143 &2881153960264806038
 CharacterController:
   m_ObjectHideFlags: 0
@@ -226,6 +211,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.27, y: 1.92, z: 1.47}
   m_Center: {x: 0, y: 0, z: -0.1}
+--- !u!114 &9177340506407554396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6130758000548300091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81d708e6df5514646b9819aea2aab379, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Movimiento
+  speed: 6
+  rotationSpeed: 720
 --- !u!114 &4449364370850004533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,13 +243,13 @@ MonoBehaviour:
   - item: {fileID: 0}
     count: 0
   activeSlotIndex: 0
+  slotBackgrounds: []
   iconSlots:
   - {fileID: 0}
   - {fileID: 0}
   stackTexts:
   - {fileID: 0}
   - {fileID: 0}
-  selectors: []
   holdPoint: {fileID: 1397507524384290631}
   interactionDistance: 2
   interactionLayer:

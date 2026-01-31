@@ -6,7 +6,7 @@ public class WinLose : MonoBehaviour
 {
     public static WinLose Instance { get; private set; }
 
-    [Header("Configuración de Partida")]
+    [Header("Configuraciï¿½n de Partida")]
     public int vidasMaximas = 5;
     public float tiempoMaximo = 120f;
 
@@ -65,7 +65,7 @@ public class WinLose : MonoBehaviour
             return;
         }
 
-        // Gestión del Cronómetro
+        // Gestiï¿½n del Cronï¿½metro
         if (tiempoRestante > 0)
         {
             tiempoRestante -= Time.deltaTime;
@@ -73,11 +73,11 @@ public class WinLose : MonoBehaviour
         }
         else
         {
-            FinalizarPartida(false, "¡Tiempo agotado!");
+            FinalizarPartida(false, "ï¿½Tiempo agotado!");
         }
     }
 
-    // --- MÉTODOS PÚBLICOS ---
+    // --- Mï¿½TODOS Pï¿½BLICOS ---
 
     public void ModificarVidas(int cantidad)
     {
@@ -93,11 +93,11 @@ public class WinLose : MonoBehaviour
         // Actualizar visual de la barra dual (0-100)
         ActualizarVisualBarraDual(valorBarra);
 
-        if (valorBarra >= 100f) FinalizarPartida(true, "¡Luz completa!");
+        if (valorBarra >= 100f) FinalizarPartida(true, "ï¿½Luz completa!");
         else if (valorBarra <= 0f) FinalizarPartida(false, "Oscuridad total.");
     }
 
-    // --- LÓGICA INTERNA ---
+    // --- Lï¿½GICA INTERNA ---
 
     private void ActualizarVisualBarraDual(float valor)
     {
