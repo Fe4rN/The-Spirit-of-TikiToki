@@ -2,31 +2,46 @@ using UnityEngine;
 
 public class Hoguera : MonoBehaviour
 {
-    public bool estaEncendida = true;
-    public GameObject efectosVisuales;
+    [Header("Estado")]
+    public bool estaEncendida = false;
+    public bool tieneMadera = false;
+    public bool tieneHojas = false;
+
+    [Header("Referencias Visuales")]
+    public GameObject efectosFuego; // El fuego (partículas/luz)
+    public GameObject modeloMadera; // Troncos visuales en la base
+    public GameObject modeloHojas;  // Hojas visuales en la base
 
     void Start()
     {
-        if (efectosVisuales != null) efectosVisuales.SetActive(estaEncendida);
+        ActualizarVisuales();
         if (Barra.Instance != null) Barra.Instance.RegistrarHoguera(this);
     }
 
-    // Este método se activa cuando cambias algo en el Inspector manualmente
-    void OnValidate()
+    public void ActualizarVisuales()
     {
-        if (Application.isPlaying && Barra.Instance != null)
-        {
-            if (efectosVisuales != null) efectosVisuales.SetActive(estaEncendida);
-            Barra.Instance.RecalcularTasaDeCambio();
-        }
+        if (efectosFuego != null) efectosFuego.SetActive(estaEncendida);
+        if (modeloMadera != null) modeloMadera.SetActive(tieneMadera);
+        if (modeloHojas != null) modeloHojas.SetActive(tieneHojas);
     }
 
-    public void AlternarEstado()
+    // Método para intentar encenderla
+    public void IntentarEncender()
     {
-        estaEncendida = !estaEncendida;
-        if (efectosVisuales != null) efectosVisuales.SetActive(estaEncendida);
+        if (estaEncendida) return;
 
-        if (Barra.Instance != null)
-            Barra.Instance.RecalcularTasaDeCambio();
+        if (tieneMadera && tieneHojas)
+        {
+            estaEncendida = true;
+            ActualizarVisuales();
+            Debug.Log("<color=orange>HOGUERA:</color> ¡Encendida!");
+
+            if (Barra.Instance != null)
+                Barra.Instance.RecalcularTasaDeCambio();
+        }
+        else
+        {
+            Debug.Log("<color=yellow>HOGUERA:</color> Faltan ingredientes. Madera: " + tieneMadera + " Hojas: " + tieneHojas);
+        }
     }
 }

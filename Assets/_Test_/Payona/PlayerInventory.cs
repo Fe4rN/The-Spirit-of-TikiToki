@@ -111,7 +111,7 @@ public class PlayerInventory : MonoBehaviour
         {
             if (Physics.Raycast(origin, dir, out hit, interactionDistance, interactionLayer))
             {
-                return hit.collider.GetComponent<WorldItem>();
+                return hit.collider.GetComponentInParent<WorldItem>();
             }
         }
         return null;
@@ -120,12 +120,64 @@ public class PlayerInventory : MonoBehaviour
     void HandleSpaceAction()
     {
         WorldItem itemInFront = GetItemInFront();
+        InventorySlot currentSlot = slots[activeSlotIndex];
 
-        // --- LÓGICA DE RECOGIDA ---
+        // --- DEBUG INICIAL: ¿Qué estamos mirando? ---
+        if (itemInFront != null)
+            Debug.Log("<color=white>RAYCAST HIT:</color> Detectado " + itemInFront.name + " con Tag: " + itemInFront.tag);
+        else
+            Debug.Log("<color=gray>RAYCAST HIT:</color> No detecto nada frente al jugador.");
+
+        // --- 1. INTERACCIÓN CON HOGUERA ---
+        if (itemInFront != null && itemInFront.CompareTag("Bonfire"))
+        {
+            Hoguera hoguera = itemInFront.GetComponentInParent<Hoguera>(); // Buscamos en el padre por si acaso
+            if (hoguera != null)
+            {
+                string itemEnMano = (currentSlot.item != null) ? currentSlot.item.itemName : "Vacio";
+                Debug.Log("<color=yellow>HOGUERA:</color> Mirando hoguera con " + itemEnMano + " en mano.");
+
+                // A. Si tienes MADERA y la hoguera la necesita: se la damos.
+                if (currentSlot.item != null && currentSlot.item.itemName == "woodPile" && !hoguera.tieneMadera)
+                {
+                    Debug.Log("<color=brown>HOGUERA:</color> Entregando madera.");
+                    hoguera.tieneMadera = true;
+                    currentSlot.count--;
+                    if (currentSlot.count <= 0) currentSlot.item = null;
+                    hoguera.ActualizarVisuales();
+                    UpdateUI();
+                    return; // Salimos para que no intente encenderla en el mismo frame
+                }
+
+                // B. Si tienes HOJAS y la hoguera las necesita: se la damos.
+                if (currentSlot.item != null && currentSlot.item.itemName == "leavesPile" && !hoguera.tieneHojas)
+                {
+                    Debug.Log("<color=green>HOGUERA:</color> Entregando hojas.");
+                    hoguera.tieneHojas = true;
+                    currentSlot.count--;
+                    if (currentSlot.count <= 0) currentSlot.item = null;
+                    hoguera.ActualizarVisuales();
+                    UpdateUI();
+                    return; // Salimos
+                }
+
+                // C. Si no estás entregando nada útil, o la hoguera ya tiene lo que ofreces, intentamos encender.
+                if (!hoguera.estaEncendida)
+                {
+                    Debug.Log("<color=orange>HOGUERA:</color> Intentando encender con lo que hay...");
+                    hoguera.IntentarEncender();
+                    return;
+                }
+
+                // Si ya está encendida, no hacemos nada más con la hoguera
+                return;
+            }
+        }
+
+        // --- 2. LÓGICA DE RECOGIDA ---
         if (itemInFront != null && itemInFront.itemData != null)
         {
             ItemData data = itemInFront.itemData;
-
             for (int i = 0; i < slots.Length; i++)
             {
                 if (slots[i].item == data && slots[i].count < data.maxStack)
@@ -135,7 +187,6 @@ public class PlayerInventory : MonoBehaviour
                     return;
                 }
             }
-
             for (int i = 0; i < slots.Length; i++)
             {
                 if (slots[i].item == null)
@@ -149,15 +200,13 @@ public class PlayerInventory : MonoBehaviour
             return;
         }
 
-        // --- LÓGICA DE TALAR ---
-        if (itemInFront != null && itemInFront.CompareTag("Tree") && slots[activeSlotIndex].item != null && slots[activeSlotIndex].item.itemName == "Axe")
+        // --- 3. LÓGICA DE TALAR ---
+        if (itemInFront != null && itemInFront.CompareTag("Tree"))
         {
-            Tree tree = itemInFront.GetComponent<Tree>();
-            if (tree != null)
+            if (currentSlot.item != null && currentSlot.item.itemName == "Axe")
             {
-                Debug.Log("<color=red>ACCION:</color> Golpeando árbol.");
-                tree.TakeHit();
-                return;
+                Tree tree = itemInFront.GetComponent<Tree>();
+                if (tree != null) { tree.TakeHit(); return; }
             }
         }
     }
