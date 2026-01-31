@@ -435,7 +435,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuOpciones
   panelOpciones: {fileID: 365366102827734987}
-  masterMixer: {fileID: 0}
+  masterMixer: {fileID: 24100000, guid: 66d3f850d0a89094aa4bc25e52891c3d, type: 2}
   sliderMaster: {fileID: 7057427470235168416}
   sliderMusica: {fileID: 8736954644580534974}
   sliderSFX: {fileID: 2292120300356964362}
