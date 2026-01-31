@@ -420,11 +420,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mask
       objectReference: {fileID: 0}
-    - target: {fileID: 8611005941377651080, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: windDuration
-      value: 7
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8639516740364750392, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -439,7 +436,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1113074947}
   - component: {fileID: 1113074946}
-  - component: {fileID: 1113074945}
   - component: {fileID: 1113074949}
   - component: {fileID: 1113074948}
   m_Layer: 0
@@ -449,14 +445,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1113074945
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1113074944}
-  m_Enabled: 1
 --- !u!20 &1113074946
 Camera:
   m_ObjectHideFlags: 0

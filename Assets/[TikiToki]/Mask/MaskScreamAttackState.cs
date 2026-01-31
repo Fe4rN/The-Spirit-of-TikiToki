@@ -22,6 +22,9 @@ public class MaskScreamAttackState : MaskState
     private Vector3 jawTargetPosition;
     private bool hasStunnedPlayer = false;
 
+
+    [SerializeField] private AudioClip audioQ;
+
     protected override void StateEnter()
     {
         Debug.Log("Entering Scream State");
@@ -40,6 +43,12 @@ public class MaskScreamAttackState : MaskState
         {
             jawInitialPosition = machine.JawTransform.localPosition;
             jawTargetPosition = jawInitialPosition + Vector3.back * (jawOpenDistance * 0.3f);
+        }
+
+
+        if (audioQ != null && machine.GetComponent<AudioSource>() != null)
+        {
+            machine.GetComponent<AudioSource>().PlayOneShot(audioQ);
         }
     }
 
