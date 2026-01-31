@@ -20,6 +20,7 @@ public class MenuNiveles : MonoBehaviour
         GenerarBotonesNiveles();
         ConfigurarBotonTutorial();
 
+        if (panelNiveles != null) panelNiveles.SetActive(false);
     }
 
     void ConfigurarBotonTutorial()

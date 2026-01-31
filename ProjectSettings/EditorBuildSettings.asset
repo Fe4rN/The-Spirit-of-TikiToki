@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/[TikiToki]/MenuInicio/Inicio.unity
     guid: 65259beb1fa233b4689c7381a7a6b23b
-  - enabled: 0
+  - enabled: 1
     path: Assets/[TikiToki]/Scenes/Tutorial.unity
     guid: 9df02988d62b5e3419405bf4727aa5b9
   - enabled: 1
