@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System;
 
 public class PlayerInventory : MonoBehaviour
 {
@@ -11,10 +10,6 @@ public class PlayerInventory : MonoBehaviour
         public ItemData item;
         public int count;
     }
-
-    public static Action<string> OnItemCollected;
-    public static Action<string> OnBonfireMaterialAdded;
-    public static Action OnItemDropped;
 
     [Header("Configuración")]
     public InventorySlot[] slots = new InventorySlot[2];
@@ -30,8 +25,9 @@ public class PlayerInventory : MonoBehaviour
     private GameObject _currentHeldObject;
 
     [Header("Interacción")]
-    public float interactionDistance = 1.5f;
+    public float interactionDistance = 1.2f;
     public LayerMask interactionLayer;
+    public float raySpread = 15f;
 
     private WorldItem _lastTargetedItem;
     private Hoguera _hogueraSiendoEncendida;
@@ -45,6 +41,14 @@ public class PlayerInventory : MonoBehaviour
 
     void Update()
     {
+        // --- VISUALIZACIÓN CONSTANTE DE RAYOS (No tocar) ---
+        Vector3 origin = transform.position + Vector3.up * -0.95f;
+        Debug.DrawRay(origin, transform.forward * interactionDistance, Color.cyan);
+        Debug.DrawRay(origin, (Quaternion.Euler(0, -raySpread, 0) * transform.forward) * interactionDistance, Color.cyan);
+        Debug.DrawRay(origin, (Quaternion.Euler(0, raySpread, 0) * transform.forward) * interactionDistance, Color.cyan);
+        Debug.DrawRay(origin, (Quaternion.Euler(0, -raySpread * 2f, 0) * transform.forward) * interactionDistance, Color.cyan);
+        Debug.DrawRay(origin, (Quaternion.Euler(0, raySpread * 2f, 0) * transform.forward) * interactionDistance, Color.cyan);
+
         ScanForHighlight();
 
         if (Input.GetKeyDown(KeyCode.Alpha1)) { activeSlotIndex = 0; UpdateUI(); }
@@ -172,40 +176,32 @@ public class PlayerInventory : MonoBehaviour
 
     WorldItem GetItemInFront()
     {
-        // 1. CREAMOS UNA "BURBUJA" DE DETECCIÓN
-        // Detectamos todo lo que esté en la capa de interacción en un radio generoso
-        Collider[] closeColliders = Physics.OverlapSphere(transform.position, interactionDistance, interactionLayer);
+        RaycastHit hit;
+        Vector3 origin = transform.position + Vector3.up * -0.95f;
+        Vector3[] directions = {
+        transform.forward,
+        Quaternion.Euler(0, -raySpread, 0) * transform.forward,
+        Quaternion.Euler(0, raySpread, 0) * transform.forward,
+        Quaternion.Euler(0, -raySpread * 2f, 0) * transform.forward,
+        Quaternion.Euler(0, raySpread * 2f, 0) * transform.forward
+    };
 
-        WorldItem bestItem = null;
-        float closestAngle = 180f; // Para buscar el que esté más centrado en nuestra vista
-
-        foreach (Collider col in closeColliders)
+        foreach (Vector3 dir in directions)
         {
-            // Buscamos el script en el objeto o sus padres
-            WorldItem item = col.GetComponentInParent<WorldItem>();
-            if (item == null) continue;
-
-            // 2. FILTRO DE ÁNGULO (Para no recoger cosas que están detrás de la espalda)
-            Vector3 directionToItem = (item.transform.position - transform.position).normalized;
-            float angle = Vector3.Angle(transform.forward, directionToItem);
-
-            // Si el objeto está frente a nosotros (menos de 70 grados)
-            if (angle < 70f)
+            // Añadimos QueryTriggerInteraction.Ignore para que no detecte triggers invisibles por error
+            if (Physics.Raycast(origin, dir, out hit, interactionDistance, interactionLayer, QueryTriggerInteraction.Ignore))
             {
-                // De todos los que hay, nos quedamos con el que miremos más directamente
-                if (angle < closestAngle)
+                // CAMBIO CLAVE: Buscamos el script en el objeto golpeado O en cualquier padre superior
+                WorldItem item = hit.collider.GetComponentInParent<WorldItem>();
+
+                if (item != null)
                 {
-                    closestAngle = angle;
-                    bestItem = item;
+                    Debug.DrawRay(origin, dir * interactionDistance, Color.red); // Rayo rojo si detecta item
+                    return item;
                 }
             }
         }
-
-        // 3. DIBUJO DE DEBUG (Para que veas en la escena qué estás detectando)
-        if (bestItem != null)
-            Debug.DrawLine(transform.position + Vector3.up, bestItem.transform.position, Color.green);
-
-        return bestItem;
+        return null;
     }
 
     void HandleHoldAction()
@@ -252,8 +248,6 @@ public class PlayerInventory : MonoBehaviour
                 if (currentSlot.item != null && currentSlot.item.itemName == "woodPile" && !hoguera.tieneMadera)
                 {
                     Debug.Log("<color=brown>HOGUERA:</color> Entregando madera.");
-                    OnBonfireMaterialAdded?.Invoke("woodPile");
-
                     hoguera.tieneMadera = true;
                     _bloquearEncendidoHastaSoltar = true;
                     currentSlot.count--;
@@ -267,8 +261,6 @@ public class PlayerInventory : MonoBehaviour
                 if (currentSlot.item != null && currentSlot.item.itemName == "leavesPile" && !hoguera.tieneHojas)
                 {
                     Debug.Log("<color=green>HOGUERA:</color> Entregando hojas.");
-                    OnBonfireMaterialAdded?.Invoke("leavesPile");
-
                     hoguera.tieneHojas = true;
                     _bloquearEncendidoHastaSoltar = true;
                     currentSlot.count--;
@@ -330,8 +322,6 @@ public class PlayerInventory : MonoBehaviour
     void FinishPickup(WorldItem item)
     {
         Debug.Log("<color=cyan>RECOGIDO:</color> " + item.itemData.itemName);
-        OnItemCollected?.Invoke(item.itemData.itemName);
-
         item.SetHighlight(false);
         Destroy(item.gameObject);
         _lastTargetedItem = null;
@@ -373,8 +363,6 @@ public class PlayerInventory : MonoBehaviour
                     rb.useGravity = true;
                 }
             }
-
-            OnItemDropped?.Invoke();
 
             // Restamos la cantidad del inventario
             currentSlot.count--;

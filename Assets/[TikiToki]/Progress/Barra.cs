@@ -6,7 +6,8 @@ public class Barra : MonoBehaviour
 {
     public static Barra Instance { get; private set; }
 
-
+    [Header("Referencias de UI")]
+    [SerializeField] private Slider barraProgreso;
 
     [Header("Ajustes de Tiempo")]
     [Range(0.1f, 5f)] public float intervaloDeTiempo = 1.0f;
@@ -31,6 +32,12 @@ public class Barra : MonoBehaviour
 
     private void Start()
     {
+        if (barraProgreso != null)
+        {
+            barraProgreso.minValue = 0;
+            barraProgreso.maxValue = 100;
+            barraProgreso.value = progresoActual;
+        }
         // Forzamos un cálculo inicial
         RecalcularTasaDeCambio();
     }
@@ -91,6 +98,9 @@ public class Barra : MonoBehaviour
 
         progresoActual += puntosAAplicar;
         progresoActual = Mathf.Clamp(progresoActual, 0, 100);
+
+        if (barraProgreso != null)
+            barraProgreso.value = progresoActual;
 
         // Avisamos al árbitro WinLose del nuevo valor de la barra
         if (WinLose.Instance != null)
