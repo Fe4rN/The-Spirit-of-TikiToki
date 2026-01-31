@@ -8,6 +8,7 @@ TagManager:
   - Bonfire
   - Fire
   - Ground
+  - Destruible
   layers:
   - Default
   - TransparentFX

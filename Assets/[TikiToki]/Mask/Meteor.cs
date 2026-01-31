@@ -6,12 +6,12 @@ public class Meteor : MonoBehaviour
     private float damageRadius;
     private bool hasImpacted = false;
     [SerializeField] private float destroyDelay = 5f;
+    [SerializeField] private float bounceForce = 5f;
     [SerializeField] private PlayerHealth playerHealth;
 
     public void Initialize(float radius)
     {
         damageRadius = radius;
-        // Mantenemos esto como respaldo si solo hay un jugador
         playerHealth = FindFirstObjectByType<PlayerHealth>();
     }
 
@@ -22,6 +22,7 @@ public class Meteor : MonoBehaviour
         // Añadimos la comprobación de "Player" para que explote si le cae encima
         if (collision.gameObject.CompareTag("Ground") ||
             collision.gameObject.name == "Suelo" ||
+            collision.gameObject.CompareTag("Tree") ||
             collision.gameObject.CompareTag("Player"))
         {
             hasImpacted = true;
@@ -36,18 +37,22 @@ public class Meteor : MonoBehaviour
             // Aplicar daño en área
             ApplyDamage();
 
-            // Desactivar física
+            // --- LÓGICA DE REBOTE ---
             Rigidbody rb = GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.isKinematic = true;
-                rb.linearVelocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
+                // Aplicamos un impulso hacia arriba para el rebote
+                rb.AddForce(Vector3.up * bounceForce, ForceMode.Impulse);
             }
 
-            // Iniciar desaparición gradual
-            StartCoroutine(ShrinkAndDestroy());
+            // Iniciamos la rutina que espera un poco antes de clavar el objeto y encogerlo
+            StartCoroutine(WaitThenShrink());
         }
+        else if (collision.gameObject.CompareTag("Destruible"))
+        { 
+            Destroy(gameObject);
+        }
+        
     }
 
     private void ApplyDamage()
@@ -71,13 +76,46 @@ public class Meteor : MonoBehaviour
                     playerHealth.TakeDamage();
                 }
             }
+            // 2. DAÑO A LOS ÁRBOLES
+            else if (hitCollider.CompareTag("Tree"))
+            {
+                // Buscamos el script en el objeto o sus padres
+                Tree tree = hitCollider.GetComponentInParent<Tree>();
+
+                // VERIFICACIÓN DE SEGURIDAD: Solo actuamos si el script existe
+                if (tree != null)
+                {
+                    for (int i = 0; i <= 4; i++)
+                    {
+                        tree.TakeHit();
+                    }
+                }
+                else
+                {
+                    // Este mensaje te dirá exactamente qué objeto tiene el tag mal puesto
+                    Debug.LogWarning($"El objeto {hitCollider.name} tiene el tag 'Tree' pero no tiene el script 'Tree'.");
+                }
+            }
         }
     }
 
-    private IEnumerator ShrinkAndDestroy()
+    private IEnumerator WaitThenShrink()
     {
-        Vector3 originalScale = transform.localScale;
+        // Esperamos un tiempo breve (0.5s) para que se vea el rebote físico
+        yield return new WaitForSeconds(2f);
+
+        // Ahora sí desactivamos la física para que se quede en el sitio
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        // Iniciar desaparición gradual
         float currentTime = 0f;
+        Vector3 originalScale = transform.localScale;
 
         while (currentTime < destroyDelay)
         {
