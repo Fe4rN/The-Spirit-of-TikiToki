@@ -119,6 +119,9 @@ public class WorldItem : MonoBehaviour
         }
 
         // Efecto visual de escala
-        transform.localScale = state ? _originalScale * 1.1f : _originalScale;
+        if (!CompareTag("Tree"))
+        {
+            transform.localScale = state ? _originalScale * 1.1f : _originalScale;
+        }
     }
 }
