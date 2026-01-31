@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class TutorialManager : MonoBehaviour
 {
@@ -173,8 +174,14 @@ public class TutorialManager : MonoBehaviour
         SetInstantText("Tutorial completado");
         StartCoroutine(FlashColor(successColor));
         Invoke("OcultarTexto", 4f);
+        Invoke("CargarSiguienteNivel", 4f);
         this.enabled = false;
     }
 
+    void CargarSiguienteNivel()
+    {
+        // Cambia "Nivel1" por el nombre exacto de tu escena en el Build Settings
+        SceneManager.LoadScene("Level1");
+    }
     void OcultarTexto() => tutorialText.gameObject.SetActive(false);
 }
