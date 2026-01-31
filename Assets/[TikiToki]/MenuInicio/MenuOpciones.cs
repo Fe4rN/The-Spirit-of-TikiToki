@@ -57,7 +57,7 @@ public class MenuOpciones : MonoBehaviour
     public void CambiarVolumenMaster(float valor)
     {
         float db = Mathf.Log10(Mathf.Max(0.0001f, valor)) * 20;
-        masterMixer.SetFloat("MasterVol", db);
+        if(masterMixer != null) masterMixer.SetFloat("MasterVol", db);
         PlayerPrefs.SetFloat("VolMaster", valor);
         Debug.Log($"<color=green>Audio:</color> Master cambiado a {valor:P0} ({db:F1} dB)");
     }
@@ -65,7 +65,7 @@ public class MenuOpciones : MonoBehaviour
     public void CambiarVolumenMusica(float valor)
     {
         float db = Mathf.Log10(Mathf.Max(0.0001f, valor)) * 20;
-        masterMixer.SetFloat("MusicVol", db);
+        if (masterMixer != null) masterMixer.SetFloat("MusicVol", db);
         PlayerPrefs.SetFloat("VolMusica", valor);
         Debug.Log($"<color=green>Audio:</color> Música cambiada a {valor:P0} ({db:F1} dB)");
     }
@@ -73,7 +73,7 @@ public class MenuOpciones : MonoBehaviour
     public void CambiarVolumenSFX(float valor)
     {
         float db = Mathf.Log10(Mathf.Max(0.0001f, valor)) * 20;
-        masterMixer.SetFloat("SFXVol", db);
+        if (masterMixer != null) masterMixer.SetFloat("SFXVol", db);
         PlayerPrefs.SetFloat("VolSFX", valor);
         Debug.Log($"<color=green>Audio:</color> SFX cambiado a {valor:P0} ({db:F1} dB)");
     }

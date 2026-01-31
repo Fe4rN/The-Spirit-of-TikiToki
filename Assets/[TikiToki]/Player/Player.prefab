@@ -140,6 +140,7 @@ GameObject:
   - component: {fileID: 6176296399961177660}
   - component: {fileID: 9177340506407554396}
   - component: {fileID: 4449364370850004533}
+  - component: {fileID: 5534364709535365762}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -225,6 +226,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Movimiento
   speed: 6
   rotationSpeed: 720
+  tremoloIntensity: 0.5
+  tremoloFrequency: 8
 --- !u!114 &4449364370850004533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,11 +254,33 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   holdPoint: {fileID: 1397507524384290631}
+  playerAnimator: {fileID: 0}
   interactionDistance: 2
   interactionLayer:
     serializedVersion: 2
     m_Bits: 8
-  raySpread: 25
+--- !u!95 &5534364709535365762
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6130758000548300091}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: efc1155c92cc1b14995b575a33564a68, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &9118186266147367867
 GameObject:
   m_ObjectHideFlags: 0
@@ -280,13 +305,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9118186266147367867}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.0024333745, y: 0.034494925, z: 0.070326, w: 0.9969245}
   m_LocalPosition: {x: 0, y: 0.019, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8083553539229771621}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -0.556, y: 3.924, z: 8.051}
 --- !u!1001 &4054366921998004133
 PrefabInstance:
   m_ObjectHideFlags: 0

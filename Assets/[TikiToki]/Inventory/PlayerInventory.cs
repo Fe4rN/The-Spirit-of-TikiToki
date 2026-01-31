@@ -29,6 +29,9 @@ public class PlayerInventory : MonoBehaviour
     public Transform holdPoint;
     private GameObject _currentHeldObject;
 
+    [Header("Animaciones")]
+    public Animator playerAnimator;
+
     [Header("Interacción")]
     public float interactionDistance = 1.5f;
     public LayerMask interactionLayer;
@@ -233,6 +236,16 @@ public class PlayerInventory : MonoBehaviour
         WorldItem itemInFront = GetItemInFront();
         InventorySlot currentSlot = slots[activeSlotIndex];
 
+        // --- PARTE 1: ACTIVAR ANIMACIÓN ---
+        if (currentSlot.item != null && currentSlot.item.itemName.ToLower() == "axe") // .ToLower() es clave
+        {
+            if (playerAnimator != null)
+            {
+                playerAnimator.SetTrigger("Chop");
+                Debug.Log("<color=magenta>ANIMACIÓN:</color> Ejecutando animación de TALA.");
+            }
+        }
+
         // --- DEBUG INICIAL: ¿Qué estamos mirando? ---
         if (itemInFront != null)
             Debug.Log("<color=white>RAYCAST HIT:</color> Detectado " + itemInFront.name + " con Tag: " + itemInFront.tag);
@@ -319,11 +332,22 @@ public class PlayerInventory : MonoBehaviour
         // --- 3. LÓGICA DE TALAR ---
         if (itemInFront != null && itemInFront.CompareTag("Tree"))
         {
-            if (currentSlot.item != null && currentSlot.item.itemName == "Axe")
+            if (currentSlot.item != null && currentSlot.item.itemName == "axe")
             {
-                Tree tree = itemInFront.GetComponent<Tree>();
-                if (tree != null) { tree.TakeHit(); return; }
+                //Tree tree = itemInFront.GetComponent<Tree>();
+                //if (tree != null) { tree.TakeHit(); return; }
+                return;
             }
+        }
+    }
+
+    public void EjecutarGolpeTala()
+    {
+        WorldItem itemInFront = GetItemInFront();
+        if (itemInFront != null && itemInFront.CompareTag("Tree"))
+        {
+            Tree tree = itemInFront.GetComponent<Tree>();
+            if (tree != null) tree.TakeHit();
         }
     }
 
@@ -356,7 +380,7 @@ public class PlayerInventory : MonoBehaviour
             // Buscamos todos los Rigidbodys en el objeto soltado (hijos incluidos)
             Rigidbody[] rbs = droppedObj.GetComponentsInChildren<Rigidbody>();
 
-            if (nameToCheck == "Axe")
+            if (nameToCheck == "axe")
             {
                 // Si es el hacha, activamos Kinematic (se queda quieta en el aire/suelo)
                 foreach (Rigidbody rb in rbs)
@@ -433,7 +457,7 @@ public class PlayerInventory : MonoBehaviour
             _currentHeldObject = Instantiate(currentItem.prefab, holdPoint.position, holdPoint.rotation, holdPoint);
 
             // --- AJUSTE DE ROTACIÓN ESPECÍFICA PARA EL HACHA ---
-            if (currentItem.itemName == "Axe")
+            if (currentItem.itemName == "axe")
             {
                 // Aplicamos la rotación local para que sea relativa a la mano
                 _currentHeldObject.transform.localEulerAngles = new Vector3(0f, 0f, -41.772f);
