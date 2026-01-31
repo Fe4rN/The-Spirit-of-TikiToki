@@ -72,10 +72,9 @@ public class Tree : MonoBehaviour
         _currentDamage += 1f;
         _lastHitTime = Time.time;
 
-        AudioSource source = GetComponent<AudioSource>();
-        if (source != null && sounTreeHit != null)
+        if (AudioManager.Instance != null && sounTreeHit != null)
         {
-            source.PlayOneShot(sounTreeHit);
+            AudioManager.Instance.Play3DSound(sounTreeHit, transform.position);
         }
 
         UpdateVisuals();
@@ -118,11 +117,9 @@ public class Tree : MonoBehaviour
 
     void Die()
     {
-        AudioSource source = GetComponent<AudioSource>();
-        if (source != null && soundTreeFall != null)
+        if (AudioManager.Instance != null && soundTreeFall != null)
         {
-            // 1. Reproducimos el sonido de caída
-            source.PlayOneShot(soundTreeFall);
+            AudioManager.Instance.Play3DSound(soundTreeFall, transform.position);
         }
 
         for (int i = 0; i < woodAmount; i++)
