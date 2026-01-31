@@ -6,14 +6,17 @@ public class MascotaMenu : MonoBehaviour
     [Header("Ajuste de Sensibilidad")]
     public float divisorDistancia = 2f;
 
-    [Header("Límites de Rotación")]
+    [Header("Lï¿½mites de Rotaciï¿½n")]
     public float minX = -50f;
     public float maxX = 50f;
     public float minY = 140f;
     public float maxY = 230f;
 
-    [Header("Estado Enfado")]
-    public GameObject objetoEnfado;
+    [Header("Eyes Material Settings")]
+    [SerializeField] private Renderer bodyRenderer; // The Renderer of your mesh
+    [SerializeField] private int eyesMaterialIndex = 5; // The index of the eyes material in the materials array
+    private Material eyesMatInstance;
+
     public float velocidadTransicion = 100f;
 
     [Header("Cierre de Juego")]
@@ -33,8 +36,19 @@ public class MascotaMenu : MonoBehaviour
         if (Camera.main != null)
             distance = Vector3.Distance(Camera.main.transform.position, transform.position) / divisorDistancia;
 
-        if (objetoEnfado != null) objetoEnfado.SetActive(false);
+        if (bodyRenderer != null)
+        {
+            // Clone the material so we donâ€™t change the shared mesh for all instances
+            Material[] mats = bodyRenderer.materials;
+            eyesMatInstance = mats[eyesMaterialIndex];
+            mats[eyesMaterialIndex] = eyesMatInstance; // assign back to array
+            bodyRenderer.materials = mats;
+
+            // Start neutral (black)
+            eyesMatInstance.SetColor("_BaseColor", Color.black);
+        }
     }
+
 
     void Update()
     {
@@ -74,9 +88,11 @@ public class MascotaMenu : MonoBehaviour
 
     public void CambiarEstadoEnfado(bool enfadado)
     {
-        estaEnfadado = enfadado;
-        if (objetoEnfado != null) objetoEnfado.SetActive(enfadado);
+        if (eyesMatInstance == null) return;
+
+        eyesMatInstance.SetColor("_BaseColor", enfadado ? Color.red : Color.black);
     }
+
 
     // --- LOGICA DE CIERRE ---
 
@@ -103,10 +119,10 @@ public class MascotaMenu : MonoBehaviour
 
     private IEnumerator EsperarYSalir()
     {
-        // Esperamos la duración exacta del clip de animación
+        // Esperamos la duraciï¿½n exacta del clip de animaciï¿½n
         yield return new WaitForSeconds(animacionFinal.length);
 
-        Debug.Log("Cerrando aplicación...");
+        Debug.Log("Cerrando aplicaciï¿½n...");
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
