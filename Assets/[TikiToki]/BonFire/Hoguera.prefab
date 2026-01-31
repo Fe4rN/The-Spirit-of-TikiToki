@@ -336,7 +336,7 @@ MonoBehaviour:
   tieneMadera: 0
   tieneHojas: 0
   progresoActual: 0
-  tiempoNecesario: 2.5
+  tiempoNecesario: 2
   velocidadDescenso: 0.5
   sistemaChispas: {fileID: 8061999663986044910}
   barraProgreso: {fileID: 8054099545539399578}
