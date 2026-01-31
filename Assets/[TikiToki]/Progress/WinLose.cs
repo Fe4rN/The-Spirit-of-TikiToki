@@ -6,7 +6,7 @@ public class WinLose : MonoBehaviour
 {
     public static WinLose Instance { get; private set; }
 
-    [Header("Configuraci�n de Partida")]
+    [Header("Configuración de Partida")]
     public int vidasMaximas = 5;
     public float tiempoMaximo = 120f;
 
@@ -18,12 +18,13 @@ public class WinLose : MonoBehaviour
     [Header("Referencias UI: Tiempo y Vidas")]
     public TextMeshProUGUI textoTiempo;
     public Slider sliderVida;
-    public GameObject panelVictoria;
-    public GameObject panelDerrota;
 
     [Header("Referencias UI: Barra Dual (Progreso)")]
     public Image barraIzquierda; // Fill Origin: Right
     public Image barraDerecha;   // Fill Origin: Left
+
+    [Header("Sistema de Navegación")]
+    public ControlPausa scriptPausa; // Arrastra el objeto con el ControlPausa aquí
 
     private void Awake()
     {
@@ -37,8 +38,11 @@ public class WinLose : MonoBehaviour
 
     private void Start()
     {
-        if (panelVictoria != null) panelVictoria.SetActive(false);
-        if (panelDerrota != null) panelDerrota.SetActive(false);
+        if (scriptPausa != null)
+        {
+            if (scriptPausa.panelVictoria != null) scriptPausa.panelVictoria.SetActive(false);
+            if (scriptPausa.panelDerrota != null) scriptPausa.panelDerrota.SetActive(false);
+        }
 
         if (sliderVida != null)
         {
@@ -46,7 +50,6 @@ public class WinLose : MonoBehaviour
             sliderVida.value = vidasActuales;
         }
 
-        // Inicializamos las barras de progreso al centro (50%)
         ActualizarVisualBarraDual(50f);
         ActualizarUI();
     }
@@ -55,7 +58,6 @@ public class WinLose : MonoBehaviour
     {
         if (juegoTerminado) return;
 
-        // Sincronizar slider de vida por si cambias el valor en el Inspector
         if (sliderVida != null && sliderVida.value != vidasActuales)
             sliderVida.value = vidasActuales;
 
@@ -65,7 +67,6 @@ public class WinLose : MonoBehaviour
             return;
         }
 
-        // Gesti�n del Cron�metro
         if (tiempoRestante > 0)
         {
             tiempoRestante -= Time.deltaTime;
@@ -73,11 +74,9 @@ public class WinLose : MonoBehaviour
         }
         else
         {
-            FinalizarPartida(false, "�Tiempo agotado!");
+            FinalizarPartida(false, "¡Tiempo agotado!");
         }
     }
-
-    // --- M�TODOS P�BLICOS ---
 
     public void ModificarVidas(int cantidad)
     {
@@ -90,19 +89,15 @@ public class WinLose : MonoBehaviour
     {
         if (juegoTerminado) return;
 
-        // Actualizar visual de la barra dual (0-100)
         ActualizarVisualBarraDual(valorBarra);
 
-        if (valorBarra >= 100f) FinalizarPartida(true, "�Luz completa!");
+        if (valorBarra >= 100f) FinalizarPartida(true, "¡Luz completa!");
         else if (valorBarra <= 0f) FinalizarPartida(false, "Oscuridad total.");
     }
-
-    // --- L�GICA INTERNA ---
 
     private void ActualizarVisualBarraDual(float valor)
     {
         if (barraIzquierda == null || barraDerecha == null) return;
-
         valor = Mathf.Clamp(valor, 0, 100);
 
         if (valor >= 50)
@@ -132,14 +127,22 @@ public class WinLose : MonoBehaviour
         if (juegoTerminado) return;
         juegoTerminado = true;
 
+        if (scriptPausa == null)
+        {
+            Debug.LogError("No hay referencia al script ControlPausa en WinLose.");
+            return;
+        }
+
         if (victoria)
         {
-            if (panelVictoria != null) panelVictoria.SetActive(true);
+            // Usamos el método de ControlPausa para registrar el panel en la pila
+            scriptPausa.ActivarPanelFin(scriptPausa.panelVictoria);
         }
         else
         {
-            if (panelDerrota != null) panelDerrota.SetActive(true);
+            scriptPausa.ActivarPanelFin(scriptPausa.panelDerrota);
         }
-        Debug.Log(mensaje);
+
+        Debug.Log("<color=white>Estado Final: </color>" + mensaje);
     }
 }
