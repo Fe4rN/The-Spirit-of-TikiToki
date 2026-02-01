@@ -1408,8 +1408,8 @@ MonoBehaviour:
   sliderMaster: {fileID: 440223575273484533}
   sliderMusica: {fileID: 2221712861094401259}
   sliderSFX: {fileID: 8657544261327375967}
-  dropdownResoluciones: {fileID: 4411372197295510787}
-  togglePantallaCompleta: {fileID: 2561851167162373248}
+  resolucionDropdown: {fileID: 4411372197295510787}
+  pantallaCompletaToggle: {fileID: 2561851167162373248}
 --- !u!1 &2429343770909951306
 GameObject:
   m_ObjectHideFlags: 0

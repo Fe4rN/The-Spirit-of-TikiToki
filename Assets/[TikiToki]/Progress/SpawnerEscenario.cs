@@ -11,11 +11,14 @@ public class SpawnerMaster : MonoBehaviour
     [Header("Límites Máximos")]
     public int maxArboles = 3;
     public int maxHojas = 4;
+    public int maxPiedras = 6; // Límite para piedras decorativas
 
     [Header("Prefabs")]
     public GameObject hogueraPrefab;
     public GameObject arbolPrefab;
     public GameObject hojasPrefab;
+    public GameObject rock1Prefab;
+    public GameObject rock2Prefab;
 
     [Header("Configuración Hogueras")]
     public int cantidadHogueras = 5;
@@ -24,6 +27,7 @@ public class SpawnerMaster : MonoBehaviour
     private List<GameObject> poolHogueras = new List<GameObject>();
     private List<GameObject> poolArboles = new List<GameObject>();
     private List<GameObject> poolHojas = new List<GameObject>();
+    private List<GameObject> poolPiedras = new List<GameObject>(); // Nuevo pool de piedras
     private List<Vector3> posicionesOcupadas = new List<Vector3>();
 
     void Awake()
@@ -31,6 +35,13 @@ public class SpawnerMaster : MonoBehaviour
         CrearPool(poolHogueras, hogueraPrefab, cantidadHogueras, PrimitiveType.Sphere, "Hoguera_");
         CrearPool(poolArboles, arbolPrefab, maxArboles, PrimitiveType.Cylinder, "Arbol_");
         CrearPool(poolHojas, hojasPrefab, maxHojas, PrimitiveType.Cube, "HojasSecas_");
+
+        // Creamos el pool de piedras alternando prefabs
+        for (int i = 0; i < maxPiedras; i++)
+        {
+            GameObject prefab = (i % 2 == 0) ? rock1Prefab : rock2Prefab;
+            poolPiedras.Add(InstanciarIndividual(prefab, PrimitiveType.Sphere, "Piedra_"));
+        }
     }
 
     void Start() { GenerarTodo(); }
@@ -41,33 +52,47 @@ public class SpawnerMaster : MonoBehaviour
         GenerarPoligonoHogueras();
         GenerarSoloArboles();
         GenerarSoloHojas();
+        GenerarSoloPiedras(); // Añadido sin quitar nada
     }
 
-    // --- LÓGICA PARA EL VIENTO (CORREGIDA) ---
+    // --- NUEVO: GENERACIÓN DE PIEDRAS ---
+    public void GenerarSoloPiedras()
+    {
+        ActualizarEstadoEscena();
+        int activos = 0;
+        for (int i = 0; i < poolPiedras.Count; i++)
+        {
+            if (poolPiedras[i] != null && poolPiedras[i].activeSelf) activos++;
+        }
 
+        for (int i = 0; i < poolPiedras.Count; i++)
+        {
+            if (activos >= maxPiedras) break;
+
+            if (poolPiedras[i] == null)
+            {
+                GameObject prefab = (Random.value > 0.5f) ? rock1Prefab : rock2Prefab;
+                poolPiedras[i] = InstanciarIndividual(prefab, PrimitiveType.Sphere, "Piedra_RE");
+            }
+
+            if (poolPiedras[i].activeSelf) continue;
+
+            if (IntentarPosicionarObjeto(poolPiedras[i], false, false)) activos++;
+        }
+    }
+
+    // --- MANTENEMOS TU LÓGICA DE VIENTO INTEGRAL ---
     public void GenerarAlgunasHojas()
     {
         ActualizarEstadoEscena();
         int cantidadATraer = Random.Range(1, 4);
         int contador = 0;
-
-        // Cambiamos foreach por for para poder manejar nulos con seguridad
         for (int i = 0; i < poolHojas.Count; i++)
         {
             if (contador >= cantidadATraer) break;
-
-            // FIX: Si el objeto fue destruido (recogido), lo re-instanciamos en el pool
-            if (poolHojas[i] == null)
-            {
-                poolHojas[i] = InstanciarIndividual(hojasPrefab, PrimitiveType.Cube, "HojasSecas_RE");
-            }
-
+            if (poolHojas[i] == null) poolHojas[i] = InstanciarIndividual(hojasPrefab, PrimitiveType.Cube, "HojasSecas_RE");
             if (poolHojas[i].activeSelf) continue;
-
-            if (IntentarPosicionarObjeto(poolHojas[i], true, false))
-            {
-                contador++;
-            }
+            if (IntentarPosicionarObjeto(poolHojas[i], true, false)) contador++;
         }
     }
 
@@ -76,32 +101,19 @@ public class SpawnerMaster : MonoBehaviour
         ActualizarEstadoEscena();
         int cantidadAAsignar = Random.Range(1, 4);
         int contador = 0;
-
         for (int i = 0; i < poolArboles.Count; i++)
         {
             if (contador >= cantidadAAsignar) break;
-
-            // FIX: Manejo de nulos si el árbol fue destruido por completo
-            if (poolArboles[i] == null)
-            {
-                poolArboles[i] = InstanciarIndividual(arbolPrefab, PrimitiveType.Cylinder, "Arbol_RE");
-            }
-
+            if (poolArboles[i] == null) poolArboles[i] = InstanciarIndividual(arbolPrefab, PrimitiveType.Cylinder, "Arbol_RE");
             if (poolArboles[i].activeSelf) continue;
-
-            if (IntentarPosicionarObjeto(poolArboles[i], false, true))
-            {
-                contador++;
-            }
+            if (IntentarPosicionarObjeto(poolArboles[i], false, true)) contador++;
         }
     }
 
-    // --- LÓGICA DE POSICIONAMIENTO ---
-
+    // --- LÓGICA DE POSICIONAMIENTO Y VALIDACIÓN ---
     private bool IntentarPosicionarObjeto(GameObject obj, bool esHoja, bool esArbol)
     {
-        if (obj == null) return false; // Failsafe extra
-
+        if (obj == null) return false;
         int intentos = 0;
         while (intentos < 100)
         {
@@ -122,10 +134,11 @@ public class SpawnerMaster : MonoBehaviour
     private void ActivarObjetoDelPool(GameObject obj, Vector3 posicion, bool esArbol)
     {
         if (obj == null) return;
-
         obj.transform.position = posicion;
-        Vector3 escalaObjetivo = obj.transform.localScale;
+        // Rotación aleatoria para que las piedras/hojas no se vean iguales
+        obj.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360f), 0);
 
+        Vector3 escalaObjetivo = obj.transform.localScale;
         if (esArbol)
         {
             Tree treeScript = obj.GetComponentInChildren<Tree>();
@@ -137,17 +150,37 @@ public class SpawnerMaster : MonoBehaviour
         StartCoroutine(EfectoCrecimiento(obj.transform, escalaObjetivo));
     }
 
+    private bool EsPosicionValida(Vector3 pos)
+    {
+        foreach (Vector3 ocupada in posicionesOcupadas)
+        {
+            // Compara contra TODO lo que ya esté en la lista posicionesOcupadas
+            if (Vector2.Distance(new Vector2(pos.x, pos.z), new Vector2(ocupada.x, ocupada.z)) < radioExclusion)
+                return false;
+        }
+        return true;
+    }
+
+    private void ActualizarEstadoEscena()
+    {
+        posicionesOcupadas.Clear();
+        posicionesOcupadas.Add(transform.position);
+        foreach (Transform hijo in transform)
+        {
+            if (hijo != null && hijo.gameObject.activeSelf)
+                posicionesOcupadas.Add(new Vector3(hijo.position.x, 0, hijo.position.z));
+        }
+    }
+
+    // --- MÉTODOS DE SOPORTE MANTENIDOS ---
     private IEnumerator EfectoCrecimiento(Transform t, Vector3 escalaFinal)
     {
         if (t == null) yield break;
-
-        float duracion = 1.5f;
-        float tiempo = 0;
+        float duracion = 1.5f; float tiempo = 0;
         t.localScale = Vector3.zero;
-
         while (tiempo < duracion)
         {
-            if (t == null) yield break; // Si se destruye durante el crecimiento
+            if (t == null) yield break;
             tiempo += Time.deltaTime;
             t.localScale = Vector3.Lerp(Vector3.zero, escalaFinal, tiempo / duracion);
             yield return null;
@@ -155,73 +188,34 @@ public class SpawnerMaster : MonoBehaviour
         if (t != null) t.localScale = escalaFinal;
     }
 
-    // --- MÉTODOS DE SOPORTE (Limpieza de Nulos) ---
-
     private GameObject InstanciarIndividual(GameObject prefab, PrimitiveType fallback, string nombre)
     {
         GameObject obj = (prefab != null) ? Instantiate(prefab, transform) : GameObject.CreatePrimitive(fallback);
-        obj.transform.parent = transform;
-        obj.name = nombre;
-        obj.SetActive(false);
+        obj.transform.parent = transform; obj.name = nombre; obj.SetActive(false);
         return obj;
     }
 
     private void CrearPool(List<GameObject> listaPool, GameObject prefab, int cantidad, PrimitiveType fallback, string nombreBase)
     {
-        for (int i = 0; i < cantidad; i++)
-        {
-            listaPool.Add(InstanciarIndividual(prefab, fallback, nombreBase + i));
-        }
+        for (int i = 0; i < cantidad; i++) { listaPool.Add(InstanciarIndividual(prefab, fallback, nombreBase + i)); }
     }
 
-    private void ActualizarEstadoEscena()
-    {
-        posicionesOcupadas.Clear();
-        posicionesOcupadas.Add(transform.position);
-
-        foreach (Transform hijo in transform)
-        {
-            // Verificamos que el hijo no sea nulo antes de preguntar si está activo
-            if (hijo != null && hijo.gameObject.activeSelf)
-                posicionesOcupadas.Add(new Vector3(hijo.position.x, 0, hijo.position.z));
-        }
-    }
-
-    private bool EsPosicionValida(Vector3 pos)
-    {
-        foreach (Vector3 ocupada in posicionesOcupadas)
-        {
-            if (Vector2.Distance(new Vector2(pos.x, pos.z), new Vector2(ocupada.x, ocupada.z)) < radioExclusion)
-                return false;
-        }
-        return true;
-    }
-
-    // Métodos para generar grupos (incluyen limpieza de nulos)
     public void GenerarSoloArboles() { ActualizarEstadoEscena(); ActivarGrupoAleatorio(poolArboles, maxArboles, true); }
     public void GenerarSoloHojas() { ActualizarEstadoEscena(); ActivarGrupoAleatorio(poolHojas, maxHojas, false); }
 
     private void ActivarGrupoAleatorio(List<GameObject> listaPool, int limite, bool esArbol)
     {
         int activos = 0;
-        for (int i = 0; i < listaPool.Count; i++)
-        {
-            if (listaPool[i] != null && listaPool[i].activeSelf) activos++;
-        }
-
+        for (int i = 0; i < listaPool.Count; i++) { if (listaPool[i] != null && listaPool[i].activeSelf) activos++; }
         for (int i = 0; i < listaPool.Count; i++)
         {
             if (activos >= limite) break;
-
-            if (listaPool[i] == null) // Limpieza si el objeto fue destruido
+            if (listaPool[i] == null)
             {
                 GameObject prefab = esArbol ? arbolPrefab : hojasPrefab;
-                PrimitiveType type = esArbol ? PrimitiveType.Cylinder : PrimitiveType.Cube;
-                listaPool[i] = InstanciarIndividual(prefab, type, "Reciclado_" + i);
+                listaPool[i] = InstanciarIndividual(prefab, esArbol ? PrimitiveType.Cylinder : PrimitiveType.Cube, "Reciclado_" + i);
             }
-
             if (listaPool[i].activeSelf) continue;
-
             if (IntentarPosicionarObjeto(listaPool[i], !esArbol, esArbol)) activos++;
         }
     }
@@ -232,12 +226,8 @@ public class SpawnerMaster : MonoBehaviour
         float anguloPaso = 360f / cantidadHogueras;
         for (int i = 0; i < poolHogueras.Count; i++)
         {
-            if (poolHogueras[i] == null)
-            {
-                poolHogueras[i] = InstanciarIndividual(hogueraPrefab, PrimitiveType.Sphere, "Hoguera_RE");
-            }
+            if (poolHogueras[i] == null) poolHogueras[i] = InstanciarIndividual(hogueraPrefab, PrimitiveType.Sphere, "Hoguera_RE");
             if (poolHogueras[i].activeSelf) continue;
-
             float angulo = (i * anguloPaso + 90f) * Mathf.Deg2Rad;
             Vector3 pos = transform.position + new Vector3(Mathf.Cos(angulo), 0, Mathf.Sin(angulo)) * radioPentagono;
             ActivarObjetoDelPool(poolHogueras[i], pos, false);
