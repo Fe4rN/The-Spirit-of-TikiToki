@@ -5016,7 +5016,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskRayAttackState
   stateName: {fileID: 11400000, guid: e5afc910086bb514682f74f3d4d8b019, type: 2}
-  initial: 1
+  initial: 0
   beamParticles: {fileID: 792432674154914021}
   beamCollider: {fileID: 2884172480346672304}
   fireTime: 3
@@ -5105,7 +5105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskScreamAttackState
   stateName: {fileID: 11400000, guid: ce4d0361c58c6a446bde743467fc05b6, type: 2}
-  initial: 0
+  initial: 1
   growlDuration: 1
   screamDuration: 2
   stunDuration: 3

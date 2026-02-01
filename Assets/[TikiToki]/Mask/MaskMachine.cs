@@ -53,6 +53,7 @@ public class MaskMachine : MonoBehaviour
     void Awake()
     {
         states = GetComponents<MaskState>();
+        PlayerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
         foreach (MaskState state in states)
         {
             if (state.Initial)

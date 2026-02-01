@@ -124,7 +124,7 @@ public class Tree : MonoBehaviour
 
         for (int i = 0; i < woodAmount; i++)
         {
-            Vector3 randomOffset = new Vector3(Random.Range(-0.6f, 0.6f), 0.2f, Random.Range(-0.6f, 0.6f));
+            Vector3 randomOffset = new Vector3(Random.Range(-0.3f, 0.3f), 0.1f, Random.Range(-0.3f, 0.1f));
             Instantiate(woodPrefab, transform.position + randomOffset, Quaternion.identity);
         }
 
@@ -132,6 +132,12 @@ public class Tree : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    public void ApplyMeteorDamage()
+    {
+        _currentDamage = tapsToCut;
+        UpdateVisuals();
+        Die();
+    }
     public void ResetearArbol()
     {
         // 1. Reseteamos el daño a 0 (equivale a vida completa)

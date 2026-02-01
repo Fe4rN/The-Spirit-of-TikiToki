@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3043281390392387828}
   - component: {fileID: 8447996209043539324}
+  - component: {fileID: 1884393427874144014}
+  - component: {fileID: 7718510662271867916}
   m_Layer: 3
   m_Name: Axe
   m_TagString: Untagged
@@ -50,6 +52,54 @@ MonoBehaviour:
   lifeTime: 30
   shrinkDuration: 1.5
   highlightColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+--- !u!65 &1884393427874144014
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6722745187792159250}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.2603078, y: 1.7112427, z: 0.8689798}
+  m_Center: {x: -0.022821903, y: 0.38542295, z: 0.102763236}
+--- !u!54 &7718510662271867916
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6722745187792159250}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &3645481543142459134
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -125,69 +175,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c54b79a650c300f4e97f58d6b9e67402, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5899426259068260006}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c54b79a650c300f4e97f58d6b9e67402, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6887261412619914433}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c54b79a650c300f4e97f58d6b9e67402, type: 3}
 --- !u!4 &3827465239935492373 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c54b79a650c300f4e97f58d6b9e67402, type: 3}
   m_PrefabInstance: {fileID: 3645481543142459134}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &4491834818496232367 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c54b79a650c300f4e97f58d6b9e67402, type: 3}
-  m_PrefabInstance: {fileID: 3645481543142459134}
-  m_PrefabAsset: {fileID: 0}
---- !u!54 &5899426259068260006
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4491834818496232367}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
---- !u!65 &6887261412619914433
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4491834818496232367}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.3270371, y: 3.4708433, z: 1.5967236}
-  m_Center: {x: 0.01054275, y: -0.49437737, z: 0.054702997}
