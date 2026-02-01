@@ -30,7 +30,7 @@ public class MenuOpciones : MonoBehaviour
     void CargarPreferencias()
     {
         // Cargar Volumenes
-        float vMaster = PlayerPrefs.GetFloat("Master", 0.75f);
+        float vMaster = PlayerPrefs.GetFloat("VolMaster", 0.75f);
         float vMusica = PlayerPrefs.GetFloat("VolMusica", 0.75f);
         float vSFX = PlayerPrefs.GetFloat("VolSFX", 0.75f);
 
@@ -89,8 +89,8 @@ public class MenuOpciones : MonoBehaviour
             string opcion = resoluciones[i].width + " x " + resoluciones[i].height + " @ " + resoluciones[i].refreshRateRatio.value.ToString("F0") + "Hz";
             opciones.Add(opcion);
 
-            if (resoluciones[i].width == Screen.currentResolution.width &&
-                resoluciones[i].height == Screen.currentResolution.height)
+            if (resoluciones[i].width == Screen.width &&
+                resoluciones[i].height == Screen.height)
             {
                 indiceResolucionActual = i;
             }
