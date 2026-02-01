@@ -1,4 +1,4 @@
-using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MaskIdleState : MaskState
@@ -10,6 +10,8 @@ public class MaskIdleState : MaskState
     [Header("Cooldown de Ataque")]
     public float minAttackCooldown;
     public float maxAttackCooldown;
+    List<MaskAttacks> attackPool = new List<MaskAttacks>();
+    MaskAttacks lastAttack;
 
     protected override void StateEnter()
     {
@@ -34,9 +36,12 @@ public class MaskIdleState : MaskState
 
     private void ChooseRandomAttack()
     {
-        int choice = Random.Range(0, 4);
+        if (attackPool.Count == 0)
+            RefillAttackPool();
 
-        nextAttack = (MaskAttacks)choice;
+        nextAttack = attackPool[0];
+        attackPool.RemoveAt(0);
+        lastAttack = nextAttack;
     }
 
     private void SwitchToAttackState()
@@ -58,6 +63,42 @@ public class MaskIdleState : MaskState
             case MaskAttacks.Scream:
                 machine.SetState(machine.screamState.Value);
                 break;
+        }
+    }
+
+    private void RefillAttackPool()
+    {
+        attackPool.Clear();
+
+        foreach (MaskAttacks attack in System.Enum.GetValues(typeof(MaskAttacks)))
+            attackPool.Add(attack);
+
+
+        attackPool.Add(MaskAttacks.Scream);
+        attackPool.Add(MaskAttacks.Wind);
+        
+        ShuffleAttackPool();
+
+        PreventImmediateRepeat();
+    }
+
+    private void ShuffleAttackPool()
+    {
+        for (int i = 0; i < attackPool.Count; i++)
+        {
+            int rand = Random.Range(i, attackPool.Count);
+            (attackPool[i], attackPool[rand]) = (attackPool[rand], attackPool[i]);
+        }
+    }
+
+    private void PreventImmediateRepeat()
+    {
+        if (attackPool.Count <= 1) return;
+
+        if (attackPool[0] == lastAttack)
+        {
+            int swapIndex = Random.Range(1, attackPool.Count);
+            (attackPool[0], attackPool[swapIndex]) = (attackPool[swapIndex], attackPool[0]);
         }
     }
 }
