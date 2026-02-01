@@ -88,6 +88,7 @@ public class MascotaMenu : MonoBehaviour
 
     public void CambiarEstadoEnfado(bool enfadado)
     {
+        estaEnfadado = enfadado;
         if (eyesMatInstance == null) return;
 
         eyesMatInstance.SetColor("_BaseColor", enfadado ? Color.red : Color.black);
