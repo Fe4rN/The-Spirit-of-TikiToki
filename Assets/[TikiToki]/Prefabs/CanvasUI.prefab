@@ -2697,6 +2697,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8333880885289406855}
     m_Modifications:
+    - target: {fileID: 508699658050950677, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
+      propertyPath: m_Color.b
+      value: 0.5169811
+      objectReference: {fileID: 0}
+    - target: {fileID: 508699658050950677, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
+      propertyPath: m_Color.g
+      value: 0.5169811
+      objectReference: {fileID: 0}
+    - target: {fileID: 508699658050950677, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
+      propertyPath: m_Color.r
+      value: 0.5169811
+      objectReference: {fileID: 0}
     - target: {fileID: 936170614827497132, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
       propertyPath: m_Name
       value: HealthBar
