@@ -4868,6 +4868,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5494413062005625902, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
+      propertyPath: slider
+      value: 
+      objectReference: {fileID: 7998468106243641551}
     - target: {fileID: 7385153534339405823, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -4879,29 +4883,19 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 936170614827497132, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8639199845412050045}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
---- !u!1 &4687689398198403207 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 936170614827497132, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
+--- !u!114 &7998468106243641551 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2518553156195526372, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
   m_PrefabInstance: {fileID: 5617104314515895851}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8639199845412050045
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4687689398198403207}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf2f3eeee82a4ed4da290c749a60254a, type: 3}
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
-  slider: {fileID: 0}
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!224 &8883975841016717984 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3943409895918572683, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
