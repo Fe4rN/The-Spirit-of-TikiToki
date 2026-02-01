@@ -25,12 +25,13 @@ public class MaskRayAttackState : MaskState
     private Vector3 jawTargetPosition;
 
     private bool _isActuallyFiring = false;
-    [SerializeField] private AudioClip audioQ;
+    [Header("Audio")]
+    [SerializeField] private AudioClip chargeSound; // Sonido mientras carga
+    [SerializeField] private AudioClip beamSound;   // Sonido al disparar el láser
     private AudioSource audioSource;
 
     protected override void StateEnter()
     {
-        audioSource = machine.GetComponent<AudioSource>();
 
         elapsedTime = 0f; // Reset del cronómetro
         FiringCounter = fireTime;
@@ -40,9 +41,9 @@ public class MaskRayAttackState : MaskState
         ToggleBeam(false);
 
         // 1. EL SONIDO Y LA BOCA EMPIEZAN JUNTOS
-        if (audioQ != null && audioSource != null)
+        if (chargeSound != null && AudioManager.Instance != null)
         {
-            audioSource.PlayOneShot(audioQ);
+            AudioManager.Instance.Play3DSound(chargeSound, machine.transform.position);
         }
 
         if (machine.JawTransform != null)
@@ -111,6 +112,11 @@ public class MaskRayAttackState : MaskState
             beamCollider.size = new Vector3(beamRadius * 2, beamRadius * 2, rayRange);
             beamCollider.center = new Vector3(0, 0, rayRange / 2f);
             beamCollider.enabled = true;
+        }
+
+        if (beamSound != null && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.Play3DSound(beamSound, machine.transform.position);
         }
 
         if (beamParticles != null)
