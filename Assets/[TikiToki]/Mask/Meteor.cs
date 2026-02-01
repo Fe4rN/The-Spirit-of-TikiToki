@@ -13,9 +13,10 @@ public class Meteor : MonoBehaviour
     [SerializeField] private AudioClip[] impactSounds;
     private AudioSource _audioSource;
 
-    public void Initialize(float radius)
+    public void Initialize(float radius, AudioClip[] sounds)
     {
         damageRadius = radius;
+        impactSounds = sounds;
         playerHealth = FindFirstObjectByType<PlayerHealth>();
         _audioSource = GetComponent<AudioSource>();
     }

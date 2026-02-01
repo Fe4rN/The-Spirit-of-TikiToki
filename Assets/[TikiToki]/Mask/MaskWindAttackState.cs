@@ -31,8 +31,8 @@ public class MaskWindAttackState : MaskState
     private WindPhase currentPhase;
     private float anticipationCounter;
 
-
-    [SerializeField] private AudioClip audioQ;
+    [Header("Audio")]
+    [SerializeField] private AudioClip windSwooshSound; // El sonido de la ráfaga de viento
 
     protected override void StateEnter()
     {
@@ -89,9 +89,9 @@ public class MaskWindAttackState : MaskState
                     // ACTIVAR VISUALES
                     ActivateWindVisuals();
 
-                    if (audioQ != null && machine.GetComponent<AudioSource>() != null)
+                    if (windSwooshSound != null && AudioManager.Instance != null)
                     {
-                        machine.GetComponent<AudioSource>().PlayOneShot(audioQ);
+                        AudioManager.Instance.Play3DSound(windSwooshSound, machine.transform.position);
                     }
 
                     if (machine.JawTransform != null)

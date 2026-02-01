@@ -23,7 +23,9 @@ public class MaskScreamAttackState : MaskState
     private bool hasStunnedPlayer = false;
 
 
-    [SerializeField] private AudioClip audioQ;
+    [Header("Audio")]
+    [SerializeField] private AudioClip growlSound; // Antes audioQ (Gruñido inicial)
+    [SerializeField] private AudioClip screamSound;
 
     protected override void StateEnter()
     {
@@ -45,10 +47,9 @@ public class MaskScreamAttackState : MaskState
             jawTargetPosition = jawInitialPosition + Vector3.back * (jawOpenDistance * 0.3f);
         }
 
-
-        if (audioQ != null && machine.GetComponent<AudioSource>() != null)
+        if (growlSound != null && AudioManager.Instance != null)
         {
-            machine.GetComponent<AudioSource>().PlayOneShot(audioQ);
+            AudioManager.Instance.Play3DSound(growlSound, machine.transform.position);
         }
     }
 
@@ -81,6 +82,11 @@ public class MaskScreamAttackState : MaskState
                     if (machine.JawTransform != null)
                     {
                         jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
+                    }
+
+                    if (screamSound != null && AudioManager.Instance != null)
+                    {
+                        AudioManager.Instance.Play3DSound(screamSound, machine.transform.position);
                     }
 
                     // --- ACTIVAR EFECTO DE GRITO ---

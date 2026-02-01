@@ -30,7 +30,9 @@ public class MaskMeteorAttackState : MaskState
     [SerializeField] private float warningDuration = 2f;
     [SerializeField] private Color warningColor = new Color(1f, 0.2f, 0f, 0.5f);
 
-    [SerializeField] private AudioClip audioQ;
+    [Header("Sonidos")]
+    [SerializeField] private AudioClip maskMeteorSound; // Sonido de la máscara al invocar
+    [SerializeField] private AudioClip[] meteorImpactSounds; // Sonidos para los meteoritos
 
     private List<GameObject> activeWarnings = new List<GameObject>();
     private bool meteorsSpawned = false;
@@ -51,9 +53,9 @@ public class MaskMeteorAttackState : MaskState
             jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
         }
 
-        if (audioQ != null && machine.GetComponent<AudioSource>() != null)
+        if (maskMeteorSound != null && AudioManager.Instance != null)
         {
-            machine.GetComponent<AudioSource>().PlayOneShot(audioQ);
+            AudioManager.Instance.Play3DSound(maskMeteorSound, machine.transform.position);
         }
     }
 
@@ -267,7 +269,7 @@ public class MaskMeteorAttackState : MaskState
         {
             meteorScript = meteor.AddComponent<Meteor>();
         }
-        meteorScript.Initialize(damageRadius);
+        meteorScript.Initialize(damageRadius, meteorImpactSounds);
     }
 
     private void CleanupWarnings()
