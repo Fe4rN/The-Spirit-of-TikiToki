@@ -43,6 +43,10 @@ public class PlayerInventory : MonoBehaviour
     private Color frameColor = new Color(0.494f, 0.494f, 0.494f, 1f);
     private Color selectedColor = new Color(1f, 0.92f, 0.016f, 1f);
 
+    [Header("Sonidos")]
+    [SerializeField] private AudioClip pickupSound;
+    [SerializeField] private AudioClip dropSound;
+
     void Start() { UpdateUI(); }
 
     void Update()
@@ -248,6 +252,11 @@ public class PlayerInventory : MonoBehaviour
 
     void FinishPickup(WorldItem item)
     {
+        if (pickupSound != null && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.Play3DSound(pickupSound, transform.position);
+        }
+
         OnItemCollected?.Invoke(item.itemData.itemName);
         item.SetHighlight(false);
         Destroy(item.gameObject);
@@ -274,6 +283,10 @@ public class PlayerInventory : MonoBehaviour
         InventorySlot currentSlot = slots[activeSlotIndex];
         if (currentSlot.item != null)
         {
+            if (dropSound != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.Play3DSound(dropSound, transform.position);
+            }
             Vector3 spawnPos = transform.position + (transform.forward * 1.2f);
             spawnPos.y = 1.1f;
             GameObject droppedObj = Instantiate(currentSlot.item.prefab, spawnPos, Quaternion.identity);
