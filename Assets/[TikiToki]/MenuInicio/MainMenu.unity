@@ -780,6 +780,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6544484807438207830, guid: ebf9dde4116e9034cb571a01f2201e34, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6592639171165274848, guid: ebf9dde4116e9034cb571a01f2201e34, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2606,8 +2610,8 @@ MonoBehaviour:
   sliderMaster: {fileID: 1302954054}
   sliderMusica: {fileID: 470637979}
   sliderSFX: {fileID: 1068655247}
-  dropdownResoluciones: {fileID: 29784726}
-  togglePantallaCompleta: {fileID: 321429049}
+  resolucionDropdown: {fileID: 29784726}
+  pantallaCompletaToggle: {fileID: 321429049}
 --- !u!1 &1671199974
 GameObject:
   m_ObjectHideFlags: 0
