@@ -3778,6 +3778,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7611334596903191813, guid: a0c01c7e8a2b5be49a323c4c4ac4c761, type: 3}
   m_PrefabInstance: {fileID: 6015936560395606049}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6015936560395606063 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 122693457777271301, guid: a0c01c7e8a2b5be49a323c4c4ac4c761, type: 3}
+  m_PrefabInstance: {fileID: 6015936560395606049}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf2f3eeee82a4ed4da290c749a60254a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
 --- !u!1001 &6615604576487398362
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3789,7 +3800,7 @@ PrefabInstance:
     - target: {fileID: 585379937921189767, guid: b490757dd0e224547be0458895558fc5, type: 3}
       propertyPath: healthBar
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 6015936560395606063}
     - target: {fileID: 4449364370850004533, guid: b490757dd0e224547be0458895558fc5, type: 3}
       propertyPath: 'iconSlots.Array.data[0]'
       value: 
@@ -3806,10 +3817,6 @@ PrefabInstance:
       propertyPath: 'stackTexts.Array.data[1]'
       value: 
       objectReference: {fileID: 1276210750}
-    - target: {fileID: 4449364370850004533, guid: b490757dd0e224547be0458895558fc5, type: 3}
-      propertyPath: slotBackgrounds.Array.size
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 4449364370850004533, guid: b490757dd0e224547be0458895558fc5, type: 3}
       propertyPath: 'slotBackgrounds.Array.data[0]'
       value: 
