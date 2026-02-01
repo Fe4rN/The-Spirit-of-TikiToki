@@ -17,18 +17,29 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage()
     {
-        if (isImmune) return;
-        if (remainingHits-- > 0)
+        // 1. Si es inmune, salimos inmediatamente
+        if (isImmune || remainingHits <= 0) return;
+
+        // 2. Restamos UNA sola vez
+        remainingHits--;
+        Debug.Log("Restando una hostia. Vidas restantes: " + remainingHits);
+
+        // 3. Actualizamos UI con seguridad (null check)
+        if (healthBar != null)
         {
-            remainingHits--;
-            Debug.Log("Restando una hostia");
             healthBar.updateSlider(remainingHits);
-            StartCoroutine(FlashCharacter());
-            StartCoroutine(ActivateImmunity());
+        }
+
+        // 4. Comprobamos si ha muerto
+        if (remainingHits <= 0)
+        {
+            Die();
         }
         else
         {
-            Die();
+            // 5. Activamos efectos e inmunidad SOLO si sigue vivo
+            StartCoroutine(FlashCharacter());
+            StartCoroutine(ActivateImmunity());
         }
     }
 
