@@ -24,6 +24,9 @@ public class SpawnerMaster : MonoBehaviour
     public int cantidadHogueras = 5;
     public float radioPentagono = 4f;
 
+    [Header("Ajustes de Altura")]
+    public float alturaHojas = 0.36f;
+
     private List<GameObject> poolHogueras = new List<GameObject>();
     private List<GameObject> poolArboles = new List<GameObject>();
     private List<GameObject> poolHojas = new List<GameObject>();
@@ -120,7 +123,9 @@ public class SpawnerMaster : MonoBehaviour
             intentos++;
             float rx = Random.Range(-areaSize.x / 2f, areaSize.x / 2f);
             float rz = Random.Range(-areaSize.y / 2f, areaSize.y / 2f);
-            Vector3 candidata = transform.position + new Vector3(rx, 0, rz);
+
+            float yPos = esHoja ? alturaHojas : 0f;
+            Vector3 candidata = transform.position + new Vector3(rx, yPos, rz);
 
             if (EsPosicionValida(candidata))
             {
@@ -136,7 +141,7 @@ public class SpawnerMaster : MonoBehaviour
         if (obj == null) return;
         obj.transform.position = posicion;
         // Rotación aleatoria para que las piedras/hojas no se vean iguales
-        obj.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360f), 0);
+        obj.transform.rotation = Quaternion.Euler(0, 0, 0);
 
         Vector3 escalaObjetivo = obj.transform.localScale;
         if (esArbol)
