@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class Meteor : MonoBehaviour
 {
@@ -67,7 +68,7 @@ public class Meteor : MonoBehaviour
             // Iniciamos la rutina que espera un poco antes de clavar el objeto y encogerlo
             StartCoroutine(WaitThenShrink());
         }
-        else if (collision.gameObject.CompareTag("Destruible"))
+        else if (collision.gameObject.CompareTag("Destruible") || collision.gameObject.CompareTag("InvisibleWall"))
         { 
             Destroy(gameObject);
         }
@@ -76,6 +77,8 @@ public class Meteor : MonoBehaviour
 
     private void ApplyDamage()
     {
+        HashSet<Tree> treesProcessed = new HashSet<Tree>();
+        // 1. DAÑO AL PLAYER
         // OverlapSphere detectará el BoxCollider del player sin problemas
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, damageRadius);
         foreach (Collider hitCollider in hitColliders)
@@ -98,21 +101,14 @@ public class Meteor : MonoBehaviour
             // 2. DAÑO A LOS ÁRBOLES
             else if (hitCollider.CompareTag("Tree"))
             {
-                // Buscamos el script en el objeto o sus padres
                 Tree tree = hitCollider.GetComponentInParent<Tree>();
 
-                // VERIFICACIÓN DE SEGURIDAD: Solo actuamos si el script existe
-                if (tree != null)
+                if (tree != null && !treesProcessed.Contains(tree))
                 {
-                    for (int i = 0; i <= 4; i++)
-                    {
-                        tree.TakeHit();
-                    }
-                }
-                else
-                {
-                    // Este mensaje te dirá exactamente qué objeto tiene el tag mal puesto
-                    Debug.LogWarning($"El objeto {hitCollider.name} tiene el tag 'Tree' pero no tiene el script 'Tree'.");
+                    treesProcessed.Add(tree); // Marcamos que este árbol ya recibió el impacto
+
+                    // USAMOS EL NUEVO MÉTODO SIN TOCAR EL ANTERIOR
+                    tree.ApplyMeteorDamage();
                 }
             }
         }
