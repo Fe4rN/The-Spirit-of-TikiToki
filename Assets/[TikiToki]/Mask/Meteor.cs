@@ -30,6 +30,7 @@ public class Meteor : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground") ||
             collision.gameObject.name == "Suelo" ||
             collision.gameObject.CompareTag("Tree") ||
+            collision.gameObject.CompareTag("Untagged") ||
             collision.gameObject.CompareTag("Player"))
         {
             hasImpacted = true;

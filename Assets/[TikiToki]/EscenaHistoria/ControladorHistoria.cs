@@ -29,7 +29,6 @@ public class ControladorHistoria : MonoBehaviour
 
     void Update()
     {
-        // Detecta clic izquierdo o barra espaciadora
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
         {
             GestionarClick();
@@ -38,7 +37,6 @@ public class ControladorHistoria : MonoBehaviour
 
     void GestionarClick()
     {
-        // Si está escribiendo, saltamos la animación y mostramos todo el texto de golpe
         if (_estaEscribiendo)
         {
             CompletarTextoInmediatamente();
@@ -67,8 +65,21 @@ public class ControladorHistoria : MonoBehaviour
     {
         PasoHistoria paso = historia.pasos[_indiceActual];
 
-        // Cambiamos la imagen inmediatamente
-        if (displayImagen != null) displayImagen.sprite = paso.imagenComic;
+        // --- LÓGICA DE ACTIVACIÓN DE IMAGEN ---
+        if (displayImagen != null)
+        {
+            if (paso.imagenComic != null)
+            {
+                // Si hay sprite, activamos el objeto y lo asignamos
+                displayImagen.gameObject.SetActive(true);
+                displayImagen.sprite = paso.imagenComic;
+            }
+            else
+            {
+                // Si no hay sprite, desactivamos el objeto para que no estorbe
+                displayImagen.gameObject.SetActive(false);
+            }
+        }
 
         // Iniciamos el efecto de máquina de escribir
         if (_typeRoutine != null) StopCoroutine(_typeRoutine);

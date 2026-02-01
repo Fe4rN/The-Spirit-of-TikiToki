@@ -25,13 +25,13 @@ MonoBehaviour:
   - imagenComic: {fileID: 0}
     textoRelato: "Al tocar la madera fr\xEDa, la m\xE1scara cobra vida. Unos ojos
       de fuego se clavan en los tuyos mientras una voz ancestral retumba en las paredes."
-  - imagenComic: {fileID: 0}
+  - imagenComic: {fileID: 21300000, guid: 738747330a76d6c4292a19fbb6ca6912, type: 3}
     textoRelato: "\"Soy Tikitoki. Ayer devor\xE9 el alma de tu abuelo... hoy, reclamar\xE9
       la tuya.\"\nLas sombras de la habitaci\xF3n empiezan a engullirte."
-  - imagenComic: {fileID: 0}
+  - imagenComic: {fileID: 21300000, guid: 5d832682fd4a6734fae24b89c3b7f7d0, type: 3}
     textoRelato: "Despiertas en una orilla extra\xF1a, bajo un cielo de sangre. Cinco
       hogueras apagadas y un hacha oxidada son tu \xFAnica esperanza."
-  - imagenComic: {fileID: 0}
+  - imagenComic: {fileID: 21300000, guid: 5d832682fd4a6734fae24b89c3b7f7d0, type: 3}
     textoRelato: "Mant\xE9n el fuego encendido. Si las llamas se apagan, Tikitoki
       se quedara tu alma."
   nombreEscenaSiguiente: Tutorial
