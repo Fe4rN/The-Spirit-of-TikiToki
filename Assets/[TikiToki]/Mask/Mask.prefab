@@ -5000,7 +5000,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskIdleState
   stateName: {fileID: 11400000, guid: 71afdd2c5a334d54fb60b0230b9625a2, type: 2}
-  initial: 1
+  initial: 0
   minAttackCooldown: 3
   maxAttackCooldown: 7
 --- !u!114 &2448894787941978986
@@ -5016,7 +5016,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskRayAttackState
   stateName: {fileID: 11400000, guid: e5afc910086bb514682f74f3d4d8b019, type: 2}
-  initial: 0
+  initial: 1
   beamParticles: {fileID: 792432674154914021}
   beamCollider: {fileID: 2884172480346672304}
   fireTime: 3
@@ -5028,8 +5028,7 @@ MonoBehaviour:
   timeToShoot: 1.3
   jawOpenDistance: 0.8
   jawAnimationSpeed: 2
-  chargeSound: {fileID: 8300000, guid: 85359064c97e1034ba94226ef6f6a177, type: 3}
-  beamSound: {fileID: 8300000, guid: 85359064c97e1034ba94226ef6f6a177, type: 3}
+  audioQ: {fileID: 8300000, guid: 85359064c97e1034ba94226ef6f6a177, type: 3}
 --- !u!114 &8611005941377651080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5083,6 +5082,9 @@ MonoBehaviour:
   damageRadius: 1
   warningDuration: 2
   warningColor: {r: 1, g: 0.2, b: 0, a: 0.5}
+  warningBlinkSpeed: 6
+  warningEmissionColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+  warningEmissionIntensity: 1.5
   maskMeteorSound: {fileID: 8300000, guid: fbd77387b1894494f80740188323ccb2, type: 3}
   meteorImpactSounds:
   - {fileID: 8300000, guid: ca6221d770c467a4c9901545a336e22d, type: 3}
@@ -5108,6 +5110,8 @@ MonoBehaviour:
   screamDuration: 2
   stunDuration: 3
   screamParticles: {fileID: 7809203326452144309}
+  mainCamera: {fileID: 0}
+  shakeIntensity: 0.5
   jawOpenDistance: 1.35
   jawAnimationSpeed: 6
   growlSound: {fileID: 8300000, guid: 16a2c85cf7b0b3c41a06ccc032266366, type: 3}
