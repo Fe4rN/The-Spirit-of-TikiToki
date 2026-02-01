@@ -1,19 +1,24 @@
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    [Header("Configuración")]
+    [Header("Configuración de Mezclador")]
     [SerializeField] private AudioMixerGroup sfxGroup;
     [SerializeField] private AudioMixerGroup musicGroup;
+
+    [Header("Canciones (Arrastra aquí tus clips)")]
+    [SerializeField] private AudioClip musicaMenu;
+    [SerializeField] private AudioClip musicaNivel1;
 
     private AudioSource _musicSource;
 
     void Awake()
     {
-        // Lógica de Singleton: Si ya existe uno, se destruye. Si no, persiste.
+        // Singleton: Solo uno puede sobrevivir
         if (Instance == null)
         {
             Instance = this;
@@ -23,40 +28,60 @@ public class AudioManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
+    }
+
+    void OnEnable()
+    {
+        // Suscribirse al evento de carga de escena
+        SceneManager.sceneLoaded += AlCargarEscena;
+    }
+
+    void OnDisable()
+    {
+        // Desuscribirse para evitar errores de memoria
+        SceneManager.sceneLoaded -= AlCargarEscena;
     }
 
     private void ConfigurarFuentesIniciales()
     {
-        // Creamos un AudioSource dedicado solo para la música
         _musicSource = gameObject.AddComponent<AudioSource>();
         _musicSource.loop = true;
         _musicSource.outputAudioMixerGroup = musicGroup;
         _musicSource.playOnAwake = false;
     }
 
-    // --- MÉTODOS PÚBLICOS PARA LLAMAR DESDE CUALQUIER LUGAR ---
+    // Este método se ejecuta AUTOMÁTICAMENTE cada vez que cambias de escena
+    private void AlCargarEscena(Scene escena, LoadSceneMode modo)
+    {
+        if (escena.name == "MainMenu")
+        {
+            PlayMusic(musicaMenu, 1f);
+        }
+        else if (escena.name == "Level1")
+        {
+            PlayMusic(musicaNivel1, 0.7f);
+        }
+    }
 
-    // Reproducir música (cambia la canción actual)
     public void PlayMusic(AudioClip clip, float volume = 1f)
     {
-        if (_musicSource.clip == clip) return; // Ya está sonando
+        if (clip == null) return;
+        if (_musicSource.clip == clip) return; // Si ya está sonando, no la reinicies
 
         _musicSource.clip = clip;
         _musicSource.volume = volume;
         _musicSource.Play();
     }
 
-    // Reproducir un efecto de sonido 2D (interfaz, sonidos globales)
-    public void PlaySFX(AudioClip clip, float volume = 1f, float pitch = 1f)
+    public void PlaySFX(AudioClip clip, float volume = 1f)
     {
         if (clip == null) return;
-
-        // Creamos un AudioSource temporal para efectos 2D o usamos PlayOneShot
         _musicSource.PlayOneShot(clip, volume);
     }
 
-    // Reproducir un sonido 3D en una posición específica
+    // Sonido 3D corregido para usar el Mixer de efectos
     public void Play3DSound(AudioClip clip, Vector3 position, float spatialBlend = 1.0f)
     {
         if (clip == null) return;
@@ -66,8 +91,8 @@ public class AudioManager : MonoBehaviour
 
         AudioSource source = tempGO.AddComponent<AudioSource>();
         source.clip = clip;
-        source.outputAudioMixerGroup = sfxGroup;
-        source.spatialBlend = spatialBlend; // 1.0 es 3D total
+        source.outputAudioMixerGroup = sfxGroup; // Usamos el grupo de efectos
+        source.spatialBlend = spatialBlend;
         source.Play();
 
         Destroy(tempGO, clip.length);

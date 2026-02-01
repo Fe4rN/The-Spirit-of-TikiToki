@@ -105,13 +105,14 @@ public class MenuOpciones : MonoBehaviour
     }
 
     // --- AUDIO ---
-    public void CambiarVolumenMaster(float v) => AplicarVolumen("MasterVol", "VolMaster", v);
-    public void CambiarVolumenMusica(float v) => AplicarVolumen("MusicVol", "VolMusica", v);
-    public void CambiarVolumenSFX(float v) => AplicarVolumen("SFXVol", "VolSFX", v);
+    public void CambiarVolumenMaster(float v) => AplicarVolumen("Master", "Master", v);
+    public void CambiarVolumenMusica(float v) => AplicarVolumen("MusicVol", "Musica", v);
+    public void CambiarVolumenSFX(float v) => AplicarVolumen("SFXVol", "SFX", v);
 
     private void AplicarVolumen(string parameter, string prefKey, float valor)
     {
         float db = Mathf.Log10(Mathf.Max(0.0001f, valor)) * 20;
+
         if (masterMixer != null) masterMixer.SetFloat(parameter, db);
         PlayerPrefs.SetFloat(prefKey, valor);
     }
@@ -126,14 +127,23 @@ public class MenuOpciones : MonoBehaviour
         pantallaCompletaToggle.onValueChanged.AddListener(CambiarPantallaCompleta);
 
         // Audio Sliders
-        sliderMaster.value = PlayerPrefs.GetFloat("VolMaster", 0.75f);
-        sliderMusica.value = PlayerPrefs.GetFloat("VolMusica", 0.75f);
-        sliderSFX.value = PlayerPrefs.GetFloat("VolSFX", 0.75f);
+        float vMaster = PlayerPrefs.GetFloat("Master", 0.75f);
+        float vMusica = PlayerPrefs.GetFloat("Musica", 0.75f);
+        float vSFX = PlayerPrefs.GetFloat("SFX", 0.75f);
 
-        // Forzar aplicación de audio al inicio
-        CambiarVolumenMaster(sliderMaster.value);
-        CambiarVolumenMusica(sliderMusica.value);
-        CambiarVolumenSFX(sliderSFX.value);
+        sliderMaster.onValueChanged.AddListener(CambiarVolumenMaster);
+        sliderMusica.onValueChanged.AddListener(CambiarVolumenMusica);
+        sliderSFX.onValueChanged.AddListener(CambiarVolumenSFX);
+
+        // Ponemos los sliders en su sitio
+        sliderMaster.value = vMaster;
+        sliderMusica.value = vMusica;
+        sliderSFX.value = vSFX;
+
+        // Aplicamos la matemática al Mixer
+        AplicarVolumen("Master", "Master", vMaster);
+        AplicarVolumen("MusicVol", "Musica", vMusica);
+        AplicarVolumen("SFXVol", "SFX", vSFX);
 
         // Aplicar resolución guardada
         CambiarResolucion(resolucionDropdown.value);
