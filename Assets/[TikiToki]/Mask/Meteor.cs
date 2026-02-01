@@ -18,7 +18,7 @@ public class Meteor : MonoBehaviour
         damageRadius = radius;
         impactSounds = sounds;
         playerHealth = FindFirstObjectByType<PlayerHealth>();
-        _audioSource = GetComponent<AudioSource>();
+
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -33,10 +33,17 @@ public class Meteor : MonoBehaviour
         {
             hasImpacted = true;
 
-            if (_audioSource != null && impactSounds != null && impactSounds.Length > 0)
+            if (impactSounds != null && impactSounds.Length > 0 && AudioManager.Instance != null)
             {
-                _audioSource.pitch = Random.Range(0.8f, 1.2f);
-                _audioSource.PlayOneShot(impactSounds[Random.Range(0, impactSounds.Length)]);
+                // 1. Elegimos el clip aleatorio
+                AudioClip clipSelected = impactSounds[Random.Range(0, impactSounds.Length)];
+
+                // 2. Log para la consola (como pediste)
+                Debug.Log($"<color=orange>[Meteor]</color> Impacto en {gameObject.name}. Enviando a AudioManager: <b>{clipSelected.name}</b>");
+
+                // 3. Llamada al método actual de tu AudioManager
+                // Pasamos el clip y la posición. El spatialBlend será 1.0f por defecto.
+                AudioManager.Instance.Play3DSound(clipSelected, transform.position);
             }
 
             // Parar emisión de partículas
