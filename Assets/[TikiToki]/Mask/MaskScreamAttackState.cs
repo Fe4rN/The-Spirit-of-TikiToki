@@ -15,6 +15,11 @@ public class MaskScreamAttackState : MaskState
     [Header("Efectos Visuales")]
     [SerializeField] private ParticleSystem screamParticles; // Arrastra aquí el efecto de distorsión/grito
 
+    [Header("Camera Shake")]
+    [SerializeField] private Camera mainCamera;
+    [SerializeField] private float shakeIntensity = 0.5f;
+    private Vector3 cameraOriginalPosition;
+
     [Header("Animación de Mandíbula")]
     [SerializeField] private float jawOpenDistance = 1.5f;
     [SerializeField] private float jawAnimationSpeed = 6f;
@@ -38,6 +43,12 @@ public class MaskScreamAttackState : MaskState
         // Aseguramos que las partículas estén paradas al inicio
         if (screamParticles != null) screamParticles.Stop();
 
+        // Guardar posición original de la cámara
+        if (mainCamera != null)
+        {
+            cameraOriginalPosition = mainCamera.transform.localPosition;
+        }
+
         // Animar mandíbula - apertura parcial para gruñido
         if (machine.JawTransform != null)
         {
@@ -56,6 +67,9 @@ public class MaskScreamAttackState : MaskState
     {
         machine.MirrorPlayerPosition();
         machine.LookAtPlayer();
+
+        // Aplicar camera shake durante todo el ataque
+        ApplyCameraShake();
 
         // Animar mandíbula
         if (machine.JawTransform != null)
@@ -121,11 +135,25 @@ public class MaskScreamAttackState : MaskState
             screamParticles.Stop();
         }
 
+        // Restaurar posición original de la cámara
+        if (mainCamera != null)
+        {
+            mainCamera.transform.localPosition = cameraOriginalPosition;
+        }
+
         // Cerrar mandíbula
         if (machine.JawTransform != null)
         {
             machine.JawTransform.localPosition = jawInitialPosition;
         }
+    }
+
+    private void ApplyCameraShake()
+    {
+        if (mainCamera == null) return;
+
+        Vector3 randomOffset = Random.insideUnitSphere * shakeIntensity;
+        mainCamera.transform.localPosition = cameraOriginalPosition + randomOffset;
     }
 }
 
