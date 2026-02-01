@@ -4,7 +4,7 @@ using System.Collections;
 public class MaskRayAttackState : MaskState
 {
     private RayAttackPhase currentPhase;
-    private float elapsedTime; // Cronómetro que empieza en 0
+    private float elapsedTime;
     private float FiringCounter;
 
     [Header("Referencias de Objetos")]
@@ -16,7 +16,7 @@ public class MaskRayAttackState : MaskState
     [SerializeField] private float rayRange = 25f;
     [SerializeField] private float beamRadius = 1.5f;
     [SerializeField] private LayerMask playerMask;
-    [SerializeField] private float timeToShoot = 1.3f; // El momento exacto del disparo
+    [SerializeField] private float timeToShoot = 1.3f;
 
     [Header("Animación de Mandíbula")]
     [SerializeField] private float jawOpenDistance = 0.8f;
@@ -26,31 +26,28 @@ public class MaskRayAttackState : MaskState
 
     private bool _isActuallyFiring = false;
     [Header("Audio")]
-    [SerializeField] private AudioClip chargeSound; // Sonido mientras carga
-    [SerializeField] private AudioClip beamSound;   // Sonido al disparar el láser
-    private AudioSource audioSource;
+    [SerializeField] private AudioClip audioQ;
 
     protected override void StateEnter()
     {
-
-        elapsedTime = 0f; // Reset del cronómetro
+        elapsedTime = 0f;
         FiringCounter = fireTime;
         currentPhase = RayAttackPhase.Charging;
         _isActuallyFiring = false;
 
         ToggleBeam(false);
 
-        // 1. EL SONIDO Y LA BOCA EMPIEZAN JUNTOS
-        if (chargeSound != null && AudioManager.Instance != null)
+        // 1. EL SONIDO EMPIEZA AQUÍ (Desde el inicio de la carga)
+        if (audioQ != null && AudioManager.Instance != null)
         {
-            AudioManager.Instance.Play3DSound(chargeSound, machine.transform.position);
+            AudioManager.Instance.Play3DSound(audioQ, machine.transform.position);
         }
 
         if (machine.JawTransform != null)
         {
             jawInitialPosition = machine.JawTransform.localPosition;
-            // Apuntamos a que esté abierta para cuando llegue el disparo
-            jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
+            // NIVEL 1: Apertura inicial (40%)
+            jawTargetPosition = jawInitialPosition + Vector3.back * (jawOpenDistance * 0.4f);
         }
     }
 
@@ -82,8 +79,6 @@ public class MaskRayAttackState : MaskState
     {
         elapsedTime += Time.deltaTime;
 
-        // Decidimos cuándo dejar de trackear al jugador (un poco antes del disparo)
-        // Por ejemplo, al segundo 0.9 deja de seguirle para "apuntar"
         float lockInTime = timeToShoot * 0.7f;
 
         if (elapsedTime < lockInTime)
@@ -91,11 +86,16 @@ public class MaskRayAttackState : MaskState
             currentPhase = RayAttackPhase.Charging;
             machine.MirrorPlayerPosition();
             machine.LookAtPlayer();
+            // Mantener el objetivo en el 40%
         }
         else if (elapsedTime < timeToShoot)
         {
-            // Entre 0.9s y 1.3s se queda quieto (LockedIn)
-            currentPhase = RayAttackPhase.LockedIn;
+            // NIVEL 2: Bloqueado (70% de apertura)
+            if (currentPhase != RayAttackPhase.LockedIn)
+            {
+                currentPhase = RayAttackPhase.LockedIn;
+                jawTargetPosition = jawInitialPosition + Vector3.back * (jawOpenDistance * 0.7f);
+            }
         }
         else
         {
@@ -107,16 +107,15 @@ public class MaskRayAttackState : MaskState
 
     private void ActivateBeam()
     {
+        // NIVEL 3: Apertura total al disparar (100%)
+        if (machine.JawTransform != null)
+            jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
+
         if (beamCollider != null)
         {
             beamCollider.size = new Vector3(beamRadius * 2, beamRadius * 2, rayRange);
             beamCollider.center = new Vector3(0, 0, rayRange / 2f);
             beamCollider.enabled = true;
-        }
-
-        if (beamSound != null && AudioManager.Instance != null)
-        {
-            AudioManager.Instance.Play3DSound(beamSound, machine.transform.position);
         }
 
         if (beamParticles != null)
