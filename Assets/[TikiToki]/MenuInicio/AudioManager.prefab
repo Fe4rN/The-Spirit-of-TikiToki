@@ -46,3 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   sfxGroup: {fileID: -7887595797380853678, guid: 66d3f850d0a89094aa4bc25e52891c3d, type: 2}
   musicGroup: {fileID: -8433219756199348232, guid: 66d3f850d0a89094aa4bc25e52891c3d, type: 2}
+  musicaMenu: {fileID: 8300000, guid: b6eaf26b80696b046a333de0e73ba2d1, type: 3}
+  musicaNivel1: {fileID: 8300000, guid: 0a395ebeaab7a75428e8852874205c34, type: 3}
