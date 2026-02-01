@@ -1796,6 +1796,7 @@ GameObject:
   - component: {fileID: 1691913184}
   - component: {fileID: 1691913183}
   - component: {fileID: 1691913186}
+  - component: {fileID: 1691913187}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1878,6 +1879,18 @@ MonoBehaviour:
   panelNiveles: {fileID: 6015936560395606050}
   panelVictoria: {fileID: 182494040}
   panelDerrota: {fileID: 1889830125}
+--- !u!114 &1691913187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1691913182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63d0342cf6571304b9660cd4a36743da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GuardarNivel
 --- !u!1 &1774013596
 GameObject:
   m_ObjectHideFlags: 0

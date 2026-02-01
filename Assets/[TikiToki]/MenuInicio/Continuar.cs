@@ -1,11 +1,37 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro; // Necesario para el texto
 
 public class Continuar : MonoBehaviour
 {
-    [Header("Configuración")]
-    public string nombreEscenaTutorial = "Tutorial";
+    [Header("Configuración de Escenas")]
+    public string nombreEscenaHistoria = "Historia";
     public string prefijoNivel = "level";
+
+    [Header("Referencias UI")]
+    public TextMeshProUGUI textoBoton; // Arrastra aquí el texto del botón
+
+    void Start()
+    {
+        ActualizarTextoBoton();
+    }
+
+    private void ActualizarTextoBoton()
+    {
+        if (textoBoton == null) return;
+
+        // Si el nivel máximo es 0, es que nunca ha empezado
+        int maxNivelSuperado = PlayerPrefs.GetInt("NivelMaximo", 0);
+
+        if (maxNivelSuperado == 0)
+        {
+            textoBoton.text = "Empezar";
+        }
+        else
+        {
+            textoBoton.text = "Continuar";
+        }
+    }
 
     public void ClickEnJugar()
     {
@@ -14,16 +40,13 @@ public class Continuar : MonoBehaviour
 
         if (maxNivelSuperado == 0)
         {
-            // Verifica si la escena existe en el Build antes de cargar
-            CargarEscenaSegura(nombreEscenaTutorial);
-        }
-        else if (maxNivelSuperado >= totalDeNiveles)
-        {
-            CargarEscenaSegura(prefijoNivel + totalDeNiveles);
+            CargarEscenaSegura(nombreEscenaHistoria);
         }
         else
         {
-            CargarEscenaSegura(prefijoNivel + (maxNivelSuperado + 1));
+            // En lugar de + 1, cargamos el nivel que el Game Manager guardó
+            // Si el Game Manager guardó "1", volvemos al "level1"
+            CargarEscenaSegura(prefijoNivel + maxNivelSuperado);
         }
     }
 
@@ -35,7 +58,7 @@ public class Continuar : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"Error: La escena '{nombre}' no está en Build Settings. Arrástrala a File > Build Settings.");
+            Debug.LogError($"Error: La escena '{nombre}' no está en Build Settings.");
         }
     }
 
@@ -46,11 +69,9 @@ public class Continuar : MonoBehaviour
 
         for (int i = 0; i < escenasEnBuild; i++)
         {
-            // Obtenemos solo el nombre de la escena, no la ruta completa
             string ruta = SceneUtility.GetScenePathByBuildIndex(i);
             string nombreEscena = System.IO.Path.GetFileNameWithoutExtension(ruta);
 
-            // Solo contamos si empieza exactamente con "level" (para no contar el Tutorial)
             if (nombreEscena.StartsWith(prefijoNivel))
             {
                 contador++;

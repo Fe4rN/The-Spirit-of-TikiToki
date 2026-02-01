@@ -1788,8 +1788,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afd140dc4c0436943afd0dca53c740f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Continuar
-  nombreEscenaTutorial: Tutorial
+  nombreEscenaHistoria: Historia
   prefijoNivel: level
+  textoBoton: {fileID: 571765461}
 --- !u!1 &1043434087
 GameObject:
   m_ObjectHideFlags: 0
