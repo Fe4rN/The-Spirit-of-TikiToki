@@ -142,4 +142,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SunsetLogic
   durationMinutes: 0.5
   startAngle: 30
-  endAngle: -145
+  endAngle: 200
