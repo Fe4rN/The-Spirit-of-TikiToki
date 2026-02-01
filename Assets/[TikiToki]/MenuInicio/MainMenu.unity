@@ -119,6 +119,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &29784726 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6544484807438207830, guid: ebf9dde4116e9034cb571a01f2201e34, type: 3}
+  m_PrefabInstance: {fileID: 382343609}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b743370ac3e4ec2a1668f5455a8ef8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_Dropdown
 --- !u!1 &200811720
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,6 +393,17 @@ MonoBehaviour:
   botonTutorial: {fileID: 1361140740}
   nombreEscenaTutorial: Tutorial
   prefijoNivel: Level
+--- !u!114 &321429049 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4929049012737985237, guid: ebf9dde4116e9034cb571a01f2201e34, type: 3}
+  m_PrefabInstance: {fileID: 382343609}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
 --- !u!1001 &382343609
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -862,7 +884,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7858515361318883796, guid: ebf9dde4116e9034cb571a01f2201e34, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -962,6 +985,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 435886643}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &470637979 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8736954644580534974, guid: ebf9dde4116e9034cb571a01f2201e34, type: 3}
+  m_PrefabInstance: {fileID: 382343609}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1 &571765459
 GameObject:
   m_ObjectHideFlags: 0
@@ -1885,6 +1919,28 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1068655247 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2292120300356964362, guid: ebf9dde4116e9034cb571a01f2201e34, type: 3}
+  m_PrefabInstance: {fileID: 382343609}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
+--- !u!114 &1302954054 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7057427470235168416, guid: ebf9dde4116e9034cb571a01f2201e34, type: 3}
+  m_PrefabInstance: {fileID: 382343609}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1 &1309956691
 GameObject:
   m_ObjectHideFlags: 0
@@ -2418,6 +2474,7 @@ GameObject:
   - component: {fileID: 1477181006}
   - component: {fileID: 1477181005}
   - component: {fileID: 1477181009}
+  - component: {fileID: 1477181010}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2532,6 +2589,25 @@ MonoBehaviour:
   panelNiveles: {fileID: 295992794}
   panelVictoria: {fileID: 0}
   panelDerrota: {fileID: 0}
+--- !u!114 &1477181010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1477181004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81e91da42fa86ee4da2a6fe75276ba0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuOpciones
+  panelOpciones: {fileID: 976043081}
+  masterMixer: {fileID: 24100000, guid: 66d3f850d0a89094aa4bc25e52891c3d, type: 2}
+  sliderMaster: {fileID: 1302954054}
+  sliderMusica: {fileID: 470637979}
+  sliderSFX: {fileID: 1068655247}
+  dropdownResoluciones: {fileID: 29784726}
+  togglePantallaCompleta: {fileID: 321429049}
 --- !u!1 &1671199974
 GameObject:
   m_ObjectHideFlags: 0

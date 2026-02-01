@@ -6,125 +6,121 @@ using System.Collections.Generic;
 
 public class MenuOpciones : MonoBehaviour
 {
-    [Header("Paneles")]
+    [Header("Paneles (Pueden estar inactivos)")]
     public GameObject panelOpciones;
 
-    [Header("Audio Sliders")]
+    [Header("Audio")]
     public AudioMixer masterMixer;
-    public Slider sliderMaster;
-    public Slider sliderMusica;
-    public Slider sliderSFX;
+    public Slider sliderMaster, sliderMusica, sliderSFX;
 
-    [Header("Visualización")]
+    [Header("Video UI")]
     public TMP_Dropdown dropdownResoluciones;
     public Toggle togglePantallaCompleta;
 
-    // Lógica de resoluciones del script Ajustes
     private Resolution[] resoluciones;
     private List<Resolution> resolucionesUnicas;
 
-    void Start()
+    void Awake()
     {
-        // 1. Configuramos las resoluciones primero
+        // 1. Cargamos las resoluciones antes que nada
         ConfigurarResoluciones();
-        // 2. Cargamos el resto de preferencias
-        CargarPreferencias();
+
+        // 2. Aplicamos los ajustes al arrancar el juego, 
+        // esté el panel abierto o no.
+        AplicarAjustesIniciales();
     }
 
-    void CargarPreferencias()
+    void OnEnable()
     {
-        // Cargar Volumenes
-        float vMaster = PlayerPrefs.GetFloat("VolMaster", 0.75f);
-        float vMusica = PlayerPrefs.GetFloat("VolMusica", 0.75f);
-        float vSFX = PlayerPrefs.GetFloat("VolSFX", 0.75f);
+        // 3. Cada vez que el panel se active, refrescamos los sliders/toggles
+        // para que coincidan con lo guardado.
+        RefrescarInterfazUI();
+    }
 
-        sliderMaster.value = vMaster;
-        sliderMusica.value = vMusica;
-        sliderSFX.value = vSFX;
+    void AplicarAjustesIniciales()
+    {
+        // Audio
+        CambiarVolumenMaster(PlayerPrefs.GetFloat("VolMaster", 0.75f));
+        CambiarVolumenMusica(PlayerPrefs.GetFloat("VolMusica", 0.75f));
+        CambiarVolumenSFX(PlayerPrefs.GetFloat("VolSFX", 0.75f));
 
-        CambiarVolumenMaster(vMaster);
-        CambiarVolumenMusica(vMusica);
-        CambiarVolumenSFX(vSFX);
+        // Pantalla Completa
+        bool esFull = PlayerPrefs.GetInt("PantallaCompleta", 1) == 1;
 
-        // Cargar Pantalla Completa
-        bool fullScreenPref = PlayerPrefs.GetInt("PantallaCompleta", Screen.fullScreen ? 1 : 0) == 1;
-        Screen.fullScreen = fullScreenPref;
-        togglePantallaCompleta.isOn = fullScreenPref;
+        // Resolución
+        int indexRes = PlayerPrefs.GetInt("ResolucionIndex", -1);
 
-        // Cargar índice de resolución guardado
-        int resGuardada = PlayerPrefs.GetInt("ResolucionIndex", dropdownResoluciones.value);
-        if (resGuardada < resolucionesUnicas.Count)
+        if (indexRes == -1) // Si es la primera vez, buscar la del monitor
         {
-            dropdownResoluciones.value = resGuardada;
-            dropdownResoluciones.RefreshShownValue();
-            // Aplicamos la resolución cargada
-            CambiarResolucion(resGuardada);
+            indexRes = BuscarIndiceResolucionActual();
         }
 
-        Debug.Log("<color=cyan>Preferencias de audio y video cargadas con éxito.</color>");
+        if (indexRes < resolucionesUnicas.Count)
+        {
+            Resolution res = resolucionesUnicas[indexRes];
+            // Usamos FullScreenWindow para evitar que se vea borroso o parpadee
+            Screen.SetResolution(res.width, res.height, esFull ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+        }
     }
 
-    // --- LÓGICA DE AUDIO ---
-    public void CambiarVolumenMaster(float valor)
+    void RefrescarInterfazUI()
     {
-        float db = Mathf.Log10(Mathf.Max(0.0001f, valor)) * 20;
-        if (masterMixer != null) masterMixer.SetFloat("MasterVol", db);
-        PlayerPrefs.SetFloat("VolMaster", valor);
+        if (sliderMaster) sliderMaster.value = PlayerPrefs.GetFloat("VolMaster", 0.75f);
+        if (sliderMusica) sliderMusica.value = PlayerPrefs.GetFloat("VolMusica", 0.75f);
+        if (sliderSFX) sliderSFX.value = PlayerPrefs.GetFloat("VolSFX", 0.75f);
+
+        if (togglePantallaCompleta) togglePantallaCompleta.isOn = PlayerPrefs.GetInt("PantallaCompleta", 1) == 1;
+
+        if (dropdownResoluciones)
+        {
+            dropdownResoluciones.value = PlayerPrefs.GetInt("ResolucionIndex", BuscarIndiceResolucionActual());
+            dropdownResoluciones.RefreshShownValue();
+        }
     }
 
-    public void CambiarVolumenMusica(float valor)
-    {
-        float db = Mathf.Log10(Mathf.Max(0.0001f, valor)) * 20;
-        if (masterMixer != null) masterMixer.SetFloat("MusicVol", db);
-        PlayerPrefs.SetFloat("VolMusica", valor);
-    }
-
-    public void CambiarVolumenSFX(float valor)
-    {
-        float db = Mathf.Log10(Mathf.Max(0.0001f, valor)) * 20;
-        if (masterMixer != null) masterMixer.SetFloat("SFXVol", db);
-        PlayerPrefs.SetFloat("VolSFX", valor);
-    }
-
-    // --- LÓGICA DE RESOLUCIÓN (IMPORTADA DE AJUSTES) ---
+    // --- LÓGICA DE RESOLUCIÓN MEJORADA ---
     void ConfigurarResoluciones()
     {
         resoluciones = Screen.resolutions;
-        dropdownResoluciones.ClearOptions();
-
-        List<string> opciones = new List<string>();
         resolucionesUnicas = new List<Resolution>();
         HashSet<string> resolucionesSet = new HashSet<string>();
+        List<string> opciones = new List<string>();
 
-        int indiceResolucionActual = 0;
-
-        for (int i = 0; i < resoluciones.Length; i++)
+        // Invertimos el bucle para que las resoluciones más altas salgan primero
+        for (int i = resoluciones.Length - 1; i >= 0; i--)
         {
-            // Filtro: No más de 1080p (como en tu script de Ajustes)
-            if (resoluciones[i].width > 1920 || resoluciones[i].height > 1080)
-                continue;
+            // Filtro para no pasar de 1080p si quieres mantener rendimiento
+            if (resoluciones[i].width > 1920 || resoluciones[i].height > 1080) continue;
 
             string opcion = resoluciones[i].width + " x " + resoluciones[i].height;
 
-            // Evitar duplicados (mismas resoluciones con distintos Hz)
-            if (resolucionesSet.Contains(opcion))
-                continue;
-
-            resolucionesSet.Add(opcion);
-            opciones.Add(opcion);
-            resolucionesUnicas.Add(resoluciones[i]);
-
-            // Detectar cuál es la resolución actual del monitor
-            if (resoluciones[i].width == Screen.currentResolution.width &&
-                resoluciones[i].height == Screen.currentResolution.height)
+            if (!resolucionesSet.Contains(opcion))
             {
-                indiceResolucionActual = opciones.Count - 1;
+                resolucionesSet.Add(opcion);
+                resolucionesUnicas.Add(resoluciones[i]);
+                opciones.Add(opcion);
             }
         }
 
-        dropdownResoluciones.AddOptions(opciones);
-        dropdownResoluciones.value = indiceResolucionActual;
-        dropdownResoluciones.RefreshShownValue();
+        // Volvemos a poner el orden normal (de menor a mayor)
+        resolucionesUnicas.Reverse();
+        opciones.Reverse();
+
+        if (dropdownResoluciones)
+        {
+            dropdownResoluciones.ClearOptions();
+            dropdownResoluciones.AddOptions(opciones);
+        }
+    }
+
+    int BuscarIndiceResolucionActual()
+    {
+        for (int i = 0; i < resolucionesUnicas.Count; i++)
+        {
+            if (resolucionesUnicas[i].width == Screen.width && resolucionesUnicas[i].height == Screen.height)
+                return i;
+        }
+        return resolucionesUnicas.Count - 1;
     }
 
     public void CambiarResolucion(int indice)
@@ -132,24 +128,37 @@ public class MenuOpciones : MonoBehaviour
         if (indice >= 0 && indice < resolucionesUnicas.Count)
         {
             Resolution res = resolucionesUnicas[indice];
-            Screen.SetResolution(res.width, res.height, togglePantallaCompleta.isOn);
+            bool esFull = togglePantallaCompleta.isOn;
+
+            Screen.SetResolution(res.width, res.height, esFull ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
+
             PlayerPrefs.SetInt("ResolucionIndex", indice);
             PlayerPrefs.Save();
-            Debug.Log($"<color=yellow>Video:</color> Resolución: {res.width}x{res.height}");
         }
     }
 
     public void CambiarPantallaCompleta(bool esCompleta)
     {
+        // Aplicamos el modo sin bordes para máxima compatibilidad
+        Screen.fullScreenMode = esCompleta ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
         Screen.fullScreen = esCompleta;
+
         PlayerPrefs.SetInt("PantallaCompleta", esCompleta ? 1 : 0);
         PlayerPrefs.Save();
-
-        // Al cambiar a pantalla completa, reaplicamos la resolución actual para evitar estiramientos
-        CambiarResolucion(dropdownResoluciones.value);
     }
 
-    // --- ABRIR Y CERRAR ---
+    // --- AUDIO (Sin cambios, es correcto) ---
+    public void CambiarVolumenMaster(float v) { AplicarVolumen("MasterVol", "VolMaster", v); }
+    public void CambiarVolumenMusica(float v) { AplicarVolumen("MusicVol", "VolMusica", v); }
+    public void CambiarVolumenSFX(float v) { AplicarVolumen("SFXVol", "VolSFX", v); }
+
+    private void AplicarVolumen(string parameter, string prefKey, float valor)
+    {
+        float db = Mathf.Log10(Mathf.Max(0.0001f, valor)) * 20;
+        if (masterMixer != null) masterMixer.SetFloat(parameter, db);
+        PlayerPrefs.SetFloat(prefKey, valor);
+    }
+
     public void AbrirOpciones() => panelOpciones.SetActive(true);
     public void CerrarOpciones() => panelOpciones.SetActive(false);
 }
