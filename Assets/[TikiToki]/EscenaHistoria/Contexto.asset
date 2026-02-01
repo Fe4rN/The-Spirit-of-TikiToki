@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bcd001db95365f47a89651b6fd25309, type: 3}
+  m_Name: Contexto
+  m_EditorClassIdentifier: Assembly-CSharp::HistoriaData
+  pasos:
+  - imagenComic: {fileID: 0}
+    textoRelato: "7:00 AM. Un n\xFAmero desconocido brilla en la pantalla de tu m\xF3vil.
+      \nEl sonido rompe el silencio de una ma\xF1ana que parec\xEDa normal."
+  - imagenComic: {fileID: 0}
+    textoRelato: "Es el hospital. Tu abuelo ha muerto de un infarto. Como \xFAnico
+      pariente, su casa y sus secretos ahora te pertenecen."
+  - imagenComic: {fileID: 0}
+    textoRelato: "La habitaci\xF3n del abuelo huele a polvo y recuerdos. Entre sus
+      pertenencias, un baul entreabierto revela algo inusual: una m\xE1scara de madera."
+  - imagenComic: {fileID: 0}
+    textoRelato: "Al tocar la madera fr\xEDa, la m\xE1scara cobra vida. Unos ojos
+      de fuego se clavan en los tuyos mientras una voz ancestral retumba en las paredes."
+  - imagenComic: {fileID: 0}
+    textoRelato: "\"Soy Tikitoki. Ayer devor\xE9 el alma de tu abuelo... hoy, reclamar\xE9
+      la tuya.\"\nLas sombras de la habitaci\xF3n empiezan a engullirte."
+  - imagenComic: {fileID: 0}
+    textoRelato: "Despiertas en una orilla extra\xF1a, bajo un cielo de sangre. Cinco
+      hogueras apagadas y un hacha oxidada son tu \xFAnica esperanza."
+  - imagenComic: {fileID: 0}
+    textoRelato: "Mant\xE9n el fuego encendido. Si las llamas se apagan, Tikitoki
+      se quedara tu alama."
+  nombreEscenaSiguiente: Tutorial
