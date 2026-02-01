@@ -110,7 +110,7 @@ public class MaskWindAttackState : MaskState
                         Time.deltaTime * jawAnimationSpeed
                     );
                 }
-            
+
                 windCounter -= Time.deltaTime;
                 if (windCounter <= 0) machine.SetState(machine.idleState.Value);
                 break;
@@ -215,7 +215,7 @@ public class MaskWindAttackState : MaskState
             // Si está encendida, hay un 20% de probabilidad de apagarla
             if (h.estaEncendida)
             {
-                if (Random.value <= 0.20f) // 0.20 = 20%
+                if (Random.value <= 0.40f) // 0.20 = 20%
                 {
                     h.ApagarHoguera();
                 }

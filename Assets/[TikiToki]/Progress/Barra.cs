@@ -18,6 +18,11 @@ public class Barra : MonoBehaviour
     public float puntosMedios = 5f;
     public float puntosRapidos = 10f;
 
+    [Header("Tasas de Subida (MÃ¡s rÃ¡pido)")]
+    public float puntosLentosSubida = 4f;
+    public float puntosMediaosSubida = 10f;
+    public float puntosRapidosSubida = 20f;
+
     [Header("Estado del Progreso")]
     public float progresoActual = 50f;
     private float puntosAAplicar = 0f;
@@ -38,7 +43,7 @@ public class Barra : MonoBehaviour
             barraProgreso.maxValue = 100;
             barraProgreso.value = progresoActual;
         }
-        // Forzamos un cálculo inicial
+        // Forzamos un cï¿½lculo inicial
         RecalcularTasaDeCambio();
     }
 
@@ -68,7 +73,7 @@ public class Barra : MonoBehaviour
         int encendidas = 0;
         int apagadas = 0;
 
-        // Log de seguridad: ¿Cuántas hogueras hay realmente en la lista?
+        // Log de seguridad: ï¿½Cuï¿½ntas hogueras hay realmente en la lista?
         Debug.Log($"<color=orange>Barra Check:</color> Total en lista: {todasLasHogueras.Count}");
 
         foreach (var h in todasLasHogueras)
@@ -80,16 +85,28 @@ public class Barra : MonoBehaviour
         int diferencia = encendidas - apagadas;
         int diferenciaAbsoluta = Mathf.Abs(diferencia);
 
-        // Asignación de puntos
-        if (diferenciaAbsoluta == 1) puntosAAplicar = puntosLentos;
-        else if (diferenciaAbsoluta == 3) puntosAAplicar = puntosMedios;
-        else if (diferenciaAbsoluta == 5) puntosAAplicar = puntosRapidos;
-        else puntosAAplicar = 0;
-
-        // Dirección del cambio
-        if (diferencia < 0) puntosAAplicar *= -1;
-
-        Debug.Log($"<color=yellow>Resultado:</color> Diferencia {diferencia}. Puntos a aplicar ahora: {puntosAAplicar}");
+        // AsignaciÃ³n de puntos (diferentes segÃºn subida o bajada)
+        if (diferencia > 0)
+        {
+            // SUBIDA: usa tasas rÃ¡pidas
+            if (diferenciaAbsoluta == 1) puntosAAplicar = puntosLentosSubida;
+            else if (diferenciaAbsoluta == 3) puntosAAplicar = puntosMediaosSubida;
+            else if (diferenciaAbsoluta == 5) puntosAAplicar = puntosRapidosSubida;
+            else puntosAAplicar = 0;
+        }
+        else if (diferencia < 0)
+        {
+            // BAJADA: usa tasas normales (negativas)
+            if (diferenciaAbsoluta == 1) puntosAAplicar = -puntosLentos;
+            else if (diferenciaAbsoluta == 3) puntosAAplicar = -puntosMedios;
+            else if (diferenciaAbsoluta == 5) puntosAAplicar = -puntosRapidos;
+            else puntosAAplicar = 0;
+        }
+        else
+        {
+            // EQUILIBRIO: sin cambio
+            puntosAAplicar = 0;
+        }
     }
 
     private void AplicarCambioDePuntos()
@@ -102,7 +119,7 @@ public class Barra : MonoBehaviour
         if (barraProgreso != null)
             barraProgreso.value = progresoActual;
 
-        // Avisamos al árbitro WinLose del nuevo valor de la barra
+        // Avisamos al ï¿½rbitro WinLose del nuevo valor de la barra
         if (WinLose.Instance != null)
         {
             WinLose.Instance.ValidarProgreso(progresoActual);
