@@ -63,7 +63,6 @@ public class Barra : MonoBehaviour
         if (!todasLasHogueras.Contains(h))
         {
             todasLasHogueras.Add(h);
-            Debug.Log($"<color=cyan>Barra:</color> Hoguera registrada. Total: {todasLasHogueras.Count}");
         }
         RecalcularTasaDeCambio();
     }
@@ -72,9 +71,6 @@ public class Barra : MonoBehaviour
     {
         int encendidas = 0;
         int apagadas = 0;
-
-        // Log de seguridad: �Cu�ntas hogueras hay realmente en la lista?
-        Debug.Log($"<color=orange>Barra Check:</color> Total en lista: {todasLasHogueras.Count}");
 
         foreach (var h in todasLasHogueras)
         {
