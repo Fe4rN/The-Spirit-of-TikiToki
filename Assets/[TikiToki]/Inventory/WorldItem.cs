@@ -10,6 +10,10 @@ public class WorldItem : MonoBehaviour
     public float lifeTime = 20f;
     public float shrinkDuration = 1.5f;
 
+    [Header("Apa√±o Anti-Ca√≠da")]
+    public float minY = -1f;
+    public Vector3 respawnPosition = new Vector3(0f, 1f, 0f);
+
     private float _timer;
     private bool _isShrinking = false;
     private PlayerInventory _cachedInv;
@@ -33,6 +37,11 @@ public class WorldItem : MonoBehaviour
 
     void Update()
     {
+        if (transform.position.y < minY)
+        {
+            transform.position = respawnPosition;
+        }
+
         if (!canDespawn || _isShrinking || itemData == null) return;
 
         if (IsItemSurplus())
@@ -88,7 +97,7 @@ public class WorldItem : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // --- VERSI”N CORREGIDA PARA M⁄LTIPLES MATERIALES ---
+    // --- VERSIÔøΩN CORREGIDA PARA MÔøΩLTIPLES MATERIALES ---
     public void SetHighlight(bool state)
     {
         if (_isShrinking) return;
@@ -114,7 +123,7 @@ public class WorldItem : MonoBehaviour
                 }
             }
 
-            // RE-ASIGNACI”N: Sin esto, los cambios no se ven en el modelo
+            // RE-ASIGNACIÔøΩN: Sin esto, los cambios no se ven en el modelo
             ren.materials = mats;
         }
 
