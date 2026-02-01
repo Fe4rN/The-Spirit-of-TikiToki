@@ -28,7 +28,10 @@ public class MaskMeteorAttackState : MaskState
     [SerializeField] private float meteorHeight = 10f;
     [SerializeField] private float damageRadius = 1f;
     [SerializeField] private float warningDuration = 2f;
-    [SerializeField] private Color warningColor = new Color(1f, 0.2f, 0f, 0.5f);
+    [SerializeField] private Color warningColor = new Color(1f, 0f, 0f, 0.6f);
+    [SerializeField] private float warningBlinkSpeed = 6f;
+    [SerializeField] private Color warningEmissionColor = new Color(1f, 0.2f, 0.2f, 1f);
+    [SerializeField] private float warningEmissionIntensity = 1.5f;
 
     [Header("Sonidos")]
     [SerializeField] private AudioClip maskMeteorSound; // Sonido de la máscara al invocar
@@ -224,8 +227,11 @@ public class MaskMeteorAttackState : MaskState
 
         // Configurar material
         Renderer renderer = warning.GetComponent<Renderer>();
-        renderer.material = new Material(Shader.Find("Standard"));
+        renderer.material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
         renderer.material.color = warningColor;
+        renderer.material.EnableKeyword("_EMISSION");
+        Color emission = warningEmissionColor * warningEmissionIntensity;
+        renderer.material.SetColor("_EmissionColor", emission);
         renderer.material.SetFloat("_Mode", 3); // Transparent mode
         renderer.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
         renderer.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
@@ -234,6 +240,11 @@ public class MaskMeteorAttackState : MaskState
         renderer.material.EnableKeyword("_ALPHABLEND_ON");
         renderer.material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
         renderer.material.renderQueue = 3000;
+
+        // Añadir parpadeo al warning
+        WarningBlink blink = warning.AddComponent<WarningBlink>();
+        blink.BlinkSpeed = warningBlinkSpeed;
+        blink.BaseColor = warningColor;
 
         // Remover collider
         Collider collider = warning.GetComponent<Collider>();
@@ -280,6 +291,29 @@ public class MaskMeteorAttackState : MaskState
                 Destroy(warning);
         }
         activeWarnings.Clear();
+    }
+}
+
+public class WarningBlink : MonoBehaviour
+{
+    public float BlinkSpeed = 6f;
+    public Color BaseColor = new Color(1f, 0f, 0f, 0.6f);
+
+    private Renderer cachedRenderer;
+
+    private void Awake()
+    {
+        cachedRenderer = GetComponent<Renderer>();
+    }
+
+    private void Update()
+    {
+        if (cachedRenderer == null) return;
+
+        float t = (Mathf.Sin(Time.time * BlinkSpeed) + 1f) * 0.5f;
+        Color c = BaseColor;
+        c.a = Mathf.Lerp(0.1f, BaseColor.a, t);
+        cachedRenderer.material.color = c;
     }
 }
 
