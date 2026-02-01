@@ -19,11 +19,15 @@ public class MenuOpciones : MonoBehaviour
     public TMP_Dropdown dropdownResoluciones;
     public Toggle togglePantallaCompleta;
 
+    // Lógica de resoluciones del script Ajustes
     private Resolution[] resoluciones;
+    private List<Resolution> resolucionesUnicas;
 
     void Start()
     {
+        // 1. Configuramos las resoluciones primero
         ConfigurarResoluciones();
+        // 2. Cargamos el resto de preferencias
         CargarPreferencias();
     }
 
@@ -38,26 +42,34 @@ public class MenuOpciones : MonoBehaviour
         sliderMusica.value = vMusica;
         sliderSFX.value = vSFX;
 
-        // Aplicar al mixer al inicio
         CambiarVolumenMaster(vMaster);
         CambiarVolumenMusica(vMusica);
         CambiarVolumenSFX(vSFX);
 
-        togglePantallaCompleta.isOn = Screen.fullScreen;
-        Debug.Log("<color=cyan>Preferencias de audio y pantalla cargadas.</color>");
+        // Cargar Pantalla Completa
+        bool fullScreenPref = PlayerPrefs.GetInt("PantallaCompleta", Screen.fullScreen ? 1 : 0) == 1;
+        Screen.fullScreen = fullScreenPref;
+        togglePantallaCompleta.isOn = fullScreenPref;
+
+        // Cargar índice de resolución guardado
+        int resGuardada = PlayerPrefs.GetInt("ResolucionIndex", dropdownResoluciones.value);
+        if (resGuardada < resolucionesUnicas.Count)
+        {
+            dropdownResoluciones.value = resGuardada;
+            dropdownResoluciones.RefreshShownValue();
+            // Aplicamos la resolución cargada
+            CambiarResolucion(resGuardada);
+        }
+
+        Debug.Log("<color=cyan>Preferencias de audio y video cargadas con éxito.</color>");
     }
 
-    // --- ABRIR Y CERRAR ---
-    public void AbrirOpciones() => panelOpciones.SetActive(true);
-    public void CerrarOpciones() => panelOpciones.SetActive(false);
-
-    // --- LÓGICA DE AUDIO CON DEPURACIÓN ---
+    // --- LÓGICA DE AUDIO ---
     public void CambiarVolumenMaster(float valor)
     {
         float db = Mathf.Log10(Mathf.Max(0.0001f, valor)) * 20;
-        if(masterMixer != null) masterMixer.SetFloat("MasterVol", db);
+        if (masterMixer != null) masterMixer.SetFloat("MasterVol", db);
         PlayerPrefs.SetFloat("VolMaster", valor);
-        Debug.Log($"<color=green>Audio:</color> Master cambiado a {valor:P0} ({db:F1} dB)");
     }
 
     public void CambiarVolumenMusica(float valor)
@@ -65,7 +77,6 @@ public class MenuOpciones : MonoBehaviour
         float db = Mathf.Log10(Mathf.Max(0.0001f, valor)) * 20;
         if (masterMixer != null) masterMixer.SetFloat("MusicVol", db);
         PlayerPrefs.SetFloat("VolMusica", valor);
-        Debug.Log($"<color=green>Audio:</color> Música cambiada a {valor:P0} ({db:F1} dB)");
     }
 
     public void CambiarVolumenSFX(float valor)
@@ -73,45 +84,72 @@ public class MenuOpciones : MonoBehaviour
         float db = Mathf.Log10(Mathf.Max(0.0001f, valor)) * 20;
         if (masterMixer != null) masterMixer.SetFloat("SFXVol", db);
         PlayerPrefs.SetFloat("VolSFX", valor);
-        Debug.Log($"<color=green>Audio:</color> SFX cambiado a {valor:P0} ({db:F1} dB)");
     }
 
-    // --- LÓGICA DE RESOLUCIÓN ---
+    // --- LÓGICA DE RESOLUCIÓN (IMPORTADA DE AJUSTES) ---
     void ConfigurarResoluciones()
     {
         resoluciones = Screen.resolutions;
         dropdownResoluciones.ClearOptions();
+
         List<string> opciones = new List<string>();
+        resolucionesUnicas = new List<Resolution>();
+        HashSet<string> resolucionesSet = new HashSet<string>();
+
         int indiceResolucionActual = 0;
 
         for (int i = 0; i < resoluciones.Length; i++)
         {
-            string opcion = resoluciones[i].width + " x " + resoluciones[i].height + " @ " + resoluciones[i].refreshRateRatio.value.ToString("F0") + "Hz";
-            opciones.Add(opcion);
+            // Filtro: No más de 1080p (como en tu script de Ajustes)
+            if (resoluciones[i].width > 1920 || resoluciones[i].height > 1080)
+                continue;
 
-            if (resoluciones[i].width == Screen.width &&
-                resoluciones[i].height == Screen.height)
+            string opcion = resoluciones[i].width + " x " + resoluciones[i].height;
+
+            // Evitar duplicados (mismas resoluciones con distintos Hz)
+            if (resolucionesSet.Contains(opcion))
+                continue;
+
+            resolucionesSet.Add(opcion);
+            opciones.Add(opcion);
+            resolucionesUnicas.Add(resoluciones[i]);
+
+            // Detectar cuál es la resolución actual del monitor
+            if (resoluciones[i].width == Screen.currentResolution.width &&
+                resoluciones[i].height == Screen.currentResolution.height)
             {
-                indiceResolucionActual = i;
+                indiceResolucionActual = opciones.Count - 1;
             }
         }
 
         dropdownResoluciones.AddOptions(opciones);
         dropdownResoluciones.value = indiceResolucionActual;
         dropdownResoluciones.RefreshShownValue();
-        Debug.Log($"<color=yellow>Video:</color> {resoluciones.Length} resoluciones detectadas.");
     }
 
-    public void CambiarResolucion(int indiceResolucion)
+    public void CambiarResolucion(int indice)
     {
-        Resolution resolucion = resoluciones[indiceResolucion];
-        Screen.SetResolution(resolucion.width, resolucion.height, Screen.fullScreen);
-        Debug.Log($"<color=yellow>Video:</color> Resolución cambiada a {resolucion.width}x{resolucion.height}");
+        if (indice >= 0 && indice < resolucionesUnicas.Count)
+        {
+            Resolution res = resolucionesUnicas[indice];
+            Screen.SetResolution(res.width, res.height, togglePantallaCompleta.isOn);
+            PlayerPrefs.SetInt("ResolucionIndex", indice);
+            PlayerPrefs.Save();
+            Debug.Log($"<color=yellow>Video:</color> Resolución: {res.width}x{res.height}");
+        }
     }
 
     public void CambiarPantallaCompleta(bool esCompleta)
     {
         Screen.fullScreen = esCompleta;
-        Debug.Log($"<color=yellow>Video:</color> Pantalla completa: {esCompleta}");
+        PlayerPrefs.SetInt("PantallaCompleta", esCompleta ? 1 : 0);
+        PlayerPrefs.Save();
+
+        // Al cambiar a pantalla completa, reaplicamos la resolución actual para evitar estiramientos
+        CambiarResolucion(dropdownResoluciones.value);
     }
+
+    // --- ABRIR Y CERRAR ---
+    public void AbrirOpciones() => panelOpciones.SetActive(true);
+    public void CerrarOpciones() => panelOpciones.SetActive(false);
 }

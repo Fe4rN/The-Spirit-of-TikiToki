@@ -654,6 +654,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4929049012737985237, guid: ebf9dde4116e9034cb571a01f2201e34, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5148268384760712570, guid: ebf9dde4116e9034cb571a01f2201e34, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
