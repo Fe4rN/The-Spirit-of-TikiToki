@@ -140,8 +140,18 @@ public class SpawnerMaster : MonoBehaviour
     {
         if (obj == null) return;
         obj.transform.position = posicion;
-        // Rotación aleatoria para que las piedras/hojas no se vean iguales
-        obj.transform.rotation = Quaternion.Euler(0, 0, 0);
+
+        // --- FILTRO DE ROTACIÓN ---
+        // Solo aplicamos rotación si NO es un árbol Y NO es una hoguera
+        if (!esArbol && !obj.name.Contains("Hoguera"))
+        {
+            obj.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360f), 0);
+        }
+        else
+        {
+            // Si es árbol o hoguera, respetamos la rotación que tenga el prefab
+            obj.transform.rotation = Quaternion.identity;
+        }
 
         Vector3 escalaObjetivo = obj.transform.localScale;
         if (esArbol)

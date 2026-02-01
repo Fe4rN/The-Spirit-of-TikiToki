@@ -2524,6 +2524,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: BarraProgreso
       objectReference: {fileID: 0}
+    - target: {fileID: 2407669581765240489, guid: d186287f537657141b2572d25fd75aaf, type: 3}
+      propertyPath: m_Color.b
+      value: 0.07450981
+      objectReference: {fileID: 0}
+    - target: {fileID: 2407669581765240489, guid: d186287f537657141b2572d25fd75aaf, type: 3}
+      propertyPath: m_Color.g
+      value: 0.2705882
+      objectReference: {fileID: 0}
+    - target: {fileID: 2407669581765240489, guid: d186287f537657141b2572d25fd75aaf, type: 3}
+      propertyPath: m_Color.r
+      value: 0.5450981
+      objectReference: {fileID: 0}
     - target: {fileID: 3864746841623061281, guid: d186287f537657141b2572d25fd75aaf, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2563,6 +2575,18 @@ PrefabInstance:
     - target: {fileID: 3864746841623061281, guid: d186287f537657141b2572d25fd75aaf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4893501520079958112, guid: d186287f537657141b2572d25fd75aaf, type: 3}
+      propertyPath: m_Color.b
+      value: 0.07450981
+      objectReference: {fileID: 0}
+    - target: {fileID: 4893501520079958112, guid: d186287f537657141b2572d25fd75aaf, type: 3}
+      propertyPath: m_Color.g
+      value: 0.27058825
+      objectReference: {fileID: 0}
+    - target: {fileID: 4893501520079958112, guid: d186287f537657141b2572d25fd75aaf, type: 3}
+      propertyPath: m_Color.r
+      value: 0.54509807
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2699,15 +2723,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 508699658050950677, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
       propertyPath: m_Color.b
-      value: 0.5169811
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 508699658050950677, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
       propertyPath: m_Color.g
-      value: 0.5169811
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 508699658050950677, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
       propertyPath: m_Color.r
-      value: 0.5169811
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 936170614827497132, guid: 810e98f463516d14590b2c696b2e0e28, type: 3}
       propertyPath: m_Name
@@ -3793,6 +3817,18 @@ PrefabInstance:
     - target: {fileID: 4971075961193016445, guid: 5711ac18955b62047a2c20ab2c1be2e6, type: 3}
       propertyPath: m_Name
       value: Tiempo
+      objectReference: {fileID: 0}
+    - target: {fileID: 8315510904098238837, guid: 5711ac18955b62047a2c20ab2c1be2e6, type: 3}
+      propertyPath: m_Color.b
+      value: 0.17254902
+      objectReference: {fileID: 0}
+    - target: {fileID: 8315510904098238837, guid: 5711ac18955b62047a2c20ab2c1be2e6, type: 3}
+      propertyPath: m_Color.g
+      value: 0.38823533
+      objectReference: {fileID: 0}
+    - target: {fileID: 8315510904098238837, guid: 5711ac18955b62047a2c20ab2c1be2e6, type: 3}
+      propertyPath: m_Color.r
+      value: 0.85098046
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
