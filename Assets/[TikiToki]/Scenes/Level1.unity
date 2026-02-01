@@ -2151,12 +2151,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -1571734138363501569, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: initial
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -1571734138363501569, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: groundReference
       value: 
       objectReference: {fileID: 843562030}
-    - target: {fileID: 2448894787941978986, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+    - target: {fileID: 3928743520178445932, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: initial
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3928743520178445932, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
+      propertyPath: shakeIntensity
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4661110866800639297, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2201,10 +2209,6 @@ PrefabInstance:
     - target: {fileID: 6118392890844229141, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
       propertyPath: m_Name
       value: Mask
-      objectReference: {fileID: 0}
-    - target: {fileID: 6660820977637867056, guid: 69ca07719b61a404795be1122b7660c2, type: 3}
-      propertyPath: initial
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

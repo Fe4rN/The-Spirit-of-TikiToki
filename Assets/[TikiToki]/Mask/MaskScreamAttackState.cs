@@ -37,6 +37,7 @@ public class MaskScreamAttackState : MaskState
         Debug.Log("Entering Scream State");
         playerMovement = machine.PlayerTransform.GetComponent<PlayerMovement>();
         spawnerMaster = FindFirstObjectByType<SpawnerMaster>();
+        mainCamera = Camera.main;
 
         currentPhase = ScreamPhase.Growling;
         phaseCounter = growlDuration;
