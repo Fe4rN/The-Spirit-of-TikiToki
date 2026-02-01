@@ -60,12 +60,6 @@ public class MaskWindAttackState : MaskState
             jawTargetPosition = jawInitialPosition + Vector3.back * (jawOpenDistance * 0.5f);
             isJawAnimating = true;
         }
-
-
-        if (audioQ != null && machine.GetComponent<AudioSource>() != null)
-        {
-            machine.GetComponent<AudioSource>().PlayOneShot(audioQ);
-        }
     }
 
     protected override void StateUpdate()
@@ -95,6 +89,11 @@ public class MaskWindAttackState : MaskState
                     // ACTIVAR VISUALES
                     ActivateWindVisuals();
 
+                    if (audioQ != null && machine.GetComponent<AudioSource>() != null)
+                    {
+                        machine.GetComponent<AudioSource>().PlayOneShot(audioQ);
+                    }
+
                     if (machine.JawTransform != null)
                     {
                         jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
@@ -111,7 +110,7 @@ public class MaskWindAttackState : MaskState
                         Time.deltaTime * jawAnimationSpeed
                     );
                 }
-
+            
                 windCounter -= Time.deltaTime;
                 if (windCounter <= 0) machine.SetState(machine.idleState.Value);
                 break;
