@@ -1,167 +1,165 @@
 using UnityEngine;
+using TikiToki.Gameplay.Player;
+using TikiToki.Gameplay.Environment;
 
-public class MaskScreamAttackState : MaskState
+namespace TikiToki.Gameplay.Boss
 {
-    private PlayerMovement playerMovement;
-    private SpawnerMaster spawnerMaster;
-    private ScreamPhase currentPhase;
-    private float phaseCounter;
-
-    [Header("Ajustes del Ataque")]
-    [SerializeField] private float growlDuration = 1f;
-    [SerializeField] private float screamDuration = 2f;
-    [SerializeField] private float stunDuration = 3f;
-
-    [Header("Efectos Visuales")]
-    [SerializeField] private ParticleSystem screamParticles; // Arrastra aquí el efecto de distorsión/grito
-
-    [Header("Camera Shake")]
-    [SerializeField] private Camera mainCamera;
-    [SerializeField] private float shakeIntensity = 0.5f;
-    private Vector3 cameraOriginalPosition;
-
-    [Header("Animación de Mandíbula")]
-    [SerializeField] private float jawOpenDistance = 1.5f;
-    [SerializeField] private float jawAnimationSpeed = 6f;
-    private Vector3 jawInitialPosition;
-    private Vector3 jawTargetPosition;
-    private bool hasStunnedPlayer = false;
-
-
-    [Header("Audio")]
-    [SerializeField] private AudioClip growlSound; // Antes audioQ (Gruñido inicial)
-    [SerializeField] private AudioClip screamSound;
-
-    protected override void StateEnter()
+    public class MaskScreamAttackState : MaskState
     {
-        Debug.Log("Entering Scream State");
-        playerMovement = machine.PlayerTransform.GetComponent<PlayerMovement>();
-        spawnerMaster = FindFirstObjectByType<SpawnerMaster>();
-        mainCamera = Camera.main;
+        private PlayerMovement _playerMovement;
+        private SpawnerMaster _spawnerMaster;
+        private ScreamPhase _currentPhase;
+        private float _phaseCounter;
 
-        currentPhase = ScreamPhase.Growling;
-        phaseCounter = growlDuration;
-        hasStunnedPlayer = false;
+        [Header("Attack Settings")]
+        [SerializeField] private float growlDuration = 1f;
+        [SerializeField] private float screamDuration = 2f;
+        [SerializeField] private float stunDuration = 3f;
 
-        // Aseguramos que las partículas estén paradas al inicio
-        if (screamParticles != null) screamParticles.Stop();
+        [Header("Visual Effects")]
+        [SerializeField] private ParticleSystem screamParticles;
 
-        // Guardar posición original de la cámara
-        if (mainCamera != null)
+        [Header("Camera Shake")]
+        [SerializeField] private Camera mainCamera;
+        [SerializeField] private float shakeIntensity = 0.5f;
+        private Vector3 _cameraOriginalPosition;
+
+        [Header("Jaw Animation")]
+        [SerializeField] private float jawOpenDistance = 1.5f;
+        [SerializeField] private float jawAnimationSpeed = 6f;
+        private Vector3 _jawInitialPosition;
+        private Vector3 _jawTargetPosition;
+        private bool _hasStunnedPlayer = false;
+
+        [Header("Audio")]
+        [SerializeField] private AudioClip growlSound;
+        [SerializeField] private AudioClip screamSound;
+
+        protected override void OnAwake()
         {
-            cameraOriginalPosition = mainCamera.transform.localPosition;
+            base.OnAwake();
         }
 
-        // Animar mandíbula - apertura parcial para gruñido
-        if (machine.JawTransform != null)
+        protected override void StateEnter()
         {
-            jawInitialPosition = machine.JawTransform.localPosition;
-            jawTargetPosition = jawInitialPosition + Vector3.back * (jawOpenDistance * 0.3f);
+            Debug.Log("Entering Scream State");
+            _playerMovement = machine.playerTransform.GetComponent<PlayerMovement>();
+            _spawnerMaster = FindFirstObjectByType<SpawnerMaster>();
+            mainCamera = Camera.main;
+
+            _currentPhase = ScreamPhase.Growling;
+            _phaseCounter = growlDuration;
+            _hasStunnedPlayer = false;
+
+            if (screamParticles != null) screamParticles.Stop();
+
+            if (mainCamera != null)
+            {
+                _cameraOriginalPosition = mainCamera.transform.localPosition;
+            }
+
+            if (machine.jawTransform != null)
+            {
+                _jawInitialPosition = machine.jawTransform.localPosition;
+                _jawTargetPosition = _jawInitialPosition + Vector3.back * (jawOpenDistance * 0.3f);
+            }
+
+            if (growlSound != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.Play3DSound(growlSound, machine.transform.position);
+            }
         }
 
-        if (growlSound != null && AudioManager.Instance != null)
+        protected override void StateUpdate()
         {
-            AudioManager.Instance.Play3DSound(growlSound, machine.transform.position);
-        }
-    }
+            machine.MirrorPlayerPosition();
+            machine.LookAtPlayer();
 
-    protected override void StateUpdate()
-    {
-        machine.MirrorPlayerPosition();
-        machine.LookAtPlayer();
+            ApplyCameraShake();
 
-        // Aplicar camera shake durante todo el ataque
-        ApplyCameraShake();
+            if (machine.jawTransform != null)
+            {
+                machine.jawTransform.localPosition = Vector3.Lerp(
+                    machine.jawTransform.localPosition,
+                    _jawTargetPosition,
+                    Time.deltaTime * jawAnimationSpeed
+                );
+            }
 
-        // Animar mandíbula
-        if (machine.JawTransform != null)
-        {
-            machine.JawTransform.localPosition = Vector3.Lerp(
-                machine.JawTransform.localPosition,
-                jawTargetPosition,
-                Time.deltaTime * jawAnimationSpeed
-            );
-        }
+            switch (_currentPhase)
+            {
+                case ScreamPhase.Growling:
+                    _phaseCounter -= Time.deltaTime;
 
-        switch (currentPhase)
-        {
-            case ScreamPhase.Growling:
-                phaseCounter -= Time.deltaTime;
-
-                if (phaseCounter <= 0)
-                {
-                    currentPhase = ScreamPhase.Screaming;
-                    phaseCounter = screamDuration;
-
-                    // Abrir completamente la mandíbula para gritar
-                    if (machine.JawTransform != null)
+                    if (_phaseCounter <= 0)
                     {
-                        jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
+                        _currentPhase = ScreamPhase.Screaming;
+                        _phaseCounter = screamDuration;
+
+                        if (machine.jawTransform != null)
+                        {
+                            _jawTargetPosition = _jawInitialPosition + Vector3.back * jawOpenDistance;
+                        }
+
+                        if (screamSound != null && AudioManager.Instance != null)
+                        {
+                            AudioManager.Instance.Play3DSound(screamSound, machine.transform.position);
+                        }
+
+                        if (screamParticles != null)
+                        {
+                            screamParticles.Play();
+                        }
+
+                        if (_spawnerMaster != null)
+                        {
+                            _spawnerMaster.GenerateSomeTrees();
+                        }
+                    }
+                    break;
+
+                case ScreamPhase.Screaming:
+                    _phaseCounter -= Time.deltaTime;
+
+                    if (!_hasStunnedPlayer && _playerMovement != null)
+                    {
+                        _playerMovement.ApplyStun(stunDuration);
+                        _hasStunnedPlayer = true;
+                        Debug.Log($"Player stunned for {stunDuration} seconds!");
                     }
 
-                    if (screamSound != null && AudioManager.Instance != null)
-                    {
-                        AudioManager.Instance.Play3DSound(screamSound, machine.transform.position);
-                    }
+                    if (_phaseCounter <= 0)
+                        machine.SetState(machine.idleState.Value);
+                    break;
+            }
+        }
 
-                    // --- ACTIVAR EFECTO DE GRITO ---
-                    if (screamParticles != null)
-                    {
-                        screamParticles.Play();
-                    }
+        protected override void StateExit()
+        {
+            if (screamParticles != null)
+            {
+                screamParticles.Stop();
+            }
 
-                    // Regenerar arboles
-                    spawnerMaster?.GenerarAlgunosArboles();
+            if (mainCamera != null)
+            {
+                mainCamera.transform.localPosition = _cameraOriginalPosition;
+            }
 
-                    // TODO: Reproducir sonido de grito
-                }
-                break;
+            if (machine.jawTransform != null)
+            {
+                machine.jawTransform.localPosition = _jawInitialPosition;
+            }
+        }
 
-            case ScreamPhase.Screaming:
-                phaseCounter -= Time.deltaTime;
+        private void ApplyCameraShake()
+        {
+            if (mainCamera == null) return;
 
-                // Aplicar stun al jugador una sola vez
-                if (!hasStunnedPlayer && playerMovement != null)
-                {
-                    playerMovement.ApplyStun(stunDuration);
-                    hasStunnedPlayer = true;
-                    Debug.Log($"Player stunned for {stunDuration} seconds!");
-                }
-
-                if (phaseCounter <= 0)
-                    machine.SetState(machine.idleState.Value);
-                break;
+            Vector3 randomOffset = Random.insideUnitSphere * shakeIntensity;
+            mainCamera.transform.localPosition = _cameraOriginalPosition + randomOffset;
         }
     }
 
-    protected override void StateExit()
-    {
-        // Detener partículas al salir del estado
-        if (screamParticles != null)
-        {
-            screamParticles.Stop();
-        }
-
-        // Restaurar posición original de la cámara
-        if (mainCamera != null)
-        {
-            mainCamera.transform.localPosition = cameraOriginalPosition;
-        }
-
-        // Cerrar mandíbula
-        if (machine.JawTransform != null)
-        {
-            machine.JawTransform.localPosition = jawInitialPosition;
-        }
-    }
-
-    private void ApplyCameraShake()
-    {
-        if (mainCamera == null) return;
-
-        Vector3 randomOffset = Random.insideUnitSphere * shakeIntensity;
-        mainCamera.transform.localPosition = cameraOriginalPosition + randomOffset;
-    }
+    public enum ScreamPhase { Growling, Screaming }
 }
-
-public enum ScreamPhase { Growling, Screaming }

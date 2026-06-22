@@ -1,136 +1,179 @@
 using UnityEngine;
 using System.Collections;
+using TikiToki.Gameplay;
 
-public class WorldItem : MonoBehaviour
+namespace TikiToki.Inventory
 {
-    public ItemData itemData;
-
-    [Header("Ajustes de Despawn Inteligente")]
-    public bool canDespawn = true;
-    public float lifeTime = 20f;
-    public float shrinkDuration = 1.5f;
-
-    [Header("Apaño Anti-Caída")]
-    public float minY = -1f;
-    public Vector3 respawnPosition = new Vector3(0f, 1f, 0f);
-
-    private float _timer;
-    private bool _isShrinking = false;
-    private PlayerInventory _cachedInv;
-
-    [Header("Ajustes Visuales")]
-    private MeshRenderer[] renderers;
-    [ColorUsage(true, true)] public Color highlightColor = new Color(0.5f, 0.5f, 0.5f);
-    private Vector3 _originalScale;
-
-    void Awake()
+    public class WorldItem : MonoBehaviour, IInteractable
     {
-        renderers = GetComponentsInChildren<MeshRenderer>();
-        _originalScale = transform.localScale;
-    }
+        public ItemData itemData;
 
-    void Start()
-    {
-        GameObject player = GameObject.FindWithTag("Player");
-        if (player != null) _cachedInv = player.GetComponent<PlayerInventory>();
-    }
+        [Header("Smart Despawn Settings")]
+        public bool canDespawn = true;
+        public float lifeTime = 20f;
+        public float shrinkDuration = 1.5f;
 
-    void Update()
-    {
-        if (transform.position.y < minY)
+        [Header("Anti-Fall Fix")]
+        public float minY = -1f;
+        public Vector3 respawnPosition = new Vector3(0f, 1f, 0f);
+
+        private float _timer;
+        private bool _isShrinking = false;
+        private PlayerInventory _cachedInv;
+
+        [Header("Visual Settings")]
+        private MeshRenderer[] renderers;
+        [ColorUsage(true, true)] public Color highlightColor = new Color(0.5f, 0.5f, 0.5f);
+        private Vector3 _originalScale;
+
+        // --- IInteractable Implementation ---
+        public string InteractionPrompt => itemData != null ? itemData.itemName : "Item";
+
+        public bool CanInteract(PlayerInventory inventory)
         {
-            transform.position = respawnPosition;
-        }
+            if (itemData == null) return false;
 
-        if (!canDespawn || _isShrinking || itemData == null) return;
-
-        if (IsItemSurplus())
-        {
-            _timer += Time.deltaTime;
-            if (_timer >= (lifeTime - shrinkDuration))
+            for (int i = 0; i < inventory.slots.Length; i++)
             {
-                _isShrinking = true;
-                StartCoroutine(ShrinkAndDestroy());
-            }
-        }
-        else
-        {
-            _timer = 0;
-        }
-    }
-
-    bool IsItemSurplus()
-    {
-        if (_cachedInv == null) return false;
-
-        bool playerAlreadyHasThisItem = false;
-        bool hasSpaceInExistingStack = false;
-        bool hasEmptySlot = false;
-
-        foreach (var slot in _cachedInv.slots)
-        {
-            if (slot.item == null) hasEmptySlot = true;
-            else if (slot.item == itemData)
-            {
-                playerAlreadyHasThisItem = true;
-                if (slot.count < itemData.maxStack) hasSpaceInExistingStack = true;
-            }
-        }
-
-        if (hasEmptySlot) return false;
-        if (hasSpaceInExistingStack) return false;
-        if (!playerAlreadyHasThisItem) return false;
-
-        return true;
-    }
-
-    IEnumerator ShrinkAndDestroy()
-    {
-        Vector3 startScale = transform.localScale;
-        float elapsed = 0;
-        while (elapsed < shrinkDuration)
-        {
-            elapsed += Time.deltaTime;
-            transform.localScale = Vector3.Lerp(startScale, Vector3.zero, elapsed / shrinkDuration);
-            yield return null;
-        }
-        Destroy(gameObject);
-    }
-
-    // --- VERSI�N CORREGIDA PARA M�LTIPLES MATERIALES ---
-    public void SetHighlight(bool state)
-    {
-        if (_isShrinking) return;
-
-        foreach (var ren in renderers)
-        {
-            // Importante: ren.materials devuelve una COPIA del array. 
-            // Debemos modificar la copia y volver a asignarla.
-            Material[] mats = ren.materials;
-
-            for (int i = 0; i < mats.Length; i++)
-            {
-                if (state)
+                if (inventory.slots[i].item == itemData && inventory.slots[i].count < itemData.maxStack)
                 {
-                    mats[i].EnableKeyword("_EMISSION");
-                    mats[i].SetColor("_EmissionColor", highlightColor);
+                    return true;
                 }
-                else
+                if (inventory.slots[i].item == null)
                 {
-                    // Al apagar, solemos poner el color en negro
-                    mats[i].SetColor("_EmissionColor", Color.black);
-                    // Opcional: mats[i].DisableKeyword("_EMISSION");
+                    return true;
                 }
             }
-
-            // RE-ASIGNACI�N: Sin esto, los cambios no se ven en el modelo
-            ren.materials = mats;
+            return false;
         }
 
-        // Efecto visual de escala
-        if (!CompareTag("Tree"))
+        public void Interact(PlayerInventory inventory)
         {
-            transform.localScale = state ? _originalScale * 1.1f : _originalScale;
+            if (itemData == null) return;
+
+            for (int i = 0; i < inventory.slots.Length; i++)
+            {
+                if (inventory.slots[i].item == itemData && inventory.slots[i].count < itemData.maxStack)
+                {
+                    inventory.slots[i].count++;
+                    inventory.FinishPickup(this);
+                    return;
+                }
+            }
+            for (int i = 0; i < inventory.slots.Length; i++)
+            {
+                if (inventory.slots[i].item == null)
+                {
+                    inventory.slots[i].item = itemData;
+                    inventory.slots[i].count = 1;
+                    inventory.FinishPickup(this);
+                    return;
+                }
+            }
+        }
+
+        void Awake()
+        {
+            renderers = GetComponentsInChildren<MeshRenderer>();
+            _originalScale = transform.localScale;
+        }
+
+        void Start()
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null) _cachedInv = player.GetComponent<PlayerInventory>();
+        }
+
+        void Update()
+        {
+            if (transform.position.y < minY)
+            {
+                transform.position = respawnPosition;
+            }
+
+            if (!canDespawn || _isShrinking || itemData == null) return;
+
+            if (IsItemSurplus())
+            {
+                _timer += Time.deltaTime;
+                if (_timer >= (lifeTime - shrinkDuration))
+                {
+                    _isShrinking = true;
+                    StartCoroutine(ShrinkAndDestroy());
+                }
+            }
+            else
+            {
+                _timer = 0;
+            }
+        }
+
+        bool IsItemSurplus()
+        {
+            if (_cachedInv == null) return false;
+
+            bool playerAlreadyHasThisItem = false;
+            bool hasSpaceInExistingStack = false;
+            bool hasEmptySlot = false;
+
+            foreach (var slot in _cachedInv.slots)
+            {
+                if (slot.item == null) hasEmptySlot = true;
+                else if (slot.item == itemData)
+                {
+                    playerAlreadyHasThisItem = true;
+                    if (slot.count < itemData.maxStack) hasSpaceInExistingStack = true;
+                }
+            }
+
+            if (hasEmptySlot) return false;
+            if (hasSpaceInExistingStack) return false;
+            if (!playerAlreadyHasThisItem) return false;
+
+            return true;
+        }
+
+        IEnumerator ShrinkAndDestroy()
+        {
+            Vector3 startScale = transform.localScale;
+            float elapsed = 0;
+            while (elapsed < shrinkDuration)
+            {
+                elapsed += Time.deltaTime;
+                transform.localScale = Vector3.Lerp(startScale, Vector3.zero, elapsed / shrinkDuration);
+                yield return null;
+            }
+            Destroy(gameObject);
+        }
+
+        public void SetHighlight(bool state)
+        {
+            if (_isShrinking) return;
+
+            foreach (var ren in renderers)
+            {
+                Material[] mats = ren.materials;
+
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    if (state)
+                    {
+                        mats[i].EnableKeyword("_EMISSION");
+                        mats[i].SetColor("_EmissionColor", highlightColor);
+                    }
+                    else
+                    {
+                        mats[i].SetColor("_EmissionColor", Color.black);
+                    }
+                }
+
+                ren.materials = mats;
+            }
+
+            if (!CompareTag("Tree"))
+            {
+                transform.localScale = state ? _originalScale * 1.1f : _originalScale;
+            }
         }
     }
 }

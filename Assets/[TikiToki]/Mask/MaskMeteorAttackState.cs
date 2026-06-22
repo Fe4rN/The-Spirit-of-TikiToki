@@ -2,319 +2,294 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class MaskMeteorAttackState : MaskState
+namespace TikiToki.Gameplay.Boss
 {
-    [Header("Ajustes del Ataque")]
-    [SerializeField] private float anticipationDuration = 1.5f;
-    [SerializeField] private float attackDuration = 3f;
-    private float attackCounter;
-    private MeteorPhase currentPhase;
-
-    [Header("Animación de Mandíbula")]
-    [SerializeField] private float jawOpenDistance = 1.2f;
-    [SerializeField] private float jawChompSpeed = 8f;
-    [SerializeField] private int chompCount = 3;
-    private Vector3 jawInitialPosition;
-    private Vector3 jawTargetPosition;
-    private float chompTimer;
-    private int currentChomps;
-    private bool isOpening;
-
-    [Header("Configuración de Meteoritos")]
-    [SerializeField] private GameObject[] meteorPrefabs;
-    [SerializeField] private Transform groundReference;
-    [SerializeField] private int minMeteors = 10;
-    [SerializeField] private int maxMeteors = 20;
-    [SerializeField] private float meteorHeight = 10f;
-    [SerializeField] private float damageRadius = 1f;
-    [SerializeField] private float warningDuration = 2f;
-    [SerializeField] private Color warningColor = new Color(1f, 0f, 0f, 0.6f);
-    [SerializeField] private float warningBlinkSpeed = 6f;
-    [SerializeField] private Color warningEmissionColor = new Color(1f, 0.2f, 0.2f, 1f);
-    [SerializeField] private float warningEmissionIntensity = 1.5f;
-
-    [Header("Sonidos")]
-    [SerializeField] private AudioClip maskMeteorSound; // Sonido de la máscara al invocar
-    [SerializeField] private AudioClip[] meteorImpactSounds; // Sonidos para los meteoritos
-
-    private List<GameObject> activeWarnings = new List<GameObject>();
-    private bool meteorsSpawned = false;
-
-    protected override void StateEnter()
+    public class MaskMeteorAttackState : MaskState
     {
-        Debug.Log("Entering Meteor State");
-        attackCounter = anticipationDuration;
-        currentPhase = MeteorPhase.Anticipation;
-        currentChomps = 0;
-        isOpening = true;
-        chompTimer = 0;
+        [Header("Attack Settings")]
+        [SerializeField] private float anticipationDuration = 1.5f;
+        [SerializeField] private float attackDuration = 3f;
+        private float _attackCounter;
+        private MeteorPhase _currentPhase;
 
-        // Inicializar posición de mandíbula
-        if (machine.JawTransform != null)
+        [Header("Jaw Animation")]
+        [SerializeField] private float jawOpenDistance = 1.2f;
+        [SerializeField] private float jawChompSpeed = 8f;
+        [SerializeField] private int chompCount = 3;
+        private Vector3 _jawInitialPosition;
+        private Vector3 _jawTargetPosition;
+        private float _chompTimer;
+        private int _currentChomps;
+        private bool _isOpening;
+
+        [Header("Meteor Configuration")]
+        [SerializeField] private GameObject[] meteorPrefabs;
+        [SerializeField] private Transform groundReference;
+        [SerializeField] private int minMeteors = 10;
+        [SerializeField] private int maxMeteors = 20;
+        [SerializeField] private float meteorHeight = 10f;
+        [SerializeField] private float damageRadius = 1f;
+        [SerializeField] private float warningDuration = 2f;
+        [SerializeField] private Color warningColor = new Color(1f, 0f, 0f, 0.6f);
+        [SerializeField] private float warningBlinkSpeed = 6f;
+        [SerializeField] private Color warningEmissionColor = new Color(1f, 0.2f, 0.2f, 1f);
+        [SerializeField] private float warningEmissionIntensity = 1.5f;
+
+        [Header("Sounds")]
+        [SerializeField] private AudioClip maskMeteorSound;
+        [SerializeField] private AudioClip[] meteorImpactSounds;
+
+        private List<GameObject> _activeWarnings = new List<GameObject>();
+        private bool _meteorsSpawned = false;
+
+        protected override void StateEnter()
         {
-            jawInitialPosition = machine.JawTransform.localPosition;
-            jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
+            Debug.Log("Entering Meteor State");
+            _attackCounter = anticipationDuration;
+            _currentPhase = MeteorPhase.Anticipation;
+            _currentChomps = 0;
+            _isOpening = true;
+            _chompTimer = 0;
+
+            if (machine.jawTransform != null)
+            {
+                _jawInitialPosition = machine.jawTransform.localPosition;
+                _jawTargetPosition = _jawInitialPosition + Vector3.back * jawOpenDistance;
+            }
+
+            if (maskMeteorSound != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.Play3DSound(maskMeteorSound, machine.transform.position);
+            }
         }
 
-        if (maskMeteorSound != null && AudioManager.Instance != null)
+        protected override void StateUpdate()
         {
-            AudioManager.Instance.Play3DSound(maskMeteorSound, machine.transform.position);
-        }
-    }
+            machine.MirrorPlayerPosition();
+            machine.LookAtPlayer();
 
-    protected override void StateUpdate()
-    {
-        machine.MirrorPlayerPosition();
-        machine.LookAtPlayer();
+            switch (_currentPhase)
+            {
+                case MeteorPhase.Anticipation:
+                    _attackCounter -= Time.deltaTime;
 
-        switch (currentPhase)
-        {
-            case MeteorPhase.Anticipation:
-                attackCounter -= Time.deltaTime;
-
-                // Hacer chomping (abrir y cerrar 3 veces)
-                if (currentChomps < chompCount && machine.JawTransform != null)
-                {
-                    machine.JawTransform.localPosition = Vector3.Lerp(
-                        machine.JawTransform.localPosition,
-                        jawTargetPosition,
-                        Time.deltaTime * jawChompSpeed
-                    );
-
-                    // Detectar cuando alcanzamos el objetivo
-                    float distance = Vector3.Distance(machine.JawTransform.localPosition, jawTargetPosition);
-                    if (distance < 0.05f)
+                    if (_currentChomps < chompCount && machine.jawTransform != null)
                     {
-                        if (isOpening)
+                        machine.jawTransform.localPosition = Vector3.Lerp(
+                            machine.jawTransform.localPosition,
+                            _jawTargetPosition,
+                            Time.deltaTime * jawChompSpeed
+                        );
+
+                        float distance = Vector3.Distance(machine.jawTransform.localPosition, _jawTargetPosition);
+                        if (distance < 0.05f)
                         {
-                            // Cambiar a cerrar
-                            isOpening = false;
-                            jawTargetPosition = jawInitialPosition;
-                        }
-                        else
-                        {
-                            // Cambiar a abrir y contar el chomp
-                            isOpening = true;
-                            currentChomps++;
-                            if (currentChomps < chompCount)
+                            if (_isOpening)
                             {
-                                jawTargetPosition = jawInitialPosition + Vector3.back * jawOpenDistance;
+                                _isOpening = false;
+                                _jawTargetPosition = _jawInitialPosition;
+                            }
+                            else
+                            {
+                                _isOpening = true;
+                                _currentChomps++;
+                                if (_currentChomps < chompCount)
+                                {
+                                    _jawTargetPosition = _jawInitialPosition + Vector3.back * jawOpenDistance;
+                                }
                             }
                         }
                     }
-                }
 
-                if (attackCounter <= 0)
-                {
-                    currentPhase = MeteorPhase.Attacking;
-                    attackCounter = attackDuration;
-
-                    // Asegurar que la mandíbula esté cerrada
-                    if (machine.JawTransform != null)
+                    if (_attackCounter <= 0)
                     {
-                        machine.JawTransform.localPosition = jawInitialPosition;
+                        _currentPhase = MeteorPhase.Attacking;
+                        _attackCounter = attackDuration;
+
+                        if (machine.jawTransform != null)
+                        {
+                            machine.jawTransform.localPosition = _jawInitialPosition;
+                        }
+
+                        StartMeteorRain();
                     }
+                    break;
 
-                    // Iniciar lluvia de meteoritos
-                    StartMeteorRain();
-                }
-                break;
+                case MeteorPhase.Attacking:
+                    _attackCounter -= Time.deltaTime;
 
-            case MeteorPhase.Attacking:
-                attackCounter -= Time.deltaTime;
-
-                if (attackCounter <= 0)
-                    machine.SetState(machine.idleState.Value);
-                break;
-        }
-    }
-
-    protected override void StateExit()
-    {
-        // Cerrar mandíbula
-        if (machine.JawTransform != null)
-        {
-            machine.JawTransform.localPosition = jawInitialPosition;
+                    if (_attackCounter <= 0)
+                        machine.SetState(machine.idleState.Value);
+                    break;
+            }
         }
 
-        // Limpiar warnings activos
-        CleanupWarnings();
-        meteorsSpawned = false;
-    }
-
-    private void StartMeteorRain()
-    {
-        if (meteorPrefabs == null || meteorPrefabs.Length == 0)
+        protected override void StateExit()
         {
-            Debug.LogError("No meteor prefabs assigned!");
-            return;
+            if (machine.jawTransform != null)
+            {
+                machine.jawTransform.localPosition = _jawInitialPosition;
+            }
+
+            CleanupWarnings();
+            _meteorsSpawned = false;
         }
 
-        if (groundReference == null)
+        private void StartMeteorRain()
         {
-            Debug.LogError("Ground reference not assigned!");
-            return;
+            if (meteorPrefabs == null || meteorPrefabs.Length == 0)
+            {
+                Debug.LogError("No meteor prefabs assigned!");
+                return;
+            }
+
+            if (groundReference == null)
+            {
+                Debug.LogError("Ground reference not assigned!");
+                return;
+            }
+
+            int meteorCount = Random.Range(minMeteors, maxMeteors + 1);
+
+            for (int i = 0; i < meteorCount; i++)
+            {
+                float delay = Random.Range(0f, attackDuration - warningDuration);
+                StartCoroutine(SpawnMeteorWithWarning(delay));
+            }
+
+            _meteorsSpawned = true;
         }
 
-        int meteorCount = Random.Range(minMeteors, maxMeteors + 1);
-
-        for (int i = 0; i < meteorCount; i++)
+        private IEnumerator SpawnMeteorWithWarning(float initialDelay)
         {
-            float delay = Random.Range(0f, attackDuration - warningDuration);
-            StartCoroutine(SpawnMeteorWithWarning(delay));
-        }
+            yield return new WaitForSeconds(initialDelay);
 
-        meteorsSpawned = true;
-    }
+            Vector3 targetPosition = GetRandomPositionOnGround();
 
-    private IEnumerator SpawnMeteorWithWarning(float initialDelay)
-    {
-        yield return new WaitForSeconds(initialDelay);
+            GameObject warning = CreateWarningIndicator(targetPosition);
+            _activeWarnings.Add(warning);
 
-        Vector3 targetPosition = GetRandomPositionOnGround();
+            yield return new WaitForSeconds(warningDuration);
 
-        // Crear warning visual
-        GameObject warning = CreateWarningIndicator(targetPosition);
-        activeWarnings.Add(warning);
-
-        // Esperar el tiempo de aviso
-        yield return new WaitForSeconds(warningDuration);
-
-        // Destruir el warning
-        if (warning != null)
-        {
-            activeWarnings.Remove(warning);
-            Destroy(warning);
-        }
-
-        // Spawear el meteorito
-        SpawnMeteor(targetPosition);
-    }
-
-    private Vector3 GetRandomPositionOnGround()
-    {
-        if (groundReference == null) return Vector3.zero;
-
-        // Obtener los bounds del suelo
-        Renderer groundRenderer = groundReference.GetComponent<Renderer>();
-        if (groundRenderer != null)
-        {
-            Bounds bounds = groundRenderer.bounds;
-
-            float randomX = Random.Range(bounds.min.x, bounds.max.x);
-            float randomZ = Random.Range(bounds.min.z, bounds.max.z);
-
-            return new Vector3(randomX, bounds.max.y, randomZ);
-        }
-
-        // Fallback si no hay renderer
-        return groundReference.position + new Vector3(
-            Random.Range(-10f, 10f),
-            0f,
-            Random.Range(-10f, 10f)
-        );
-    }
-
-    private GameObject CreateWarningIndicator(Vector3 position)
-    {
-        // Crear un cilindro aplanado como indicador
-        GameObject warning = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        warning.name = "MeteorWarning";
-
-        // Posicionar ligeramente sobre el suelo
-        warning.transform.position = position + Vector3.up * 0.05f;
-        warning.transform.localScale = new Vector3(damageRadius * 2, 0.01f, damageRadius * 2);
-
-        // Configurar material
-        Renderer renderer = warning.GetComponent<Renderer>();
-        renderer.material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        renderer.material.color = warningColor;
-        renderer.material.EnableKeyword("_EMISSION");
-        Color emission = warningEmissionColor * warningEmissionIntensity;
-        renderer.material.SetColor("_EmissionColor", emission);
-        renderer.material.SetFloat("_Mode", 3); // Transparent mode
-        renderer.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        renderer.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        renderer.material.SetInt("_ZWrite", 0);
-        renderer.material.DisableKeyword("_ALPHATEST_ON");
-        renderer.material.EnableKeyword("_ALPHABLEND_ON");
-        renderer.material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        renderer.material.renderQueue = 3000;
-
-        // Añadir parpadeo al warning
-        WarningBlink blink = warning.AddComponent<WarningBlink>();
-        blink.BlinkSpeed = warningBlinkSpeed;
-        blink.BaseColor = warningColor;
-
-        // Remover collider
-        Collider collider = warning.GetComponent<Collider>();
-        if (collider != null)
-            Destroy(collider);
-
-        return warning;
-    }
-
-    private void SpawnMeteor(Vector3 targetPosition)
-    {
-        // Seleccionar prefab aleatorio
-        GameObject meteorPrefab = meteorPrefabs[Random.Range(0, meteorPrefabs.Length)];
-
-        // Posición de spawn en el cielo
-        Vector3 spawnPosition = targetPosition + Vector3.up * meteorHeight;
-
-        // Instanciar meteorito
-        //GameObject meteor = Instantiate(meteorPrefab, spawnPosition, Random.rotation);
-        GameObject meteor = Instantiate(meteorPrefab, spawnPosition, Quaternion.identity);
-
-        // Asegurar que tiene Rigidbody
-        Rigidbody rb = meteor.GetComponent<Rigidbody>();
-        if (rb == null)
-        {
-            rb = meteor.AddComponent<Rigidbody>();
-        }
-        rb.useGravity = true;
-
-        // Agregar el script Meteor si no lo tiene
-        Meteor meteorScript = meteor.GetComponent<Meteor>();
-        if (meteorScript == null)
-        {
-            meteorScript = meteor.AddComponent<Meteor>();
-        }
-        meteorScript.Initialize(damageRadius, meteorImpactSounds);
-    }
-
-    private void CleanupWarnings()
-    {
-        foreach (GameObject warning in activeWarnings)
-        {
             if (warning != null)
+            {
+                _activeWarnings.Remove(warning);
                 Destroy(warning);
+            }
+
+            SpawnMeteor(targetPosition);
         }
-        activeWarnings.Clear();
+
+        private Vector3 GetRandomPositionOnGround()
+        {
+            if (groundReference == null) return Vector3.zero;
+
+            Renderer groundRenderer = groundReference.GetComponent<Renderer>();
+            if (groundRenderer != null)
+            {
+                Bounds bounds = groundRenderer.bounds;
+
+                float randomX = Random.Range(bounds.min.x, bounds.max.x);
+                float randomZ = Random.Range(bounds.min.z, bounds.max.z);
+
+                return new Vector3(randomX, bounds.max.y, randomZ);
+            }
+
+            return groundReference.position + new Vector3(
+                Random.Range(-10f, 10f),
+                0f,
+                Random.Range(-10f, 10f)
+            );
+        }
+
+        private GameObject CreateWarningIndicator(Vector3 position)
+        {
+            GameObject warning = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            warning.name = "MeteorWarning";
+
+            warning.transform.position = position + Vector3.up * 0.05f;
+            warning.transform.localScale = new Vector3(damageRadius * 2, 0.01f, damageRadius * 2);
+
+            Renderer renderer = warning.GetComponent<Renderer>();
+            renderer.material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+            renderer.material.color = warningColor;
+            renderer.material.EnableKeyword("_EMISSION");
+            Color emission = warningEmissionColor * warningEmissionIntensity;
+            renderer.material.SetColor("_EmissionColor", emission);
+            renderer.material.SetFloat("_Mode", 3);
+            renderer.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            renderer.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            renderer.material.SetInt("_ZWrite", 0);
+            renderer.material.DisableKeyword("_ALPHATEST_ON");
+            renderer.material.EnableKeyword("_ALPHABLEND_ON");
+            renderer.material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+            renderer.material.renderQueue = 3000;
+
+            WarningBlink blink = warning.AddComponent<WarningBlink>();
+            blink.blinkSpeed = warningBlinkSpeed;
+            blink.baseColor = warningColor;
+
+            Collider collider = warning.GetComponent<Collider>();
+            if (collider != null)
+                Destroy(collider);
+
+            return warning;
+        }
+
+        private void SpawnMeteor(Vector3 targetPosition)
+        {
+            GameObject meteorPrefab = meteorPrefabs[Random.Range(0, meteorPrefabs.Length)];
+            Vector3 spawnPosition = targetPosition + Vector3.up * meteorHeight;
+            GameObject meteor = Instantiate(meteorPrefab, spawnPosition, Quaternion.identity);
+
+            Rigidbody rb = meteor.GetComponent<Rigidbody>();
+            if (rb == null)
+            {
+                rb = meteor.AddComponent<Rigidbody>();
+            }
+            rb.useGravity = true;
+
+            Meteor meteorScript = meteor.GetComponent<Meteor>();
+            if (meteorScript == null)
+            {
+                meteorScript = meteor.AddComponent<Meteor>();
+            }
+            meteorScript.Initialize(damageRadius, meteorImpactSounds);
+        }
+
+        private void CleanupWarnings()
+        {
+            foreach (GameObject warning in _activeWarnings)
+            {
+                if (warning != null)
+                    Destroy(warning);
+            }
+            _activeWarnings.Clear();
+        }
     }
-}
 
-public class WarningBlink : MonoBehaviour
-{
-    public float BlinkSpeed = 6f;
-    public Color BaseColor = new Color(1f, 0f, 0f, 0.6f);
-
-    private Renderer cachedRenderer;
-
-    private void Awake()
+    public class WarningBlink : MonoBehaviour
     {
-        cachedRenderer = GetComponent<Renderer>();
+        public float blinkSpeed = 6f;
+        public Color baseColor = new Color(1f, 0f, 0f, 0.6f);
+
+        private Renderer _cachedRenderer;
+
+        private void Awake()
+        {
+            _cachedRenderer = GetComponent<Renderer>();
+        }
+
+        private void Update()
+        {
+            if (_cachedRenderer == null) return;
+
+            float t = (Mathf.Sin(Time.time * blinkSpeed) + 1f) * 0.5f;
+            Color c = baseColor;
+            c.a = Mathf.Lerp(0.1f, baseColor.a, t);
+            _cachedRenderer.material.color = c;
+        }
     }
 
-    private void Update()
-    {
-        if (cachedRenderer == null) return;
-
-        float t = (Mathf.Sin(Time.time * BlinkSpeed) + 1f) * 0.5f;
-        Color c = BaseColor;
-        c.a = Mathf.Lerp(0.1f, BaseColor.a, t);
-        cachedRenderer.material.color = c;
-    }
+    public enum MeteorPhase { Anticipation, Attacking }
 }
-
-public enum MeteorPhase { Anticipation, Attacking }

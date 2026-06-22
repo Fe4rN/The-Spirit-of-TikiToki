@@ -1,160 +1,187 @@
+using System;
 using System.Collections;
 using UnityEngine;
-using System;
 using Random = UnityEngine.Random;
 
-public class Tree : MonoBehaviour
+namespace TikiToki.Gameplay.Environment
 {
-    [Header("Ajustes de Tala")]
-    public int tapsToCut = 5;
-    private float _currentDamage = 0f; // Ahora es float para suavidad
-
-    [Header("Ajustes de Regeneración")]
-    public float timeToStartRegen = 3.0f;
-    public float regenSpeed = 0.5f; // Cantidad de "toques" que recupera por segundo
-    private float _lastHitTime;
-
-    [Header("Referencias")]
-    public TreeHealthBarTree healthBar;
-    public GameObject woodPrefab;
-    public int woodAmount = 3;
-
-    [Header("Visuales")]
-    public Vector3 escalaNormal = Vector3.one;
-    private Vector3 _originalScale;
-
-
-    public AudioClip sounTreeHit;
-    public AudioClip soundTreeFall;
-
-    public static Action OnTreeHit;
-    public static Action OnTreeDestroyed;
-
-    void Awake()
+    public class Tree : MonoBehaviour, IInteractable
     {
-        // Usamos Awake para capturar la escala del prefab antes de que el Spawner la toque
-        _originalScale = (transform.localScale.magnitude > 0.1f) ? transform.localScale : escalaNormal;
-    }
+        [Header("Chopping Settings")]
+        public int tapsToCut = 5;
+        private float _currentDamage = 0f;
 
-    void Start()
-    {
-        // Si por alguna razón el Spawner lo puso a 0 antes del Awake, usamos la escala de respaldo
-        if (_originalScale.magnitude < 0.1f) _originalScale = escalaNormal;
-    }
+        [Header("Regeneration Settings")]
+        public float timeToStartRegen = 3.0f;
+        public float regenSpeed = 0.5f;
+        private float _lastHitTime;
 
-    void Update()
-    {
-        // Si hay daño, intentamos regenerar
-        if (_currentDamage > 0)
+        [Header("References")]
+        public TreeHealthBarTree healthBar;
+        public GameObject woodPrefab;
+        public int woodAmount = 3;
+
+        [Header("Visuals")]
+        public Vector3 normalScale = Vector3.one;
+        private Vector3 _originalScale;
+        private MeshRenderer[] _renderers;
+        [ColorUsage(true, true)] public Color highlightColor = new Color(0.5f, 0.5f, 0.5f);
+
+        [Header("Audio")]
+        public AudioClip soundTreeHit;
+        public AudioClip soundTreeFall;
+
+        public static Action OnTreeHit;
+        public static Action OnTreeDestroyed;
+
+        // --- IInteractable Implementation ---
+        public string InteractionPrompt => "Chop Tree";
+
+        public bool CanInteract(TikiToki.Inventory.PlayerInventory inventory)
         {
-            if (Time.time - _lastHitTime > timeToStartRegen)
+            var activeSlot = inventory.slots[inventory.activeSlotIndex];
+            return activeSlot.item != null && activeSlot.item.itemName.ToLower() == "axe";
+        }
+
+        public void Interact(TikiToki.Inventory.PlayerInventory inventory)
+        {
+            TakeHit();
+        }
+
+        public void SetHighlight(bool active)
+        {
+            if (_renderers == null) _renderers = GetComponentsInChildren<MeshRenderer>();
+
+            foreach (var ren in _renderers)
             {
-                // Curación gradual y constante
-                _currentDamage -= Time.deltaTime * regenSpeed;
-
-                // Evitamos que baje de 0
-                if (_currentDamage <= 0)
+                if (ren == null) continue;
+                Material[] mats = ren.materials;
+                for (int i = 0; i < mats.Length; i++)
                 {
-                    _currentDamage = 0;
-                    if (healthBar != null) healthBar.gameObject.SetActive(false);
+                    if (active)
+                    {
+                        mats[i].EnableKeyword("_EMISSION");
+                        mats[i].SetColor("_EmissionColor", highlightColor);
+                    }
+                    else
+                    {
+                        mats[i].SetColor("_EmissionColor", Color.black);
+                    }
                 }
-
-                OnTreeHit?.Invoke();
-
-                UpdateVisuals();
+                ren.materials = mats;
             }
         }
-    }
 
-    public void TakeHit()
-    {
-        // Sumamos 1 de daño completo por cada pulsación
-        _currentDamage += 1f;
-        _lastHitTime = Time.time;
-
-        if (AudioManager.Instance != null && sounTreeHit != null)
+        void Awake()
         {
-            AudioManager.Instance.Play3DSound(sounTreeHit, transform.position);
+            _originalScale = (transform.localScale.magnitude > 0.1f) ? transform.localScale : normalScale;
+            _renderers = GetComponentsInChildren<MeshRenderer>();
         }
 
-        UpdateVisuals();
-
-        StopAllCoroutines();
-        StartCoroutine(HitEffect());
-
-        // Comprobamos si el daño acumulado supera el límite
-        if (_currentDamage >= tapsToCut)
+        void Start()
         {
-            Die();
+            if (_originalScale.magnitude < 0.1f) _originalScale = normalScale;
         }
-    }
 
-    // Nueva función para centralizar la actualización de la barra
-    void UpdateVisuals()
-    {
-        if (healthBar != null)
+        void Update()
         {
             if (_currentDamage > 0)
             {
-                // Si hay daño, nos aseguramos de que esté encendida y actualizamos
-                if (!healthBar.gameObject.activeSelf) healthBar.gameObject.SetActive(true);
-                healthBar.SetHealth(tapsToCut - _currentDamage, tapsToCut);
+                if (Time.time - _lastHitTime > timeToStartRegen)
+                {
+                    _currentDamage -= Time.deltaTime * regenSpeed;
+
+                    if (_currentDamage <= 0)
+                    {
+                        _currentDamage = 0;
+                        if (healthBar != null) healthBar.gameObject.SetActive(false);
+                    }
+
+                    OnTreeHit?.Invoke();
+                    UpdateVisuals();
+                }
             }
-            else
+        }
+
+        public void TakeHit()
+        {
+            _currentDamage += 1f;
+            _lastHitTime = Time.time;
+
+            if (AudioManager.Instance != null && soundTreeHit != null)
             {
-                // Si el daño es 0, apagamos la barra
-                if (healthBar.gameObject.activeSelf) healthBar.gameObject.SetActive(false);
+                AudioManager.Instance.Play3DSound(soundTreeHit, transform.position);
+            }
+
+            UpdateVisuals();
+
+            StopAllCoroutines();
+            StartCoroutine(HitEffect());
+
+            if (_currentDamage >= tapsToCut)
+            {
+                Die();
             }
         }
-    }
 
-    IEnumerator HitEffect()
-    {
-        transform.localScale = _originalScale * 0.9f;
-        yield return new WaitForSeconds(0.05f);
-        transform.localScale = _originalScale;
-    }
-
-    void Die()
-    {
-        if (AudioManager.Instance != null && soundTreeFall != null)
+        void UpdateVisuals()
         {
-            AudioManager.Instance.Play3DSound(soundTreeFall, transform.position);
+            if (healthBar != null)
+            {
+                if (_currentDamage > 0)
+                {
+                    if (!healthBar.gameObject.activeSelf) healthBar.gameObject.SetActive(true);
+                    healthBar.SetHealth(tapsToCut - _currentDamage, tapsToCut);
+                }
+                else
+                {
+                    if (healthBar.gameObject.activeSelf) healthBar.gameObject.SetActive(false);
+                }
+            }
         }
 
-        for (int i = 0; i < woodAmount; i++)
+        IEnumerator HitEffect()
         {
-            Vector3 randomOffset = new Vector3(Random.Range(-0.3f, 0.3f), 0.1f, Random.Range(-0.3f, 0.1f));
-            Instantiate(woodPrefab, transform.position + randomOffset, Quaternion.identity);
+            transform.localScale = _originalScale * 0.9f;
+            yield return new WaitForSeconds(0.05f);
+            transform.localScale = _originalScale;
         }
 
-        OnTreeDestroyed?.Invoke();
-        gameObject.SetActive(false);
-    }
-
-    public void ApplyMeteorDamage()
-    {
-        _currentDamage = tapsToCut;
-        UpdateVisuals();
-        Die();
-    }
-    public void ResetearArbol()
-    {
-        // 1. Reseteamos el daño a 0 (equivale a vida completa)
-        _currentDamage = 0f;
-
-        // 2. Apagamos la barra de vida para que no se vea al "nacer"
-        if (healthBar != null)
+        void Die()
         {
-            // En tu script healthBar es el componente, así que usamos .gameObject
-            healthBar.gameObject.SetActive(false);
+            if (AudioManager.Instance != null && soundTreeFall != null)
+            {
+                AudioManager.Instance.Play3DSound(soundTreeFall, transform.position);
+            }
 
-            // Dejamos el valor de la barra preparado al máximo por si acaso
-            healthBar.SetHealth(tapsToCut, tapsToCut);
+            for (int i = 0; i < woodAmount; i++)
+            {
+                Vector3 randomOffset = new Vector3(Random.Range(-0.3f, 0.3f), 0.1f, Random.Range(-0.3f, 0.1f));
+                Instantiate(woodPrefab, transform.position + randomOffset, Quaternion.identity);
+            }
+
+            OnTreeDestroyed?.Invoke();
+            gameObject.SetActive(false);
         }
 
-        // 3. Importante: si el árbol murió, su escala podría haber quedado rara.
-        // Aunque el Spawner lo escala de 0 a 1, nos aseguramos de que el valor inicial sea 0.
-        transform.localScale = Vector3.zero;
+        public void ApplyMeteorDamage()
+        {
+            _currentDamage = tapsToCut;
+            UpdateVisuals();
+            Die();
+        }
+
+        public void ResetearArbol()
+        {
+            _currentDamage = 0f;
+
+            if (healthBar != null)
+            {
+                healthBar.gameObject.SetActive(false);
+                healthBar.SetHealth(tapsToCut, tapsToCut);
+            }
+
+            transform.localScale = Vector3.zero;
+        }
     }
 }

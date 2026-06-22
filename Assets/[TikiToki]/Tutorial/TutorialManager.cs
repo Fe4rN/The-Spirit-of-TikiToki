@@ -3,185 +3,190 @@ using TMPro;
 using System;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using TikiToki.Inventory;
+using TikiToki.Gameplay.Environment;
+using Tree = TikiToki.Gameplay.Environment.Tree;
 
-public class TutorialManager : MonoBehaviour
+namespace TikiToki.Gameplay
 {
-    [Header("Referencias")]
-    public TextMeshProUGUI tutorialText;
-    public Camera playerCamera;
-
-    [Header("Ajustes de Estética")]
-    public float typingSpeed = 0.03f;
-    public Color highlightColor = new Color(1f, 0.8f, 0f);
-    public Color successColor = new Color(0.2f, 1f, 0.2f);
-
-    private int _currentStep = 0;
-    private Coroutine _typeRoutine;
-
-    private bool _hasWood = false;
-    private bool _hasLeaves = false;
-    private bool _woodInBonfire = false;
-    private bool _leavesInBonfire = false;
-
-    private string[] _instructions = {
-        "Usa <b>WASD</b> para moverte",
-        "Usa <b>Q</b> y <b>E</b> para el Zoom",
-        "Busca el <b>Hacha</b> y recógela con ESPACIO",
-        "Equipa el hacha y <b>TALA</b> un árbol",
-        "Pulsa <b>R</b> para soltar el hacha",
-        "Recoge la <b>Madera</b> y las <b>Hojas</b>",
-        "Lleva los materiales a la <b>Hoguera</b>",
-        "Mantén ESPACIO para <b>ENCENDER</b> el fuego"
-    };
-
-    // --- MÉTODOS DE ACTUALIZACIÓN VISUAL CORREGIDOS ---
-
-    void UpdateUI()
+    public class TutorialManager : MonoBehaviour
     {
-        if (_typeRoutine != null) StopCoroutine(_typeRoutine);
-        _typeRoutine = StartCoroutine(TypeText(_instructions[_currentStep]));
-    }
+        [Header("References")]
+        public TextMeshProUGUI tutorialText;
+        public Camera playerCamera;
 
-    void SetInstantText(string txt)
-    {
-        if (_typeRoutine != null) StopCoroutine(_typeRoutine);
-        tutorialText.text = txt;
-        // Importante: Al poner texto instantáneo, mostramos todos los caracteres
-        tutorialText.maxVisibleCharacters = txt.Length;
-    }
+        [Header("Aesthetics")]
+        public float typingSpeed = 0.03f;
+        public Color highlightColor = new Color(1f, 0.8f, 0f);
+        public Color successColor = new Color(0.2f, 1f, 0.2f);
 
-    IEnumerator TypeText(string text)
-    {
-        // 1. Ponemos el texto COMPLETO primero para que TMP parsee los <b> inmediatamente
-        tutorialText.text = text;
+        private int _currentStep = 0;
+        private Coroutine _typeRoutine;
 
-        // 2. Escondemos todos los caracteres
-        tutorialText.maxVisibleCharacters = 0;
+        private bool _hasWood = false;
+        private bool _hasLeaves = false;
+        private bool _woodInBonfire = false;
+        private bool _leavesInBonfire = false;
 
-        // 3. Forzamos la actualización de la malla para que TMP sepa cuántos caracteres hay
-        tutorialText.ForceMeshUpdate();
+        private string[] _instructions = {
+            "Use <b>WASD</b> to move",
+            "Use <b>Q</b> and <b>E</b> to Zoom",
+            "Find the <b>Axe</b> and pick it up with SPACE",
+            "Equip the axe and <b>CHOP</b> a tree",
+            "Press <b>R</b> to drop the axe",
+            "Collect the <b>Wood</b> and <b>Leaves</b>",
+            "Bring the materials to the <b>Bonfire</b>",
+            "Hold SPACE to <b>LIGHT</b> the fire"
+        };
 
-        int totalVisibleCharacters = tutorialText.textInfo.characterCount;
-        int counter = 0;
-
-        // 4. Vamos aumentando el límite de caracteres visibles
-        while (counter <= totalVisibleCharacters)
+        void Start()
         {
-            tutorialText.maxVisibleCharacters = counter;
-            counter++;
-            yield return new WaitForSeconds(typingSpeed);
+            UpdateUI();
         }
-    }
 
-    // --- EL RESTO DE TU LÓGICA SE MANTIENE IGUAL ---
-
-    void OnEnable()
-    {
-        PlayerInventory.OnItemCollected += CheckItemPickup;
-        PlayerInventory.OnBonfireMaterialAdded += CheckBonfireUpdate;
-        PlayerInventory.OnItemDropped += CheckItemDropped;
-        Tree.OnTreeDestroyed += SiguientePasoArbolRoto;
-        Hoguera.OnBonfireLit += SiguientePaso;
-    }
-
-    void OnDisable()
-    {
-        PlayerInventory.OnItemCollected -= CheckItemPickup;
-        PlayerInventory.OnBonfireMaterialAdded -= CheckBonfireUpdate;
-        PlayerInventory.OnItemDropped -= CheckItemDropped;
-        Tree.OnTreeDestroyed -= SiguientePasoArbolRoto;
-        Hoguera.OnBonfireLit -= SiguientePaso;
-    }
-
-    void Start() => UpdateUI();
-
-    void Update()
-    {
-        if (_currentStep == 0 && (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)) SiguientePaso();
-        if (_currentStep == 1 && (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))) SiguientePaso();
-
-        if (Input.GetKey(KeyCode.Q)) playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, 30, Time.deltaTime * 5);
-        if (Input.GetKey(KeyCode.E)) playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, 60, Time.deltaTime * 5);
-    }
-
-    void CheckItemPickup(string itemName)
-    {
-        if (_currentStep == 2 && itemName == "axe") SiguientePaso();
-        else if (_currentStep == 5)
+        void Update()
         {
-            if (itemName == "woodPile") _hasWood = true;
-            if (itemName == "leavesPile") _hasLeaves = true;
-            if (_hasWood && _hasLeaves) SiguientePaso();
-            else ActualizarSubtareaRecogida();
-        }
-    }
+            if (_currentStep == 0 && (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)) NextStep();
+            if (_currentStep == 1 && (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))) NextStep();
 
-    void CheckBonfireUpdate(string material)
-    {
-        if (_currentStep == 6)
+            if (Input.GetKey(KeyCode.Q)) playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, 30, Time.deltaTime * 5);
+            if (Input.GetKey(KeyCode.E)) playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, 60, Time.deltaTime * 5);
+        }
+
+        void UpdateUI()
         {
-            if (material == "woodPile") _woodInBonfire = true;
-            if (material == "leavesPile") _leavesInBonfire = true;
-            if (_woodInBonfire && _leavesInBonfire) SiguientePaso();
-            else ActualizarSubtareaHoguera();
+            if (_typeRoutine != null) StopCoroutine(_typeRoutine);
+            _typeRoutine = StartCoroutine(TypeText(_instructions[_currentStep]));
         }
-    }
 
-    void SiguientePasoArbolRoto() { if (_currentStep == 3) SiguientePaso(); }
-    void CheckItemDropped() { if (_currentStep == 4) SiguientePaso(); }
-
-    void ActualizarSubtareaRecogida()
-    {
-        string txt = "";
-        if (_hasWood && !_hasLeaves) txt = "Madera recogida. ¡Busca las <b>Hojas</b>!";
-        if (!_hasWood && _hasLeaves) txt = "Hojas recogidas. ¡Busca la <b>Madera</b>!";
-        StartCoroutine(FlashColor(highlightColor));
-        SetInstantText(txt);
-    }
-
-    void ActualizarSubtareaHoguera()
-    {
-        string txt = "";
-        if (_woodInBonfire) txt = "Madera en la hoguera. ¡Faltan las <b>Hojas</b>!";
-        if (_leavesInBonfire) txt = "Hojas en la hoguera. ¡Falta la <b>Madera</b>!";
-        StartCoroutine(FlashColor(highlightColor));
-        SetInstantText(txt);
-    }
-
-    void SiguientePaso()
-    {
-        _currentStep++;
-        StartCoroutine(FlashColor(successColor));
-        if (_currentStep < _instructions.Length) UpdateUI();
-        else FinalizarTutorial();
-    }
-
-    IEnumerator FlashColor(Color color)
-    {
-        tutorialText.color = color;
-        float elapsed = 0;
-        while (elapsed < 0.5f)
+        void SetInstantText(string txt)
         {
-            tutorialText.color = Color.Lerp(color, Color.white, elapsed / 0.5f);
-            elapsed += Time.deltaTime;
-            yield return null;
+            if (_typeRoutine != null) StopCoroutine(_typeRoutine);
+            tutorialText.text = txt;
+            tutorialText.maxVisibleCharacters = txt.Length;
         }
-        tutorialText.color = Color.white;
-    }
 
-    void FinalizarTutorial()
-    {
-        SetInstantText("Tutorial completado");
-        StartCoroutine(FlashColor(successColor));
-        Invoke("OcultarTexto", 4f);
-        Invoke("CargarSiguienteNivel", 4f);
-        this.enabled = false;
-    }
+        IEnumerator TypeText(string text)
+        {
+            tutorialText.text = text;
+            tutorialText.maxVisibleCharacters = 0;
+            tutorialText.ForceMeshUpdate();
 
-    void CargarSiguienteNivel()
-    {
-        // Cambia "Nivel1" por el nombre exacto de tu escena en el Build Settings
-        SceneManager.LoadScene("Level1");
+            int totalVisibleCharacters = tutorialText.textInfo.characterCount;
+            int counter = 0;
+
+            while (counter <= totalVisibleCharacters)
+            {
+                tutorialText.maxVisibleCharacters = counter;
+                counter++;
+                yield return new WaitForSeconds(typingSpeed);
+            }
+        }
+
+        void OnEnable()
+        {
+            PlayerInventory.OnItemCollected += CheckItemPickup;
+            PlayerInventory.OnBonfireMaterialAdded += CheckBonfireUpdate;
+            PlayerInventory.OnItemDropped += CheckItemDropped;
+            Tree.OnTreeDestroyed += NextStepTreeDestroyed;
+            Bonfire.OnBonfireLit += NextStep;
+        }
+
+        void OnDisable()
+        {
+            PlayerInventory.OnItemCollected -= CheckItemPickup;
+            PlayerInventory.OnBonfireMaterialAdded -= CheckBonfireUpdate;
+            PlayerInventory.OnItemDropped -= CheckItemDropped;
+            Tree.OnTreeDestroyed -= NextStepTreeDestroyed;
+            Bonfire.OnBonfireLit -= NextStep;
+        }
+
+        void CheckItemPickup(string itemName)
+        {
+            if (_currentStep == 2 && itemName == "axe") NextStep();
+            else if (_currentStep == 5)
+            {
+                if (itemName == "woodPile") _hasWood = true;
+                if (itemName == "leavesPile") _hasLeaves = true;
+                if (_hasWood && _hasLeaves) NextStep();
+                else UpdateItemPickupSubtitle();
+            }
+        }
+
+        void CheckBonfireUpdate(string material)
+        {
+            if (_currentStep == 6)
+            {
+                if (material == "woodPile") _woodInBonfire = true;
+                if (material == "leavesPile") _leavesInBonfire = true;
+                if (_woodInBonfire && _leavesInBonfire) NextStep();
+                else UpdateBonfireSubtitle();
+            }
+        }
+
+        void NextStepTreeDestroyed() 
+        { 
+            if (_currentStep == 3) NextStep(); 
+        }
+
+        void CheckItemDropped() 
+        { 
+            if (_currentStep == 4) NextStep(); 
+        }
+
+        void UpdateItemPickupSubtitle()
+        {
+            string txt = "";
+            if (_hasWood && !_hasLeaves) txt = "Wood collected. Look for the <b>Leaves</b>!";
+            if (!_hasWood && _hasLeaves) txt = "Leaves collected. Look for the <b>Wood</b>!";
+            StartCoroutine(FlashColor(highlightColor));
+            SetInstantText(txt);
+        }
+
+        void UpdateBonfireSubtitle()
+        {
+            string txt = "";
+            if (_woodInBonfire) txt = "Wood added to bonfire. Missing <b>Leaves</b>!";
+            if (_leavesInBonfire) txt = "Leaves added to bonfire. Missing <b>Wood</b>!";
+            StartCoroutine(FlashColor(highlightColor));
+            SetInstantText(txt);
+        }
+
+        void NextStep()
+        {
+            _currentStep++;
+            StartCoroutine(FlashColor(successColor));
+            if (_currentStep < _instructions.Length) UpdateUI();
+            else FinishTutorial();
+        }
+
+        IEnumerator FlashColor(Color color)
+        {
+            tutorialText.color = color;
+            float elapsed = 0;
+            while (elapsed < 0.5f)
+            {
+                tutorialText.color = Color.Lerp(color, Color.white, elapsed / 0.5f);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            tutorialText.color = Color.white;
+        }
+
+        void FinishTutorial()
+        {
+            SetInstantText("Tutorial Completed");
+            StartCoroutine(FlashColor(successColor));
+            Invoke("HideText", 4f);
+            Invoke("LoadNextLevel", 4f);
+            this.enabled = false;
+        }
+
+        void LoadNextLevel()
+        {
+            SceneManager.LoadScene("Level1");
+        }
+
+        void HideText() => tutorialText.gameObject.SetActive(false);
     }
-    void OcultarTexto() => tutorialText.gameObject.SetActive(false);
 }

@@ -1,121 +1,124 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
-public class PlayerMovement : MonoBehaviour
+namespace TikiToki.Gameplay.Player
 {
-    [SerializeField] private float speed = 6f;
-    [SerializeField] private float rotationSpeed = 720f;
-
-    private CharacterController controller;
-    private Vector3 moveInput;
-
-    private Vector3 windDirection;
-    private float windStrength;
-    private float verticalVelocity;
-
-    private bool isStunned = false;
-    private float stunTimer = 0f;
-
-    [Header("Efecto de Stun")]
-    [SerializeField] private float tremoloIntensity = 0.5f;
-    [SerializeField] private float tremoloFrequency = 8f;
-
-    void Start()
+    [RequireComponent(typeof(CharacterController))]
+    public class PlayerMovement : MonoBehaviour
     {
-        controller = GetComponent<CharacterController>();
-    }
+        [SerializeField] private float speed = 6f;
+        [SerializeField] private float rotationSpeed = 720f;
 
-    void Update()
-    {
-        // Actualizar stun timer
-        if (isStunned)
+        private CharacterController controller;
+        private Vector3 moveInput;
+
+        private Vector3 windDirection;
+        private float windStrength;
+        private float verticalVelocity;
+
+        private bool isStunned = false;
+        private float stunTimer = 0f;
+
+        [Header("Stun Effect Settings")]
+        [SerializeField] private float tremoloIntensity = 0.5f;
+        [SerializeField] private float tremoloFrequency = 8f;
+
+        void Start()
         {
-            stunTimer -= Time.deltaTime;
-            if (stunTimer <= 0)
-            {
-                isStunned = false;
-                stunTimer = 0f;
-            }
+            controller = GetComponent<CharacterController>();
         }
 
-        // Si está stunned, no puede moverse
-        if (isStunned)
+        void Update()
         {
-            // Solo aplicar gravedad
+            // Update stun timer
+            if (isStunned)
+            {
+                stunTimer -= Time.deltaTime;
+                if (stunTimer <= 0)
+                {
+                    isStunned = false;
+                    stunTimer = 0f;
+                }
+            }
+
+            // If stunned, movement is blocked
+            if (isStunned)
+            {
+                // Only apply gravity
+                if (controller.isGrounded)
+                {
+                    verticalVelocity = -1f;
+                }
+                else
+                {
+                    verticalVelocity -= 9.81f * Time.deltaTime;
+                }
+
+                // Apply tremor effect
+                Vector3 tremolo = GetTremoloOffset();
+                Vector3 gravityOnly = Vector3.up * verticalVelocity + tremolo;
+                controller.Move(gravityOnly * Time.deltaTime);
+                return;
+            }
+
+            float moveX = Input.GetAxisRaw("Horizontal");
+            float moveZ = Input.GetAxisRaw("Vertical");
+
+            moveInput = new Vector3(moveX, 0, moveZ).normalized;
+
+            if (moveInput != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(moveInput);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+
             if (controller.isGrounded)
             {
-                verticalVelocity = -1f;
+                verticalVelocity = -1f; // Minimum force to keep contact
             }
             else
             {
-                verticalVelocity -= 9.81f * Time.deltaTime;
+                verticalVelocity -= 9.81f * Time.deltaTime; // Normal gravity when falling
             }
 
-            // Aplicar efecto de temblor
-            Vector3 tremolo = GetTremoloOffset();
-            Vector3 gravityOnly = Vector3.up * verticalVelocity + tremolo;
-            controller.Move(gravityOnly * Time.deltaTime);
-            return;
-        }
+            float againstWindFactor = 1f;
 
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveZ = Input.GetAxisRaw("Vertical");
-
-        moveInput = new Vector3(moveX, 0, moveZ).normalized;
-
-        if (moveInput != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(moveInput);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-        }
-
-        if (controller.isGrounded)
-        {
-            verticalVelocity = -1f; // Fuerza m�nima para mantener el contacto
-        }
-        else
-        {
-            verticalVelocity -= 9.81f * Time.deltaTime; // Gravedad normal si cae
-        }
-
-        float againstWindFactor = 1f;
-
-        if (moveInput != Vector3.zero && windStrength > 0f)
-        {
-            float dot = Vector3.Dot(moveInput.normalized, windDirection);
-            if (dot < 0)
+            if (moveInput != Vector3.zero && windStrength > 0f)
             {
-                float resistance = Mathf.Abs(dot) * windStrength;
-                againstWindFactor -= resistance;
+                float dot = Vector3.Dot(moveInput.normalized, windDirection);
+                if (dot < 0)
+                {
+                    float resistance = Mathf.Abs(dot) * windStrength;
+                    againstWindFactor -= resistance;
+                }
             }
+
+            Vector3 finalVelocity = moveInput * speed * Mathf.Clamp(againstWindFactor, 0.2f, 1f) + (Vector3.up * verticalVelocity);
+            controller.Move(finalVelocity * Time.deltaTime);
         }
 
-        Vector3 finalVelocity = moveInput * speed * Mathf.Clamp(againstWindFactor, 0.2f, 1f) + (Vector3.up * verticalVelocity);
-        controller.Move(finalVelocity * Time.deltaTime);
-    }
+        public void SetWind(Vector3 direction, float strength)
+        {
+            windDirection = direction.normalized;
+            windStrength = strength;
+        }
 
-    public void SetWind(Vector3 direction, float strength)
-    {
-        windDirection = direction.normalized;
-        windStrength = strength;
-    }
+        public void ClearWind()
+        {
+            windStrength = 0f;
+        }
 
-    public void ClearWind()
-    {
-        windStrength = 0f;
-    }
+        public void ApplyStun(float duration)
+        {
+            isStunned = true;
+            stunTimer = duration;
+            Debug.Log($"Player stunned for {duration} seconds");
+        }
 
-    public void ApplyStun(float duration)
-    {
-        isStunned = true;
-        stunTimer = duration;
-        Debug.Log($"Player stunned for {duration} seconds");
-    }
-
-    private Vector3 GetTremoloOffset()
-    {
-        float xTremolo = Mathf.Sin(Time.time * tremoloFrequency) * tremoloIntensity;
-        float zTremolo = Mathf.Cos(Time.time * tremoloFrequency * 0.7f) * tremoloIntensity;
-        return new Vector3(xTremolo, 0, zTremolo);
+        private Vector3 GetTremoloOffset()
+        {
+            float xTremolo = Mathf.Sin(Time.time * tremoloFrequency) * tremoloIntensity;
+            float zTremolo = Mathf.Cos(Time.time * tremoloFrequency * 0.7f) * tremoloIntensity;
+            return new Vector3(xTremolo, 0, zTremolo);
+        }
     }
 }

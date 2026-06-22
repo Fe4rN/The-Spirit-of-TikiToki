@@ -2,68 +2,74 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerHealth : MonoBehaviour
+namespace TikiToki.Gameplay.Player
 {
-    [SerializeField] private int MaxHits;
-    public int remainingHits;
-    private bool isImmune = false;
-    [SerializeField] private GameObject Character;
-    [SerializeField] private HealthBarUI healthBar;
-
-    private void Start()
+    public class PlayerHealth : MonoBehaviour
     {
-        remainingHits = MaxHits;
-    }
+        [UnityEngine.Serialization.FormerlySerializedAs("MaxHits")]
+        [SerializeField] private int maxHits = 5;
+        public int remainingHits;
+        private bool _isImmune = false;
+        [UnityEngine.Serialization.FormerlySerializedAs("Character")]
+        [SerializeField] private GameObject characterModel;
+        [SerializeField] private HealthBarUI healthBar;
 
-    public void TakeDamage()
-    {
-        // 1. Si es inmune, salimos inmediatamente
-        if (isImmune || remainingHits <= 0) return;
-
-        // 2. Restamos UNA sola vez
-        remainingHits--;
-        Debug.Log("Restando una hostia. Vidas restantes: " + remainingHits);
-
-        // 3. Actualizamos UI con seguridad (null check)
-        if (healthBar != null)
+        private void Start()
         {
-            healthBar.updateSlider(remainingHits);
+            remainingHits = maxHits;
         }
 
-        // 4. Comprobamos si ha muerto
-        if (remainingHits <= 0)
+        public void TakeDamage()
         {
-            Die();
+            if (_isImmune || remainingHits <= 0) return;
+
+            remainingHits--;
+            Debug.Log("Player hit. Remaining hits: " + remainingHits);
+
+            if (healthBar != null)
+            {
+                healthBar.updateSlider(remainingHits);
+            }
+
+            if (remainingHits <= 0)
+            {
+                Die();
+            }
+            else
+            {
+                StartCoroutine(FlashCharacter());
+                StartCoroutine(ActivateImmunity());
+            }
         }
-        else
+
+        private void Die()
         {
-            // 5. Activamos efectos e inmunidad SOLO si sigue vivo
-            StartCoroutine(FlashCharacter());
-            StartCoroutine(ActivateImmunity());
+            StopAllCoroutines();
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.EndGame(false, "Lives exhausted.");
+            }
         }
-    }
 
-    private void Die()
-    {
-        StopAllCoroutines();
-        GameObject.FindFirstObjectByType<WinLose>().FinalizarPartida(false, "Vidas agotadas.");
-    }
+        private IEnumerator FlashCharacter()
+        {
+            if (characterModel != null)
+            {
+                characterModel.SetActive(false);
+                yield return new WaitForSeconds(.1f);
+                characterModel.SetActive(true);
+                yield return new WaitForSeconds(.1f);
+                characterModel.SetActive(false);
+                yield return new WaitForSeconds(.1f);
+                characterModel.SetActive(true);
+            }
+        }
 
-    private IEnumerator FlashCharacter()
-    {
-        Character.SetActive(false);
-        yield return new WaitForSeconds(.1f);
-        Character.SetActive(true);
-        yield return new WaitForSeconds(.1f);
-        Character.SetActive(false);
-        yield return new WaitForSeconds(.1f);
-        Character.SetActive(true);
-    }
-
-    private IEnumerator ActivateImmunity()
-    {
-        isImmune = true;
-        yield return new WaitForSeconds(1.5f);
-        isImmune = false;
+        private IEnumerator ActivateImmunity()
+        {
+            _isImmune = true;
+            yield return new WaitForSeconds(1.5f);
+            _isImmune = false;
+        }
     }
 }

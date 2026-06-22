@@ -1,106 +1,107 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MaskIdleState : MaskState
+namespace TikiToki.Gameplay.Boss
 {
-    MaskAttacks nextAttack;
-    float decisionTimer;
-    bool isAttackChosen = false;
-
-    [Header("Cooldown de Ataque")]
-    public float minAttackCooldown;
-    public float maxAttackCooldown;
-    List<MaskAttacks> attackPool = new List<MaskAttacks>();
-    MaskAttacks lastAttack;
-
-    protected override void StateEnter()
+    public class MaskIdleState : MaskState
     {
-        Debug.Log("Entering Idle State");
-        decisionTimer = Random.Range(minAttackCooldown, maxAttackCooldown);
-        isAttackChosen = false;
-    }
+        private MaskAttacks _nextAttack;
+        private float _decisionTimer;
+        private bool _isAttackChosen = false;
 
-    protected override void StateUpdate()
-    {
-        machine.MirrorPlayerPosition();
+        [Header("Attack Cooldown")]
+        public float minAttackCooldown;
+        public float maxAttackCooldown;
+        private List<MaskAttacks> _attackPool = new List<MaskAttacks>();
+        private MaskAttacks _lastAttack;
 
-        if (!isAttackChosen) decisionTimer -= Time.deltaTime;
-
-        if (decisionTimer <= 0f && !isAttackChosen)
+        protected override void StateEnter()
         {
-            isAttackChosen = true;
-            ChooseRandomAttack();
-            SwitchToAttackState();
+            Debug.Log("Entering Idle State");
+            _decisionTimer = Random.Range(minAttackCooldown, maxAttackCooldown);
+            _isAttackChosen = false;
+        }
+
+        protected override void StateUpdate()
+        {
+            machine.MirrorPlayerPosition();
+
+            if (!_isAttackChosen) _decisionTimer -= Time.deltaTime;
+
+            if (_decisionTimer <= 0f && !_isAttackChosen)
+            {
+                _isAttackChosen = true;
+                ChooseRandomAttack();
+                SwitchToAttackState();
+            }
+        }
+
+        private void ChooseRandomAttack()
+        {
+            if (_attackPool.Count == 0)
+                RefillAttackPool();
+
+            _nextAttack = _attackPool[0];
+            _attackPool.RemoveAt(0);
+            _lastAttack = _nextAttack;
+        }
+
+        private void SwitchToAttackState()
+        {
+            switch (_nextAttack)
+            {
+                case MaskAttacks.Laser:
+                    machine.SetState(machine.laserState.Value);
+                    break;
+
+                case MaskAttacks.Wind:
+                    machine.SetState(machine.windState.Value);
+                    break;
+
+                case MaskAttacks.Meteor:
+                    machine.SetState(machine.meteorState.Value);
+                    break;
+
+                case MaskAttacks.Scream:
+                    machine.SetState(machine.screamState.Value);
+                    break;
+            }
+        }
+
+        private void RefillAttackPool()
+        {
+            _attackPool.Clear();
+
+            foreach (MaskAttacks attack in System.Enum.GetValues(typeof(MaskAttacks)))
+                _attackPool.Add(attack);
+
+            _attackPool.Add(MaskAttacks.Scream);
+            _attackPool.Add(MaskAttacks.Wind);
+            
+            ShuffleAttackPool();
+            PreventImmediateRepeat();
+        }
+
+        private void ShuffleAttackPool()
+        {
+            for (int i = 0; i < _attackPool.Count; i++)
+            {
+                int rand = Random.Range(i, _attackPool.Count);
+                (_attackPool[i], _attackPool[rand]) = (_attackPool[rand], _attackPool[i]);
+            }
+        }
+
+        private void PreventImmediateRepeat()
+        {
+            if (_attackPool.Count <= 1) return;
+
+            if (_attackPool[0] == _lastAttack)
+            {
+                int swapIndex = Random.Range(1, _attackPool.Count);
+                (_attackPool[0], _attackPool[swapIndex]) = (_attackPool[swapIndex], _attackPool[0]);
+            }
         }
     }
 
-    private void ChooseRandomAttack()
-    {
-        if (attackPool.Count == 0)
-            RefillAttackPool();
-
-        nextAttack = attackPool[0];
-        attackPool.RemoveAt(0);
-        lastAttack = nextAttack;
-    }
-
-    private void SwitchToAttackState()
-    {
-        switch (nextAttack)
-        {
-            case MaskAttacks.Laser:
-                machine.SetState(machine.laserState.Value);
-                break;
-
-            case MaskAttacks.Wind:
-                machine.SetState(machine.windState.Value);
-                break;
-
-            case MaskAttacks.Meteor:
-                machine.SetState(machine.meteorState.Value);
-                break;
-
-            case MaskAttacks.Scream:
-                machine.SetState(machine.screamState.Value);
-                break;
-        }
-    }
-
-    private void RefillAttackPool()
-    {
-        attackPool.Clear();
-
-        foreach (MaskAttacks attack in System.Enum.GetValues(typeof(MaskAttacks)))
-            attackPool.Add(attack);
-
-
-        attackPool.Add(MaskAttacks.Scream);
-        attackPool.Add(MaskAttacks.Wind);
-        
-        ShuffleAttackPool();
-
-        PreventImmediateRepeat();
-    }
-
-    private void ShuffleAttackPool()
-    {
-        for (int i = 0; i < attackPool.Count; i++)
-        {
-            int rand = Random.Range(i, attackPool.Count);
-            (attackPool[i], attackPool[rand]) = (attackPool[rand], attackPool[i]);
-        }
-    }
-
-    private void PreventImmediateRepeat()
-    {
-        if (attackPool.Count <= 1) return;
-
-        if (attackPool[0] == lastAttack)
-        {
-            int swapIndex = Random.Range(1, attackPool.Count);
-            (attackPool[0], attackPool[swapIndex]) = (attackPool[swapIndex], attackPool[0]);
-        }
-    }
+    public enum MaskAttacks { Laser, Wind, Meteor, Scream }
 }
-
-public enum MaskAttacks { Laser, Wind, Meteor, Scream }
