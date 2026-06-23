@@ -28,7 +28,8 @@ namespace TikiToki.Gameplay
         private bool _woodInBonfire = false;
         private bool _leavesInBonfire = false;
 
-        private string[] _instructions = {
+        // TODO: Usar el sistema de traduccion de unity, mucho mejor que hardcodeado.
+        private static readonly string[] _instructionsEn = {
             "Use <b>WASD</b> to move",
             "Use <b>Q</b> and <b>E</b> to Zoom",
             "Find the <b>Axe</b> and pick it up with SPACE",
@@ -38,6 +39,20 @@ namespace TikiToki.Gameplay
             "Bring the materials to the <b>Bonfire</b>",
             "Hold SPACE to <b>LIGHT</b> the fire"
         };
+
+        private static readonly string[] _instructionsEs = {
+            "Usa <b>WASD</b> para moverte",
+            "Usa <b>Q</b> y <b>E</b> para hacer zoom",
+            "Encuentra el <b>Hacha</b> y recógela con ESPACIO",
+            "Equípate el hacha y <b>TALA</b> un árbol",
+            "Pulsa <b>R</b> para soltar el hacha",
+            "Recoge la <b>Madera</b> y las <b>Hojas</b>",
+            "Lleva los materiales a la <b>Hoguera</b>",
+            "Mantén ESPACIO para <b>ENCENDER</b> el fuego"
+        };
+
+        private bool IsSpanish => Application.systemLanguage == SystemLanguage.Spanish;
+        private string[] _instructions => IsSpanish ? _instructionsEs : _instructionsEn;
 
         void Start()
         {
@@ -137,8 +152,14 @@ namespace TikiToki.Gameplay
         void UpdateItemPickupSubtitle()
         {
             string txt = "";
-            if (_hasWood && !_hasLeaves) txt = "Wood collected. Look for the <b>Leaves</b>!";
-            if (!_hasWood && _hasLeaves) txt = "Leaves collected. Look for the <b>Wood</b>!";
+            if (_hasWood && !_hasLeaves)
+            {
+                txt = IsSpanish ? "Madera recogida. ¡Busca las <b>Hojas</b>!" : "Wood collected. Look for the <b>Leaves</b>!";
+            }
+            else if (!_hasWood && _hasLeaves)
+            {
+                txt = IsSpanish ? "Hojas recogidas. ¡Busca la <b>Madera</b>!" : "Leaves collected. Look for the <b>Wood</b>!";
+            }
             StartCoroutine(FlashColor(highlightColor));
             SetInstantText(txt);
         }
@@ -146,8 +167,14 @@ namespace TikiToki.Gameplay
         void UpdateBonfireSubtitle()
         {
             string txt = "";
-            if (_woodInBonfire) txt = "Wood added to bonfire. Missing <b>Leaves</b>!";
-            if (_leavesInBonfire) txt = "Leaves added to bonfire. Missing <b>Wood</b>!";
+            if (_woodInBonfire && !_leavesInBonfire)
+            {
+                txt = IsSpanish ? "Madera añadida a la hoguera. ¡Faltan las <b>Hojas</b>!" : "Wood added to bonfire. Missing <b>Leaves</b>!";
+            }
+            else if (!_woodInBonfire && _leavesInBonfire)
+            {
+                txt = IsSpanish ? "Hojas añadidas a la hoguera. ¡Falta la <b>Madera</b>!" : "Leaves added to bonfire. Missing <b>Wood</b>!";
+            }
             StartCoroutine(FlashColor(highlightColor));
             SetInstantText(txt);
         }
@@ -175,7 +202,7 @@ namespace TikiToki.Gameplay
 
         void FinishTutorial()
         {
-            SetInstantText("Tutorial Completed");
+            SetInstantText(IsSpanish ? "Tutorial completado" : "Tutorial Completed");
             StartCoroutine(FlashColor(successColor));
             Invoke("HideText", 4f);
             Invoke("LoadNextLevel", 4f);

@@ -45,14 +45,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnerEscenario
   areaSize: {x: 35, y: 14}
-  radioExclusion: 3.04
-  maxArboles: 4
-  maxHojas: 4
-  maxPiedras: 10
-  hogueraPrefab: {fileID: 7633995313012639236, guid: 899ae0a11ae20744096ae41312f4d4ca, type: 3}
-  arbolPrefab: {fileID: 9050551289244230672, guid: 1f2e7f2719e2ef742bde1a57ba0f7a60, type: 3}
-  hojasPrefab: {fileID: 7049852181358402290, guid: 8cfe42f50457c8144ae9c9675bd76222, type: 3}
+  exclusionRadius: 3.5
+  maxTrees: 4
+  maxLeaves: 4
+  maxStones: 10
+  bonfirePrefab: {fileID: 7633995313012639236, guid: 899ae0a11ae20744096ae41312f4d4ca, type: 3}
+  treePrefab: {fileID: 9050551289244230672, guid: 1f2e7f2719e2ef742bde1a57ba0f7a60, type: 3}
+  leavesPrefab: {fileID: 7049852181358402290, guid: 8cfe42f50457c8144ae9c9675bd76222, type: 3}
   rock1Prefab: {fileID: 6023399913126936572, guid: 17458254c38596448ad4ef5fc2fa22bf, type: 3}
   rock2Prefab: {fileID: 2423641330846493538, guid: 14a47917e98560e41baee27a1a5f82f7, type: 3}
-  cantidadHogueras: 5
-  radioPentagono: 3
+  bonfireCount: 5
+  pentagonRadius: 3
+  leavesHeight: 0.36

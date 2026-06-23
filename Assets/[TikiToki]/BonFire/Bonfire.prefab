@@ -292,7 +292,7 @@ GameObject:
   - component: {fileID: 6307574777551360132}
   - component: {fileID: 8161826117074074383}
   m_Layer: 3
-  m_Name: Hoguera
+  m_Name: Bonfire
   m_TagString: Bonfire
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -332,19 +332,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0febc0fb45140e7409d8af00b7ecca1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hoguera
-  estaEncendida: 0
-  tieneMadera: 0
-  tieneHojas: 0
-  progresoActual: 0
-  tiempoNecesario: 2
-  velocidadDescenso: 0.5
-  sistemaChispas: {fileID: 8061999663986044910}
-  barraProgreso: {fileID: 8054099545539399578}
-  modeloVacio: {fileID: 5472820304438106947}
-  modeloConMadera: {fileID: 4030859699894952392}
-  modeloConHojas: {fileID: 8509976435981496238}
-  modeloCompleto: {fileID: 6232384128943534018}
-  efectosFuego: {fileID: 3583014115201697659}
+  isLit: 0
+  hasWood: 0
+  hasLeaves: 0
+  currentProgress: 0
+  requiredTime: 2
+  decreaseSpeed: 0.5
+  sparkSystem: {fileID: 8061999663986044910}
+  progressBar: {fileID: 8054099545539399578}
+  emptyModel: {fileID: 5472820304438106947}
+  woodModel: {fileID: 4030859699894952392}
+  leavesModel: {fileID: 8509976435981496238}
+  completeModel: {fileID: 6232384128943534018}
+  fireEffects: {fileID: 3583014115201697659}
+  highlightColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!114 &8161826117074074383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -361,6 +362,8 @@ MonoBehaviour:
   canDespawn: 0
   lifeTime: 20
   shrinkDuration: 1.5
+  minY: -1
+  respawnPosition: {x: 0, y: 1, z: 0}
   highlightColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1 &9017468121463909253
 GameObject:

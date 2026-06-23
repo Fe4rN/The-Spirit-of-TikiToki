@@ -4975,9 +4975,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 114e8cef96ced74408b3644d953ec637, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskMachine
-  PlayerTransform: {fileID: 0}
-  MaskTransform: {fileID: 4661110866800639297}
-  JawTransform: {fileID: 7847746012094545211}
+  playerTransform: {fileID: 0}
+  maskTransform: {fileID: 4661110866800639297}
+  jawTransform: {fileID: 7847746012094545211}
   smoothTime: 0.2
   idleState: {fileID: 11400000, guid: 71afdd2c5a334d54fb60b0230b9625a2, type: 2}
   laserState: {fileID: 11400000, guid: e5afc910086bb514682f74f3d4d8b019, type: 2}
@@ -5069,7 +5069,7 @@ MonoBehaviour:
   initial: 0
   anticipationDuration: 1.5
   attackDuration: 3
-  jawOpenDistance: 1.2
+  jawOpenDistance: 1.1
   jawChompSpeed: 8
   chompCount: 3
   meteorPrefabs:
@@ -5112,7 +5112,7 @@ MonoBehaviour:
   screamParticles: {fileID: 7809203326452144309}
   mainCamera: {fileID: 0}
   shakeIntensity: 10
-  jawOpenDistance: 1.35
+  jawOpenDistance: 0.9
   jawAnimationSpeed: 6
   growlSound: {fileID: 8300000, guid: 16a2c85cf7b0b3c41a06ccc032266366, type: 3}
   screamSound: {fileID: 8300000, guid: 16a2c85cf7b0b3c41a06ccc032266366, type: 3}

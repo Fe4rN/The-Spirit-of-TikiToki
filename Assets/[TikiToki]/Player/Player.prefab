@@ -242,9 +242,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42013bc5a1f1431499acb5aefb2b68b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  MaxHits: 5
+  maxHits: 5
   remainingHits: 0
-  Character: {fileID: 3784546432930140916}
+  characterModel: {fileID: 3784546432930140916}
   healthBar: {fileID: 0}
 --- !u!114 &4449364370850004533
 MonoBehaviour:
@@ -279,6 +279,8 @@ MonoBehaviour:
   interactionLayer:
     serializedVersion: 2
     m_Bits: 8
+  pickupSound: {fileID: 8300000, guid: d3ce68bfd5d627d4c9f635499354fcc7, type: 3}
+  dropSound: {fileID: 8300000, guid: ef8f49c641af20341ab70de243a81978, type: 3}
 --- !u!95 &5534364709535365762
 Animator:
   serializedVersion: 7

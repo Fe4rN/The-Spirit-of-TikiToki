@@ -51,6 +51,8 @@ MonoBehaviour:
   canDespawn: 0
   lifeTime: 30
   shrinkDuration: 1.5
+  minY: -1
+  respawnPosition: {x: 0, y: 1, z: 0}
   highlightColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!65 &1884393427874144014
 BoxCollider:
@@ -96,10 +98,10 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!1001 &3645481543142459134
 PrefabInstance:
   m_ObjectHideFlags: 0
